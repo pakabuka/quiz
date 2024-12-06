@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+    #result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Procedure I (Funk)</h4>
+      <h5 style="text-align: center;">Finding the Law</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+    {
+    question: "The Rules of Decision Act (RDA), 28 U.S.C. § 1652, states that: 'The laws of the several states, except where the Constitution or treaties of the United States or Acts of Congress otherwise require or provide, shall be regarded as rules of decision in civil actions in the courts of the United States, in cases where they apply.' What is the significance of this statute in relation to the Erie doctrine?",
+    options: [
+      "A. It establishes a clear preference for federal procedural law in diversity cases.",
+      "B. It explicitly outlines the types of cases where federal common law should apply.",
+      "C. It serves as the statutory basis for the Erie doctrine, mandating that federal courts apply state substantive law in diversity cases.",
+      "D. It grants federal courts broad discretion to develop federal common law principles in areas not governed by federal statutes or the Constitution."
+    ],
+    correct: 2,
+    explanation: "The RDA is the cornerstone of the Erie doctrine. Erie interpreted the RDA to mean that in diversity cases, federal courts must apply state substantive law (including common law) unless there is a controlling federal statute or constitutional provision. This prevents forum shopping and ensures the equitable administration of laws."
+  },
+  {
+    question: "In Guaranty Trust Co. v. York, the Supreme Court held that statutes of limitations are substantive for Erie purposes. What was the primary rationale for this holding?",
+    options: [
+      "A. Statutes of limitations are inherently procedural, but federal courts should defer to state rules to avoid forum shopping.",
+      "B. The Court recognized a historical exception to the Erie doctrine for equitable remedies, allowing federal courts to apply laches instead of state statutes of limitations.",
+      "C. The Court reasoned that applying different statutes of limitations in state and federal court could lead to forum shopping and inequitable outcomes, making them effectively substantive.",
+      "D. The Court found that statutes of limitations directly regulate the right to bring a claim, aligning them with substantive state law."
+    ],
+    correct: 2,
+    explanation: "The Guaranty Trust Court focused on the outcome-determinative nature of statutes of limitations. They reasoned that allowing different time limits in state and federal courts would encourage forum shopping because litigants would choose the forum with the more favorable statute of limitations, creating an incentive for forum shopping and potentially leading to different outcomes based solely on the forum."
+  },
+  {
+    question: "The Erie doctrine aims to prevent:",
+    options: [
+      "A. Federal courts from developing their own body of common law.",
+      "B. Forum shopping and inequitable administration of the law.",
+      "C. State courts from applying federal procedural rules.",
+      "D. The use of federal statutes in diversity cases."
+    ],
+    correct: 1,
+    explanation: "The Erie doctrine's twin aims are to prevent forum shopping (litigants choosing a court based on more favorable laws) and to ensure the equitable administration of laws, meaning that cases with the same facts should have the same outcome regardless of whether they are filed in state or federal court."
+  },
+  {
+    question: "Byrd v. Blue Ridge Rural Electric Cooperative established the 'essential characteristic' balancing test. What is the purpose of this test in the context of the Erie doctrine?",
+    options: [
+      "A. It determines whether a state law is outcome-determinative and thus should be applied in federal court.",
+      "B. It balances state interests against federal procedural interests when a state law conflicts with an essential characteristic of the federal judicial system.",
+      "C. It clarifies the distinction between substantive and procedural law for Erie purposes.",
+      "D. It guides federal courts in applying state choice-of-law rules."
+    ],
+    correct: 1,
+    explanation: "The Byrd test applies when a state law conflicts with an essential aspect of the federal court system, such as the Seventh Amendment's right to a jury trial. It requires courts to balance the state's interest in having its law applied against the federal interest in maintaining the integrity and essential characteristics of its judicial system."
+  },
+  {
+    question: "In Hanna v. Plumer, the Supreme Court articulated a two-part test for resolving conflicts between state law and the Federal Rules of Civil Procedure. What is the central question addressed by the second part of the Hanna test (Hanna II)?",
+    options: [
+      "A. Whether the difference between the federal and state rules would lead to forum shopping or inequitable administration of the laws.",
+      "B. Whether the Federal Rule of Civil Procedure is valid under the Rules Enabling Act (REA) and directly conflicts with the state law.",
+      "C. Whether the state law reflects a substantive state policy that should be respected by the federal court.",
+      "D. Whether the federal court should certify the question to the state supreme court for a definitive interpretation of state law."
+    ],
+    correct: 1,
+    explanation: "Hanna II is triggered when a Federal Rule of Civil Procedure directly conflicts with a state law. The test examines whether the Federal Rule is valid under the REA, meaning it is 'arguably procedural' and does not 'abridge, enlarge or modify any substantive right.' If the Rule is valid and the conflict is unavoidable, the Federal Rule applies."
+  },
+  {
+    question: "According to the sources, what should a federal court do when a question of state law arises in a diversity case, but the state law is unclear or there is no controlling precedent?",
+    options: [
+      "A. The federal court should dismiss the case for lack of subject matter jurisdiction.",
+      "B. The federal court should apply federal common law.",
+      "C. The federal court can make an educated guess as to how the state's highest court would rule, or it can certify the question to the state supreme court.",
+      "D. The federal court should defer to the ruling of a lower state court, even if it is not binding precedent."
+    ],
+    correct: 2,
+    explanation: "When facing an unresolved question of state law, federal courts can make an 'Erie Guess,' predicting how the state's highest court would rule. Alternatively, they can, in some jurisdictions, certify the question directly to the state supreme court for a definitive answer."
+  },
+  {
+    question: "Which of the following is an example of a situation where a federal court might apply federal law even in a diversity case?",
+    options: [
+      "A. Determining the applicable statute of limitations for a state law breach of contract claim.",
+      "B. Deciding whether to apply the doctrine of laches to bar a state law claim.",
+      "C. Determining the preclusive effect of a prior federal judgment on a subsequent state law claim.",
+      "D. Applying a state law rule regarding the admissibility of evidence."
+    ],
+    correct: 2,
+    explanation: "While Erie generally mandates the application of state substantive law in diversity cases, there are exceptions. Federal courts will apply federal law when it comes to matters like the preclusive effect of federal judgments or procedural rules governing federal courts, even if the underlying claim is based on state law."
+  },
+  {
+    question: "What is the significance of the 'twin aims of Erie' in determining whether to apply a federal practice or a state law in a diversity case?",
+    options: [
+      "A. They establish a bright-line rule that federal procedural rules always trump state law in federal court.",
+      "B. They are only relevant when a Federal Rule of Civil Procedure directly conflicts with a state law.",
+      "C. They guide courts in assessing whether applying a federal practice instead of a state law would encourage forum shopping or lead to inequitable outcomes.",
+      "D. They prioritize the application of federal common law principles in diversity cases."
+    ],
+    correct: 2,
+    explanation: "The twin aims of Erie — preventing forum shopping and ensuring the equitable administration of laws — serve as guiding principles in many Erie analysis scenarios. Even when there is no direct conflict between a federal rule and state law, courts will consider whether applying the federal practice would create an unfair advantage for plaintiffs choosing federal court or lead to different outcomes based solely on the forum."
+  },
+  {
+    question: "Which of the following is a situation where federal courts do not have to follow state law?",
+    options: [
+      "A. Where federal and state law conflict.",
+      "B. Where the Constitution requires application of federal law.",
+      "C. Both a and b.",
+      "D. Neither a nor b."
+    ],
+    correct: 2,
+    explanation: "The Rules of Decision Act states that federal courts must apply state law, except where the Constitution or federal law require or provide otherwise. This means that when there is a conflict, or the Constitution requires application of federal law, federal courts do not have to apply state law."
+  },
+  {
+    question: "Why did the Supreme Court overrule Swift v. Tyson in Erie Railroad v. Tompkins?",
+    options: [
+      "A. Because Swift had been poorly reasoned.",
+      "B. Because Swift led to an inequitable administration of the law.",
+      "C. Because Swift encouraged forum shopping.",
+      "D. Both b and c."
+    ],
+    correct: 3,
+    explanation: "In the Swift era, federal judges could apply general federal common law as long as no state statute was on point. This practice encouraged forum shopping, as litigants could choose to bring their case in federal court to take advantage of the more favorable federal common law. It also led to an inequitable administration of the laws, as parties with the same case could get different outcomes depending on whether they were in state or federal court. The Erie court found that this was contrary to the intent of the Rules of Decision Act and held that federal courts must apply state substantive law in diversity cases."
+  },
+  {
+    question: "Which of the following cases established the principle that federal courts should apply state substantive law in diversity cases?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "The landmark case of Erie Railroad Co. v. Tompkins overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court held that federal courts in diversity cases must apply the substantive law of the state in which they sit."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  },
+  {
+    question: "Federal courts must apply state law in diversity cases, but it is not always clear what the state law is. What should a federal court do when it is unsure of the applicable state law?",
+    options: [
+      "A. The federal court should abstain from hearing the case.",
+      "B. The federal court should make an 'Erie Guess' about what the state's highest court would decide.",
+      "C. The federal court should apply federal common law.",
+      "D. The federal court should dismiss the case."
+    ],
+    correct: 1,
+    explanation: "When a federal court needs to apply state law but the law is unclear, the court should attempt to predict how the state's highest court would decide on that specific legal question. This prediction is called an 'Erie Guess'. The federal court's guess will not bind the state courts, but it may be persuasive."
+  },
+  {
+    question: "In a diversity case, the federal court is faced with a conflict between a Federal Rule of Civil Procedure and state law. What is the correct order of analysis the court should apply?",
+    options: [
+      "A. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the Hanna I test.",
+      "B. Determine if there is a conflict, apply the Hanna II test, if there is no conflict, apply the York/Erie test.",
+      "C. Apply the York/Erie test, determine if the federal interest is at stake, apply the Hanna I test.",
+      "D. Apply the Hanna I test, determine if the federal interest is at stake, apply the Hanna II test."
+    ],
+    correct: 1,
+    explanation: "First, the court should determine whether the Federal Rule of Civil Procedure directly conflicts with the state law. If it does, the court should apply the Hanna II test to determine if the Federal Rule is valid. If the rule is valid, then it applies. If there is no direct conflict, the court should analyze the issue under the York/Erie test, considering the twin aims of Erie."
+  },
+  {
+    question: "Which of the following cases held that there is no general federal common law?",
+    options: [
+      "A. Swift v. Tyson",
+      "B. Erie Railroad Co. v. Tompkins",
+      "C. Guaranty Trust v. York",
+      "D. Hanna v. Plumer"
+    ],
+    correct: 1,
+    explanation: "Erie Railroad Co. v. Tompkins (1938) overturned the Swift v. Tyson decision and held that there is no general federal common law. The Erie Court reasoned that the creation of general federal common law was not authorized by the Constitution or Congress, and that allowing federal courts to create their own common law would violate the principles of federalism."
+  },
+  {
+    question: "After Erie, what is the role of federal common law in federal courts?",
+    options: [
+      "A. Federal common law has been completely abolished.",
+      "B. Federal common law still exists in limited areas, such as admiralty and interstate disputes.",
+      "C. Federal common law is applied in all cases where there is no federal statute on point.",
+      "D. Federal common law is applied in all diversity cases."
+    ],
+    correct: 1,
+    explanation: "Although Erie significantly limited the role of federal common law, it did not completely abolish it. Federal common law continues to exist in certain areas of law where federal interests are particularly strong. Examples of areas where federal common law applies include admiralty law, interstate disputes, and certain types of federal claims, such as labor disputes under the Taft-Hartley Act."
+  },
+  {
+    question: "Which of the following is not a part of the Hanna I test?",
+    options: [
+      "A. Whether the federal practice is an essential characteristic of the federal system.",
+      "B. Whether applying the federal practice instead of the state law would lead to forum shopping.",
+      "C. Whether applying the federal practice instead of the state law would result in the inequitable administration of the laws.",
+      "D. Whether the difference between the federal and state practices would be outcome determinative."
+    ],
+    correct: 0,
+    explanation: "The Hanna I test is applied when there is no Federal Rule of Civil Procedure on point and asks whether the federal practice is outcome-determinative in light of the twin aims of Erie. The factors to be considered in the Hanna I analysis include: (1) whether applying the federal practice would lead to forum shopping, (2) whether applying the federal practice would result in the inequitable administration of the laws, and (3) whether the difference between the federal and state practices would be outcome determinative. The inquiry of whether the federal practice is an essential characteristic of the federal system comes from the Byrd balancing test, which is a separate test."
+  },
+  {
+    question: "What is the meaning of the phrase 'outcome determinative' in the context of the Erie doctrine?",
+    options: [
+      "A. Any federal rule that affects the outcome of a case must be applied.",
+      "B. Any state rule that affects the outcome of a case must be applied.",
+      "C. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the state law should apply.",
+      "D. If applying the federal practice instead of the state law would significantly affect the outcome of the litigation, then the federal practice should apply."
+    ],
+    correct: 2,
+    explanation: "The outcome-determinative test was first articulated in Guaranty Trust v. York, where the Court held that federal courts must apply state law when it would be outcome determinative. The Court reasoned that in diversity cases, federal courts are essentially sitting as state courts and should not apply different rules that would lead to different outcomes. For example, if a state law has a one-year statute of limitations for a particular claim, and federal law has a two-year statute of limitations, the state law should apply because it would determine whether the claim is barred. However, later cases have clarified that the outcome-determinative test is not absolute and federal courts can apply federal practice even if it might affect the outcome. The Byrd balancing test allows federal courts to consider whether the federal practice is an essential characteristic of the federal system, even if applying it would lead to a different outcome than applying state law."
+  },
+  {
+    question: "Which of the following statements is true about certification to a state's highest court?",
+    options: [
+      "A. Certification is mandatory when a federal court is unsure about a question of state law.",
+      "B. Certification is discretionary.",
+      "C. All states allow for certification.",
+      "D. Certification is reviewed de novo."
+    ],
+    correct: 1,
+    explanation: "When a federal court is presented with an unclear or unsettled question of state law, it may choose to certify the question to that state's highest court. Certification is a helpful tool that allows the federal court to obtain a definitive ruling on the issue from the state court. However, certification is not mandatory. It is a discretionary procedure that the federal court can choose to use or not. Certification is also not available in all states. While a majority of states allow for it, a few states do not. If a state does not allow for certification, the federal court must make an 'Erie Guess' about how the state's highest court would rule on the unsettled issue of state law. The decision of whether to certify a question to a state supreme court is within the discretion of the federal court. Therefore, a federal court's decision to certify or not certify a question is reviewed for abuse of discretion. Abuse of discretion review is a highly deferential standard that requires the reviewing court to uphold the lower court's decision unless it was clearly erroneous or unreasonable."
+  }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

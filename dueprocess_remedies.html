@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+  
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Procedure I (Funk)</h4>
+      <h5 style="text-align: center;">Due Process and Remedies</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+  {
+    question: "Which of the following is NOT an element of the Mathews test used to determine the level of due process owed?",
+    options: [
+      "A. The probable value of additional or substitute procedural safeguards",
+      "B. The private interest that will be affected by the official action",
+      "C. The dignity values involved in allowing litigation of the claim",
+      "D. The Government's interest, including the function involved and the fiscal and administrative burdens that the additional or substitute procedural requirement would entail"
+    ],
+    correct: 2,
+    explanation: "Options A, B, and D are the three prongs of the Mathews balancing test. Option C refers to the dignity values identified by Michelman as one of the reasons we should make litigation possible, which is not relevant to the Mathews test."
+  },
+  {
+    question: "Which of the following is NOT a requirement for a Temporary Restraining Order (TRO) to be issued without notice to the adverse party?",
+    options: [
+      "A. The movant's attorney certifies in writing any efforts made to give notice and the reasons why it should not be required.",
+      "B. The order must state the date and hour it was issued; describe the injury and state why it is irreparable; state why the order was issued without notice; and be promptly filed in the clerk's office and entered in the record.",
+      "C. The motion for a preliminary injunction must be set for a hearing at the earliest possible time.",
+      "D. The movant must give security in an amount that the court considers proper to pay the costs and damages sustained by any party found to have been wrongfully enjoined or restrained."
+    ],
+    correct: 3,
+    explanation: "Options A, B, and C are specific requirements for a TRO issued without notice. Option D, concerning security, applies to both TROs and preliminary injunctions."
+  },
+  {
+    question: "According to Fuentes, before the state can seize property, due process requires what procedural safeguards?",
+    options: [
+      "A. Prior notice and a hearing.",
+      "B. A bond posted by the creditor and an affidavit.",
+      "C. An opportunity for the possessor to contest the seizure in court.",
+      "D. None of the above."
+    ],
+    correct: 0,
+    explanation: "Fuentes established that pre-deprivation hearings are generally necessary before the deprivation of property. The case outlined some narrow exceptions to this general rule, but none of the other options are mentioned as requirements."
+  },
+  {
+    question: "Which of the following statements about the Collateral Bar Rule is FALSE?",
+    options: [
+      "A. It prohibits parties from collaterally attacking court orders by violating them instead of challenging them through proper legal channels.",
+      "B. It applies even when the court that issued the order lacked jurisdiction.",
+      "C. It serves to manage court resources and prevent an unlimited number of collateral cases.",
+      "D. It has exceptions, such as when there was insufficient time to appeal the order or when the order is void on its face."
+    ],
+    correct: 1,
+    explanation: "The Collateral Bar Rule generally prevents collateral attacks on court orders, but there are exceptions. One such exception is when the court that issued the order lacked jurisdiction."
+  },
+  {
+    question: "Under FRCP 68, when a plaintiff rejects a defendant’s settlement offer and then wins a judgment at trial that is less favorable than the offer, what are the consequences regarding costs?",
+    options: [
+      "A. The defendant must pay the plaintiff's costs incurred after the offer was made.",
+      "B. The plaintiff must pay the costs incurred after the offer was made.",
+      "C. Each side bears its own costs.",
+      "D. The court has discretion to allocate costs."
+    ],
+    correct: 1,
+    explanation: "FRCP 68 encourages settlement by placing a cost burden on a plaintiff who rejects an offer and then obtains a less favorable result at trial. This rule incentivizes plaintiffs to seriously consider settlement offers."
+  },
+  {
+    question: "In Walgreen Co. v. Sara Creek Property, how did Judge Posner approach the decision of whether to grant a permanent injunction or award damages?",
+    options: [
+      "A. He applied the traditional irreparable injury rule.",
+      "B. He conducted a cost-benefit analysis, essentially 'outsourcing' the determination of damages to the parties.",
+      "C. He held that injunctions are always preferred in breach of contract cases.",
+      "D. He gave deference to the trial court's findings, applying an abuse of discretion standard."
+    ],
+    correct: 1,
+    explanation: "Judge Posner's approach in Walgreen was unusual in that he explicitly used a cost-benefit analysis to decide between an injunction and damages. He believed the market, through negotiation between the parties, could determine the cost of the harm more effectively than the court. This approach was not a rejection of the irreparable injury rule but rather a recognition of the difficulty and potential inaccuracy in calculating damages in certain situations."
+  },
+  
+  {
+    question: "Which of the following is NOT a requirement for a temporary restraining order (TRO) without notice?",
+    options: [
+      "A. The movant’s attorney certifies in writing any efforts made to give notice and the reasons why it should not be required.",
+      "B. The order expires at the time after entry - not to exceed 14 days - that the court sets, unless before that time the court, for good cause, extends it for a like period, or the adverse party consents to a longer extension.",
+      "C. The court may consolidate the TRO hearing with a trial on the merits.",
+      "D. Specific facts in an affidavit or a verified complaint clearly show that immediate and irreparable injury, loss, or damage will result to the movant before the adverse party can be heard in opposition."
+    ],
+    correct: 2,
+    explanation: "Answer choice C is a characteristic of a preliminary injunction hearing, not a TRO. Answer choices A, B, and D are requirements of a temporary restraining order."
+  },
+  {
+    question: "The Collateral Bar Rule prevents a party from:",
+    options: [
+      "A. Challenging an injunction by violating it.",
+      "B. Appealing a court order.",
+      "C. Filing a lawsuit in a different court.",
+      "D. Presenting new evidence in a case."
+    ],
+    correct: 0,
+    explanation: "The Collateral Bar Rule prevents parties from challenging court orders through disobedience rather than appealing them. This rule helps courts manage resources and maintain their authority."
+  },
+  {
+    question: "According to Fuentes v. Shevin, what is required before the state can seize property?",
+    options: [
+      "A. A warrant issued by a judge.",
+      "B. Payment of a bond by the creditor.",
+      "C. Prior notice and a hearing.",
+      "D. A showing that the property is essential to the debtor's livelihood."
+    ],
+    correct: 2,
+    explanation: "The Supreme Court held in Fuentes v. Shevin that due process necessitates pre-seizure notice and an opportunity for a hearing. This safeguards individuals' property rights from arbitrary government action."
+  },
+  {
+    question: "In Mathews v. Eldridge, the Supreme Court held that a pre-termination evidentiary hearing is not always required before the government can deprive someone of a property interest. Which of the following is NOT a factor in the Mathews balancing test used to determine when such a hearing is required?",
+    options: [
+      "A. The risk of an erroneous deprivation.",
+      "B. The government’s interest, including fiscal and administrative burdens.",
+      "C. The private interest affected by the deprivation.",
+      "D. The availability of legal representation for the individual."
+    ],
+    correct: 3,
+    explanation: "While access to counsel can be relevant in due process cases, the Mathews test does not explicitly consider it. The test emphasizes balancing the individual's interest, the risk of error, and the government's burden to determine the level of procedural protection required."
+  },
+  {
+    question: "Under the American Rule, who typically pays the attorney's fees in a civil case?",
+    options: [
+      "A. The losing party pays the winner's fees.",
+      "B. Each party pays their own attorney's fees.",
+      "C. The government pays the fees for both parties.",
+      "D. The prevailing party always pays their own fees."
+    ],
+    correct: 1,
+    explanation: "Unlike the English Rule where the loser pays, the American Rule dictates that each side bears the cost of their own legal representation. Fee-shifting statutes create exceptions in specific cases."
+  },
+  {
+    question: "What is the purpose of FRCP 68, the Offer of Judgment rule?",
+    options: [
+      "A. To discourage parties from filing frivolous lawsuits.",
+      "B. To require parties to disclose all relevant evidence before trial.",
+      "C. To encourage settlements and avoid unnecessary trials.",
+      "D. To ensure that all parties have access to legal representation."
+    ],
+    correct: 2,
+    explanation: "FRCP 68 offers a mechanism for defendants to propose a settlement. If the plaintiff rejects a reasonable offer and later wins less at trial, they bear certain costs. This incentivizes accepting fair settlements."
+  },
+  {
+    question: "What are the four elements of a preliminary injunction?",
+    options: [
+      "A. Likelihood of success on the merits; irreparable harm; balance of equities; and the public interest.",
+      "B. Notice to the adverse party; a bond; a hearing; and a court order.",
+      "C. A verified complaint; an affidavit; a court order; and an opportunity for a hearing.",
+      "D. Immediate and irreparable injury; attempts to notify the opposing party; a court order; and a bond."
+    ],
+    correct: 0,
+    explanation: "To secure a preliminary injunction, a plaintiff must demonstrate a strong case, significant harm without the injunction, favorable balance of hardships, and alignment with the public good."
+  },
+  {
+    question: "According to Carey v. Piphus, what must a plaintiff prove to recover compensatory damages for a violation of due process?",
+    options: [
+      "A. That the violation was intentional.",
+      "B. That they suffered an actual injury as a result of the violation.",
+      "C. That the government acted in bad faith.",
+      "D. That they were denied access to legal representation."
+    ],
+    correct: 1,
+    explanation: "The Supreme Court established in Carey v. Piphus that merely proving a procedural due process violation is insufficient for compensatory damages. The plaintiff must further establish concrete harm stemming from that violation."
+  },
+  {
+    question: "In Walgreen Co. v. Sara Creek Property, Judge Posner decided to award an injunction rather than damages. What was his primary rationale for this decision?",
+    options: [
+      "A. Damages would be too difficult and costly to calculate accurately.",
+      "B. Walgreen had a high likelihood of success on the merits of the case.",
+      "C. An injunction would better serve the public interest.",
+      "D. Sara Creek acted in bad faith by breaching the lease agreement."
+    ],
+    correct: 0,
+    explanation: "Judge Posner favored the injunction, reasoning that quantifying damages would be complex and potentially imprecise. He leaned on the Coase Theorem, suggesting the parties could negotiate a more efficient outcome through bargaining."
+  },
+  {
+    question: "What is a structural injunction?",
+    options: [
+      "A. An injunction that is designed to prevent future harm.",
+      "B. An injunction that orders the payment of money damages.",
+      "C. An injunction that is issued without notice to the adverse party.",
+      "D. An injunction that orders broad, systemic changes to an institution to remedy constitutional violations."
+    ],
+    correct: 3,
+    explanation: "Structural injunctions target comprehensive reforms within institutions, often addressing widespread issues like prison conditions or school segregation. These injunctions seek to correct underlying problems, not just isolated incidents."
+  },
+  {
+    question: "Which of the following is NOT a characteristic of the traditional model of civil adjudication, according to Chayes?",
+    options: [
+      "A. Bipolar, meaning there are two sides with opposing views.",
+      "B. Party-initiated and party-controlled, where parties handle fact-finding and present arguments.",
+      "C. Prospective, focusing on preventing future harm rather than addressing past events.",
+      "D. Self-contained, with the judgment limited to the parties involved."
+    ],
+    correct: 2,
+    explanation: "Traditionally, civil adjudication centers on past events, seeking to resolve a specific dispute that has already occurred. This contrasts with a more prospective approach that aims to prevent future harm."
+  },
+  {
+    question: "In U.S. v. Hall, the court held that a non-party to a lawsuit could be held in contempt for violating an injunction. What were the two key requirements for this to occur?",
+    options: [
+      "A. The non-party must have had actual notice of the injunction, and their violation must threaten the court’s ability to adjudicate the case between the original parties.",
+      "B. The non-party must have acted in concert with one of the original parties, and the injunction must have been specifically directed at them.",
+      "C. The non-party must have benefited from the violation, and the violation must have caused substantial harm to the plaintiff.",
+      "D. The non-party must have been aware that their actions would violate the injunction, and they must have willfully disobeyed the court’s order."
+    ],
+    correct: 0,
+    explanation: "The Hall case demonstrates that even those not directly involved in a lawsuit can face penalties for violating injunctions. The crucial elements are that they were informed of the injunction and their actions undermined the court's authority in the original case."
+  }, {
+    question: "What standard of review did the Supreme Court apply in Brown v. Plata?",
+    options: [
+      "A. De Novo.",
+      "B. Abuse of discretion.",
+      "C. Clear error.",
+      "D. Substantial evidence."
+    ],
+    correct: 2,
+    explanation: "The Supreme Court in Brown v. Plata used a clear error standard to assess the lower court's factual findings. This standard grants deference to the trial court's determination unless a clear error is apparent on the record. The Supreme Court found no such error, upholding the structural injunction to reduce overcrowding in California prisons."
+  },
+  {
+    question: "Which of the following is an exception to the general requirement for a pre-deprivation hearing before seizing property, according to Fuentes v. Shevin?",
+    options: [
+      "A. The property is worth less than $1,000.",
+      "B. The creditor has a strong likelihood of success on the merits of the case.",
+      "C. The property is subject to a valid security agreement.",
+      "D. There is a special need for prompt action to secure an important government or public interest."
+    ],
+    correct: 3,
+    explanation: "Fuentes v. Shevin established the necessity of pre-seizure hearings to protect due process rights. However, the court carved out exceptions for 'extraordinary circumstances.' One such exception is when swift action is crucial to safeguard a significant government or public interest."
+  },
+  {
+    question: "According to Turner v. Rogers, under what circumstances might an indigent individual facing incarceration in a civil contempt proceeding NOT be entitled to appointed counsel?",
+    options: [
+      "A. When the opposing party is also unrepresented by counsel.",
+      "B. When the individual has a history of failing to pay child support.",
+      "C. When the court provides alternative procedural safeguards to determine the individual's ability to pay.",
+      "D. When the individual has waived their right to counsel in writing."
+    ],
+    correct: 2,
+    explanation: "While Turner v. Rogers clarified that the Due Process Clause does not automatically guarantee counsel in civil contempt proceedings, it stressed the need for safeguards to protect individuals facing jail time for inability to pay. If adequate alternative procedures exist to fairly assess the individual's financial capacity, appointment of counsel may not be mandatory."
+  },
+  {
+    question: "Under FRCP 54(c), what relief can a court grant a claimant?",
+    options: [
+      "A. Only the relief specifically requested in the pleadings.",
+      "B. Any relief that is consistent with the evidence presented at trial.",
+      "C. Any relief that is permitted by law, even if not requested in the pleadings.",
+      "D. Relief that is greater in amount than what was demanded in the pleadings."
+    ],
+    correct: 2,
+    explanation: "FRCP 54(c) grants courts flexibility in awarding remedies. A court is not strictly bound by the specific relief sought in initial filings but can grant any remedy supported by the law and evidence, ensuring that parties receive what they are entitled to."
+  },
+  {
+    question: "What does the \"lodestar\" method calculate?",
+    options: [
+      "A. The amount of punitive damages that can be awarded in a civil case.",
+      "B. The reasonable amount of attorney's fees in a fee-shifting case.",
+      "C. The value of a property interest for due process purposes.",
+      "D. The amount of a bond required for a preliminary injunction."
+    ],
+    correct: 1,
+    explanation: "In cases involving fee-shifting, where the prevailing party can recover attorney's fees from the opponent, courts often use the \"lodestar\" method. This calculation multiplies a reasonable hourly rate by the number of hours reasonably spent on the case to determine a fair award of fees."
+  },
+  {
+    question: "What was the main takeaway from U.S. v. Hall regarding injunctions and non-parties?",
+    options: [
+      "A. Non-parties are never bound by the terms of an injunction.",
+      "B. Non-parties can be held in contempt for violating an injunction if they have notice of it and their actions threaten the court’s ability to enforce its judgment.",
+      "C. Injunctions can only be enforced against parties who were named in the original lawsuit.",
+      "D. Non-parties can challenge the validity of an injunction in a separate legal proceeding."
+    ],
+    correct: 1,
+    explanation: "The decision in U.S. v. Hall expanded the reach of injunctions. The court asserted that individuals not initially involved in a case could still face consequences for violating an injunction if they were aware of its existence and their actions interfered with the court's authority. This emphasizes the seriousness of court orders and their potential implications beyond the immediate parties."
+  },
+  {
+    question: "According to Carey v. Piphus, what is required for a plaintiff to receive compensatory damages in a Section 1983 action alleging a violation of due process?",
+    options: [
+      "A. The plaintiff must demonstrate the deprivation of a constitutionally protected liberty or property interest.",
+      "B. The plaintiff must prove that the defendant acted with malicious intent.",
+      "C. The plaintiff must establish a causal connection between the due process violation and actual injury.",
+      "D. The plaintiff must show that the defendant failed to provide adequate notice and an opportunity to be heard."
+    ],
+    correct: 2,
+    explanation: "Carey v. Piphus emphasized that a violation of due process, while significant, does not automatically guarantee compensatory damages. Plaintiffs must go a step further and present evidence demonstrating concrete harm directly resulting from the procedural deprivation. This principle ensures that damages awarded under Section 1983 genuinely redress the actual injuries suffered."
+  },
+  {
+    question: "What is the primary difference between a preliminary injunction and a permanent injunction?",
+    options: [
+      "A. A preliminary injunction is issued before a trial, while a permanent injunction is issued after a trial.",
+      "B. A preliminary injunction requires a showing of irreparable harm, while a permanent injunction does not.",
+      "C. A preliminary injunction can be issued ex parte, while a permanent injunction cannot.",
+      "D. A preliminary injunction is appealable, while a permanent injunction is not."
+    ],
+    correct: 0,
+    explanation: "The core distinction between preliminary and permanent injunctions lies in their timing within a lawsuit. A preliminary injunction serves to maintain the status quo during litigation, preventing irreparable harm before a final judgment. In contrast, a permanent injunction, issued after a full trial, provides a lasting remedy based on a comprehensive assessment of the merits and appropriate relief."
+  },
+  {
+    question: "Which of the following is a characteristic of \"public law litigation,\" as described by Chayes?",
+    options: [
+      "A. The parties' roles are clearly defined and remain static throughout the litigation.",
+      "B. The judge acts as a passive arbiter, allowing the parties to control the pace and direction of the case.",
+      "C. The lawsuit focuses on resolving past disputes rather than shaping future conduct.",
+      "D. The judge takes an active role in shaping the litigation and managing ongoing relief."
+    ],
+    correct: 3,
+    explanation: "Chayes' analysis of public law litigation highlights a departure from the traditional adversarial model. In these cases, judges often assume a more proactive stance, steering the complex proceedings and overseeing the implementation of remedies that may have broad societal impact, moving beyond the passive role characteristic of traditional litigation."
+  },
+  {
+    question: "Which of the following is NOT an element of the preliminary injunction test established in Winter v. Natural Resources Defense Council?",
+    options: [
+      "A. Likelihood of success on the merits.",
+      "B. Irreparable harm in the absence of the injunction.",
+      "C. Balance of hardships favoring the plaintiff.",
+      "D. Proof that the defendant acted with negligence or intentional misconduct."
+    ],
+    correct: 3,
+    explanation: "The Winter test for preliminary injunctions focuses on preventing immediate harm and preserving the court's ability to provide an effective remedy. While demonstrating harm and the likelihood of ultimately prevailing on the merits are crucial, establishing the defendant's fault through negligence or intentional wrongdoing is not a requirement for obtaining this type of provisional relief."
+  },
+  {
+    question: "Under the American rule for financing litigation, who is generally responsible for paying attorney's fees?",
+    options: [
+      "A. The losing party pays the winning party's attorney's fees.",
+      "B. Each party pays their own attorney's fees.",
+      "C. The government pays the attorney's fees for both parties in civil rights cases.",
+      "D. The prevailing party always pays their own attorney's fees, but the losing party may have to pay court costs."
+    ],
+    correct: 1,
+    explanation: "The American rule distinguishes the US legal system from many others. It dictates that, barring specific exceptions, each side bears the cost of their own legal representation, regardless of the case's outcome. This principle contrasts with the \"English rule,\" where the losing party typically shoulders the burden of the prevailing party's legal expenses."
+  },
+  {
+    question: "Which of the following is NOT a characteristic of public law litigation, as described by Chayes?",
+    options: [
+      "A. The party structure is amorphous and changes over the course of litigation.",
+      "B. The judge plays a passive role in organizing and guiding the case.",
+      "C. The trial judge often manages complex forms of ongoing relief.",
+      "D. The effects of the judgment can be widespread, impacting individuals not directly involved in the case."
+    ],
+    correct: 1,
+    explanation: "According to Chayes, public law litigation is characterized by a more active role for the judge, who guides the case and manages ongoing relief. Option (B) contradicts this view."
+  },
+  {
+    question: "What is the primary purpose of the Collateral Bar Rule?",
+    options: [
+      "A. To punish individuals who violate court orders.",
+      "B. To protect the integrity and efficiency of the judicial system.",
+      "C. To ensure all litigants have access to legal counsel.",
+      "D. To promote settlement agreements in civil cases."
+    ],
+    correct: 1,
+    explanation: "The Collateral Bar Rule is designed to prevent individuals from challenging court orders by violating them rather than pursuing proper legal channels. This helps manage court resources and prevents an endless cycle of collateral cases, thus safeguarding the judicial system's effectiveness."
+  },
+  {
+    question: "Under the Mathews test, which factor is LEAST likely to be considered when determining the level of due process required in a given situation?",
+    options: [
+      "A. The nature of the private interest at stake.",
+      "B. The risk of erroneous deprivation of that interest.",
+      "C. The cost of providing additional procedural safeguards.",
+      "D. The societal benefits of the government's actions."
+    ],
+    correct: 2,
+    explanation: "While the Mathews test considers the private interest, risk of erroneous deprivation, and government's interest in terms of fiscal and administrative burden, it does not explicitly account for broader societal benefits, unlike the Goldberg test."
+  },
+  {
+    question: "Which of the following statements accurately reflects the holding in Walgreen Co. v. Sara Creek Property?",
+    options: [
+      "A. Permanent injunctions should only be granted in extraordinary circumstances.",
+      "B. Courts should prioritize awarding damages over injunctions when possible.",
+      "C. The decision to grant a permanent injunction should be based on a cost-benefit analysis.",
+      "D. The inadequacy of damages is not a relevant factor in determining whether to grant an injunction."
+    ],
+    correct: 2,
+    explanation: "In Walgreen, Judge Posner adopted a cost-benefit approach to determine whether a permanent injunction was warranted. While this approach deviates from the traditional \"irreparable harm\" standard, it highlights the economic considerations underlying equitable relief."
+  },
+  {
+    question: "What is the significance of FRCP 54(c) in the context of remedies?",
+    options: [
+      "A. It limits the types of relief a plaintiff can request in their initial pleadings.",
+      "B. It allows the court to grant a plaintiff relief that was not specifically requested in their pleadings.",
+      "C. It requires the court to award the plaintiff the exact relief requested in their pleadings.",
+      "D. It prevents the court from awarding any relief beyond monetary damages."
+    ],
+    correct: 1,
+    explanation: "FRCP 54(c) empowers the court to grant relief that aligns with each party's entitlement, even if it wasn't explicitly requested in the pleadings. This provision reflects the court's commitment to ensuring a just outcome, regardless of technical pleading deficiencies."
+  }
+
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

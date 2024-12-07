@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Flashcards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flashcard {
+            width: 350px; /* Slightly larger width */
+            height: 250px; /* Slightly larger height */
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            overflow: hidden; /* Prevent overflow issues */
+        }
+
+        .flashcard-inner {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transform-style: preserve-3d;
+            transform: rotateY(0deg);
+            transition: transform 0.6s;
+            position: relative;
+        }
+
+        .flashcard.flip .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front,
+        .flashcard-back {
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto; /* Add vertical scrolling for long content */
+        }
+
+        .flashcard-front {
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .flashcard-back {
+            background-color: #2ecc71;
+            color: white;
+            font-size: 16px;
+            transform: rotateY(180deg);
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+        }
+
+        .counter {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .end-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Flashcards</h1>
+    <h2>Yale Law Constitutional Law (Rodriguez)</h2>
+    <button class="button" id="startButton">Start</button>
+    <button class="button" id="mainPageButton">Main Page</button>
+    <div class="container" id="flashcardsContainer">
+        <div class="counter" id="counter">Card 1 of 5</div>
+        <div class="flashcard" id="flashcard">
+            <div class="flashcard-inner">
+                <div class="flashcard-front" id="cardQuestion"></div>
+                <div class="flashcard-back" id="cardAnswer"></div>
+            </div>
+        </div>
+        <div class="navigation-buttons">
+            <button class="button" id="backButton">Back</button>
+            <button class="button" id="nextButton">Next</button>
+        </div>
+        <div class="end-buttons" id="endButtons" style="display: none;">
+            <button class="button" id="restartButton">Restart</button>
+            <button class="button" id="homeButton">Return to Home Page</button>
+        </div>
+    </div>
+
+    <script>
+         const flashcardsData = [
+        { question: "McCulloch v. Maryland (1819)", answer: "This case established the principle of implied powers, holding that Congress has powers beyond those explicitly listed in the Constitution. The Court ruled that Congress could create a national bank, even though the Constitution did not explicitly grant that power, because it was necessary and proper to carry out its enumerated powers, such as regulating commerce and issuing currency. The case also established the principle of federal supremacy, holding that federal law trumps state law when the two conflict." },
+    { question: "Marbury v. Madison (1803)", answer: "This case established the principle of judicial review, which is the power of the courts to declare laws unconstitutional. The Court ruled that a provision of the Judiciary Act of 1789 was unconstitutional, thus affirming its own authority to review the constitutionality of laws passed by Congress. This case is considered one of the most important in American history, as it established the judiciary as a coequal branch of government." },
+    { question: "Gibbons v. Ogden (1824)", answer: "This case broadened the definition of interstate commerce, granting Congress the power to regulate any commercial activity that crosses state lines. The Court struck down a New York law that granted a monopoly on steamboat navigation in state waters, finding that it conflicted with a federal law regulating coastal trade. The decision established the preemption doctrine, where federal law takes precedence over state law when the two conflict." },
+    { question: "Champion v. Ames (1903)", answer: "This case, also known as the Lottery Case, further expanded Congress's power under the Commerce Clause by upholding the Federal Lottery Act, which prohibited the interstate shipment of lottery tickets. The Court's 5-4 decision determined that Congress could regulate the interstate transportation of items it deemed harmful to public morals, even if the items themselves were not inherently harmful. This ruling sparked debate over the balance of federal and state powers, with some arguing that it granted Congress an overly broad police power." },
+    { question: "Hammer v. Dagenhart (1918)", answer: "This case, also known as the Child Labor Case, struck down the Keating-Owen Act, which prohibited the interstate shipment of goods produced by child labor. The Court held that regulating child labor was a power reserved to the states, not the federal government, and that Congress could not use the Commerce Clause to regulate production, as opposed to commerce itself. The decision marked a departure from the expansive view of the Commerce Clause seen in earlier cases like Champion v. Ames and sparked controversy over the Court’s interference in social legislation." },
+    { question: "Lochner v. New York (1905)", answer: "This case established the principle of substantive due process, which allows courts to strike down laws that they deem to be unreasonable or arbitrary, even if the laws do not violate any specific provision of the Constitution. The Court struck down a New York law that limited the number of hours bakers could work, arguing that it interfered with the freedom of contract between employers and employees. This case marked a period of significant judicial activism, with the Court actively protecting economic rights and limiting state regulation." },
+    { question: "Jacobson v. Massachusetts (1905)", answer: "In contrast to Lochner, this case upheld a state law requiring mandatory vaccination against smallpox. The Court recognized that individual liberty is not absolute and that states have the power to enact reasonable regulations to protect public health and safety. This decision reinforced the principle of police power, which allows states to restrict individual liberties for the common good." },
+    { question: "Home Building & Loan Association v. Blaisdell (1934)", answer: "This case upheld a Minnesota law that temporarily extended the redemption period for homeowners facing foreclosure during the Great Depression. The Court recognized that states have the power to modify contracts in times of emergency, even if such modifications impair contractual obligations. This decision marked a shift away from the strict protection of contract rights seen in Lochner and reflected a greater deference to state legislatures during economic crises." },
+    { question: "West Coast Hotel v. Parrish (1937)", answer: "This case overturned Adkins v. Children's Hospital, upholding a state minimum wage law for women. The Court’s decision marked the end of the Lochner era, signifying a shift away from strict scrutiny of economic regulations and toward greater deference to legislative judgments. The case recognized the state’s legitimate interest in protecting the health and welfare of workers and acknowledged that the freedom of contract was not absolute. This case marked a turning point in the Court's approach to economic regulation, ushering in an era of greater deference to legislative judgments." },
+    { question: "United States v. Carolene Products (1938)", answer: "In this case, the Court upheld the Filled Milk Act, which prohibited the interstate shipment of skimmed milk compounded with any fat or oil other than milk fat. The decision is significant for Justice Stone's famous “Footnote Four,” which suggested a higher level of scrutiny for laws that discriminate against discrete and insular minorities or that restrict fundamental rights. While upholding the economic regulation, the case signaled a shift in the Court’s focus toward protecting civil liberties and individual rights." },
+    { question: "Williamson v. Lee Optical (1955)", answer: "This case upheld an Oklahoma law that restricted the sale of eyeglasses to licensed optometrists or ophthalmologists. The Court applied a highly deferential rational basis review, finding that the law was rationally related to a legitimate state interest in protecting public health. This decision solidified the trend toward judicial restraint in economic matters, leaving economic regulations largely to legislative discretion." },
+    { question: "NLRB v. Jones & Laughlin Steel (1937)", answer: "This case significantly expanded Congress’s power under the Commerce Clause. The Court upheld the National Labor Relations Act, which regulated labor practices in industries that affected interstate commerce. This decision signaled the end of the Court’s era of striking down New Deal legislation and marked a shift toward a broader interpretation of the Commerce Clause, allowing Congress to regulate a wider range of economic activities." },
+    { question: "United States v. Darby (1941)", answer: "This case upheld the Fair Labor Standards Act, which established minimum wage and maximum hour requirements for employees engaged in the production of goods for interstate commerce. The Court’s decision rejected the distinction between production and commerce, holding that Congress could regulate any activity that had a substantial effect on interstate commerce. This ruling solidified the broad interpretation of the Commerce Clause established in Jones & Laughlin." },
+    { question: "Wickard v. Filburn (1942)", answer: "This case expanded the Commerce Clause power even further, upholding federal regulation of wheat production, even if the wheat was grown and consumed entirely within a single state. The Court reasoned that, in aggregate, such local production could have a substantial effect on interstate commerce. This decision reinforced the principle that Congress could regulate activities with indirect but significant effects on interstate commerce." },
+    { question: "Heart of Atlanta Motel v. United States (1964)", answer: "This case upheld the Civil Rights Act of 1964, which prohibited racial discrimination in public accommodations that affected interstate commerce. The Court held that Congress could use the Commerce Clause to regulate private discrimination if it had a substantial effect on interstate commerce. This decision marked a significant expansion of federal power in the realm of civil rights and further broadened the scope of the Commerce Clause." },
+    { question: "Katzenbach v. McClung (1964)", answer: "This case, also known as the Ollie’s Barbecue Case, upheld the Civil Rights Act of 1964 by ruling that Congress could use the Commerce Clause to prohibit racial discrimination in restaurants that served a substantial amount of food that had traveled in interstate commerce. This decision further solidified Congress's authority to regulate private discrimination under the Commerce Clause and reinforced the principle that even seemingly local businesses could be subject to federal regulation if their activities affected interstate commerce." },
+    { question: "South Dakota v. Dole (1987)", answer: "This case upheld a federal law that withheld highway funds from states that did not raise their drinking age to 21. The Court ruled that Congress could use its spending power to influence state policy, even in areas where it did not have direct regulatory authority, as long as the conditions attached to the funds were related to the general welfare and did not violate other constitutional provisions." },
+    { question: "NFIB v. Sebelius (2012)", answer: "This case considered the constitutionality of the Affordable Care Act’s individual mandate, which required most Americans to obtain health insurance. The Court upheld the mandate under Congress's taxing power, but not under the Commerce Clause. The decision placed limits on Congress’s power to regulate inactivity under the Commerce Clause, but affirmed its authority to use taxation as a means of regulating economic behavior." },
+    { question: "Prigg v. Pennsylvania (1842)", answer: "This case involved the Fugitive Slave Act of 1793, which required states to return escaped slaves to their owners. The Court held that the federal law was supreme over any conflicting state laws, establishing the principle of federal preemption in matters concerning fugitive slaves. The decision highlighted the tension between federal authority and states' rights, particularly in the context of slavery." },
+    { question: "Dred Scott v. Sandford (1857)", answer: "This case ruled that enslaved people were not citizens and had no standing to sue in federal court. The Court further held that Congress could not prohibit slavery in the territories, invalidating the Missouri Compromise. This widely criticized decision exacerbated tensions between the North and South and contributed to the outbreak of the Civil War." },
+    { question: "The Prize Cases (1863)", answer: "This case upheld President Lincoln’s blockade of Southern ports during the Civil War. The Court ruled that the President had the authority to take military action to suppress an insurrection, even without a formal declaration of war from Congress. This decision expanded the scope of executive power during times of national crisis." },
+    { question: "Ex Parte Merryman (1861)", answer: "This case challenged President Lincoln’s suspension of habeas corpus during the Civil War. Chief Justice Taney, riding circuit, ruled that only Congress had the power to suspend habeas corpus. Lincoln ignored the ruling, arguing that the Constitution granted him the power to take extraordinary measures to preserve the Union. The case highlights the ongoing tension between executive power and individual liberties during times of war." },
+    { question: "The Slaughterhouse Cases (1873)", answer: "This case involved a challenge to a Louisiana law that granted a monopoly to a single slaughterhouse company. The Court narrowly interpreted the Privileges or Immunities Clause of the Fourteenth Amendment, holding that it applied only to rights associated with U.S. citizenship, not state citizenship. The decision limited the scope of the Fourteenth Amendment's protections and paved the way for Jim Crow segregation." },
+    { question: "United States v. Cruikshank (1876)", answer: "This case arose from the Colfax Massacre, a racially motivated attack on Black citizens in Louisiana. The Court ruled that the Fourteenth Amendment applied only to state actions and did not protect individuals from private violence. This decision severely limited the federal government's ability to enforce civil rights protections and contributed to the rise of racial terrorism in the South." },
+    { question: "Bradwell v. Illinois (1873)", answer: "This case upheld a state law that denied a woman the right to practice law because of her sex. The Court reasoned that the right to practice a profession was not a privilege or immunity of U.S. citizenship protected by the Fourteenth Amendment. The decision reinforced traditional gender roles and limited women's opportunities in the legal profession." },
+    { question: "Minor v. Happersett (1874)", answer: "This case ruled that women did not have a constitutional right to vote. The Court held that citizenship did not automatically confer the right to vote and that states had the power to determine voter qualifications. The decision highlighted the limited scope of the Fourteenth Amendment's protections for women's rights." },
+    { question: "Strauder v. West Virginia (1880)", answer: "This case struck down a state law that excluded Black men from serving on juries. The Court held that the law violated the Equal Protection Clause of the Fourteenth Amendment, which guaranteed equal protection under the law. This decision marked an early victory for racial equality under the law, but its impact was limited by subsequent decisions that upheld segregation." },
+    { question: "The Civil Rights Cases (1883)", answer: "This case struck down the Civil Rights Act of 1875, which prohibited racial discrimination in public accommodations. The Court held that the Fourteenth Amendment applied only to state actions, not to the actions of private individuals. This decision severely limited the federal government's ability to combat racial discrimination and paved the way for the Jim Crow era." },
+    { question: "Plessy v. Ferguson (1896)", answer: "This case upheld a state law requiring racial segregation on trains, establishing the 'separate but equal' doctrine. The Court ruled that segregation did not violate the Equal Protection Clause as long as the facilities provided for each race were equal in quality. This decision legitimized racial segregation for decades, becoming the legal basis for Jim Crow laws throughout the South." },
+    { question: "Brown v. Board of Education (1954)", answer: "This landmark case overturned the 'separate but equal' doctrine established in Plessy v. Ferguson. The Court ruled that racial segregation in public schools was inherently unequal and violated the Equal Protection Clause of the Fourteenth Amendment. This decision was a major turning point in the Civil Rights Movement and led to the desegregation of public schools across the United States." },
+    { question: "Korematsu v. United States (1944)", answer: "This case upheld the internment of Japanese Americans during World War II. The Court ruled that the government’s actions were justified by national security concerns, even though they were based on race. This decision is widely criticized today as a violation of civil liberties and a failure to protect minority rights during wartime." },
+    { question: "Loving v. Virginia (1967)", answer: "This case struck down state laws banning interracial marriage. The Court ruled that these laws violated the Equal Protection Clause of the Fourteenth Amendment, holding that marriage was a fundamental right and that racial classifications in marriage laws were subject to strict scrutiny. This decision was a major victory for civil rights and a step toward dismantling racial discrimination in the United States." },
+    { question: "Washington v. Davis (1976)", answer: "This case established that discriminatory intent, not merely disparate impact, must be proven to establish an equal protection violation. The Court upheld a police department's hiring practices, even though they had a disproportionate impact on Black applicants, because there was no evidence of intentional discrimination. This decision made it more difficult to challenge policies that have a discriminatory effect without clear evidence of discriminatory intent." },
+    { question: "Village of Arlington Heights v. Metropolitan Housing Development Corp. (1977)", answer: "This case further refined the discriminatory intent standard, providing a framework for courts to assess whether a seemingly neutral policy was enacted with a discriminatory purpose. The Court held that a zoning ordinance that had a disparate impact on minority residents was not unconstitutional unless there was proof that the ordinance was adopted with discriminatory intent." },
+    { question: "Personnel Administrator of Massachusetts v. Feeney (1979)", answer: "This case upheld a state law granting hiring preferences to veterans, even though the law disproportionately benefited men. The Court ruled that the law did not violate the Equal Protection Clause because it was facially neutral and did not intentionally discriminate against women. This decision clarified that a law with a disparate impact on a protected group is not unconstitutional unless it was enacted with a discriminatory purpose." },
+    { question: "Grutter v. Bollinger (2003)", answer: "This case upheld the University of Michigan Law School’s affirmative action program, which considered race as a factor in admissions decisions to achieve a diverse student body. The Court held that diversity in higher education was a compelling state interest and that race could be considered as one factor among many in a holistic admissions process." },
+    { question: "Students for Fair Admissions, Inc. v. President & Fellows of Harvard College (2023)", answer: "This recent case overturned Grutter v. Bollinger and ruled that Harvard and UNC's affirmative action programs violated the Equal Protection Clause. The Court held that race could not be considered as a factor in college admissions, even for the purpose of achieving diversity." },
+    { question: "Frontiero v. Richardson", answer: "This case established that sex-based classifications imposed by federal laws can violate the Due Process Clause of the Fifth Amendment. The Court found that providing different benefits to male and female service members based solely on sex was arbitrary and unequal treatment." },
+    { question: "United States v. Virginia", answer: "This case established the requirement for 'exceedingly persuasive justification' for any governmental gender classification. The Court struck down the Virginia Military Institute’s male-only admissions policy, holding that it violated the Fourteenth Amendment's Equal Protection Clause." },
+    { question: "Nguyen v. INS", answer: "This case held that gender-based distinctions in citizenship laws can be constitutionally permissible if they are grounded in biological differences and serve important governmental objectives related to those differences." },
+    { question: "Geduldig v. Aiello", answer: "This case established that discrimination based on pregnancy is not inherently sex discrimination under the Fourteenth Amendment. The Court upheld a California disability insurance program that excluded pregnancy-related disabilities, stating that the program did not discriminate based on sex because it treated pregnant women and non-pregnant persons similarly." },
+    { question: "Griswold v. Connecticut", answer: "This case established a constitutional right to privacy in marital relations, particularly concerning the use of contraception. The Court struck down a Connecticut law that criminalized the use of contraceptives by married couples." },
+    { question: "Roe v. Wade", answer: "This landmark but later overturned case recognized a woman’s right to choose to have an abortion under the Due Process Clause of the Fourteenth Amendment, grounding this right in the right to privacy." },
+    { question: "Planned Parenthood of Southeastern Pennsylvania v. Casey", answer: "This case reaffirmed the core holding of Roe v. Wade but replaced the trimester framework with the 'undue burden' standard for evaluating abortion restrictions." },
+    { question: "Dobbs v. Whole Women’s Health", answer: "This case overturned Roe v. Wade and Planned Parenthood v. Casey, holding that the Constitution does not confer a right to abortion and returning regulation to the states." },
+    { question: "Bowers v. Hardwick", answer: "This now-overturned case ruled that there is no fundamental right to engage in homosexual sodomy, upholding a Georgia law that criminalized sodomy." },
+    { question: "Romer v. Evans", answer: "This case held that laws targeting specific groups based on animus or a bare desire to harm violate the Equal Protection Clause. The Court struck down a Colorado amendment prohibiting anti-discrimination measures protecting LGBTQ+ individuals." },
+    { question: "Lawrence v. Texas", answer: "This case overturned Bowers v. Hardwick, recognizing a constitutional right to privacy in adult consensual sexual conduct regardless of sexual orientation." },
+    { question: "Obergefell v. Hodges", answer: "This landmark case established a fundamental right to marry for same-sex couples under the Due Process and Equal Protection Clauses of the Fourteenth Amendment." },
+    { question: "Bostock v. Clayton County", answer: "This case held that Title VII of the Civil Rights Act of 1964, which prohibits employment discrimination based on sex, also encompasses discrimination based on sexual orientation and gender identity." },
+    { question: "New York State Rifle & Pistol Association v. Bruen", answer: "This case established a new standard for reviewing Second Amendment challenges, focusing on historical tradition. The Court struck down a New York law requiring individuals to demonstrate 'proper cause' to obtain a concealed carry license." },
+    { question: "Shelby County v. Holder", answer: "This case struck down Section 4(b) of the Voting Rights Act of 1965, which determined which jurisdictions needed federal preclearance to change voting laws, holding the formula was outdated and unconstitutional." },
+    { question: "Youngstown Sheet and Tube Co. v. Sawyer", answer: "This case limited presidential power, ruling that President Truman's seizure of steel mills during the Korean War lacked constitutional or congressional authorization." },
+    { question: "Seila Law LLC v. CFPB", answer: "This case held that restrictions on the President’s power to remove the director of the CFPB violated the separation of powers. The Court found the CFPB’s structure unconstitutional." },
+    { question: "Gundy v. United States", answer: "This case upheld the delegation of authority to agencies under the 'intelligible principle' standard but signaled potential future challenges to this doctrine." },
+    { question: "Loper Bright Enterprises v. Raimondo", answer: "This case is still pending before the Supreme Court. It focuses on the scope of Chevron deference, which requires courts to defer to agency interpretations of ambiguous statutes." },
+    { question: "INS v. Chadha", answer: "This case established that legislative actions altering legal rights or obligations must comply with bicameralism and presentment. The Court struck down the legislative veto as unconstitutional." },
+    { question: "SEC v. Jarkezy", answer: "This case held that the Seventh Amendment’s right to a jury trial applies to SEC actions seeking civil penalties, limiting the scope of administrative adjudication for such cases." },
+    { question: "United States v. Nixon", answer: "This case established that executive privilege is not absolute and can be subject to judicial review. The Court ordered President Nixon to turn over Watergate tapes, emphasizing the need for evidence in criminal proceedings." },
+    { question: "United States v. Trump", answer: "This case held that a former President does not have absolute immunity from criminal process for actions taken while in office, affirming that no one is above the law." },
+    { question: "Trump v. Mazars USA, LLP", answer: "This case established a framework for evaluating congressional subpoenas targeting a sitting President's personal information. The Court required balancing investigative needs with separation of powers." }
+];
+
+
+        const mainPageButton = document.getElementById("mainPageButton");
+        const startButton = document.getElementById("startButton");
+        const restartButton = document.getElementById("restartButton");
+        const homeButton = document.getElementById("homeButton");
+        const nextButton = document.getElementById("nextButton");
+        const backButton = document.getElementById("backButton");
+        const flashcardsContainer = document.getElementById("flashcardsContainer");
+        const flashcard = document.getElementById("flashcard");
+        const cardQuestion = document.getElementById("cardQuestion");
+        const cardAnswer = document.getElementById("cardAnswer");
+        const counter = document.getElementById("counter");
+        const endButtons = document.getElementById("endButtons");
+
+        let shuffledFlashcards = [];
+        let currentIndex = 0;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function updateCounter() {
+            counter.textContent = `Card ${currentIndex + 1} of ${shuffledFlashcards.length}`;
+        }
+
+        function loadFlashcard(index) {
+            const card = shuffledFlashcards[index];
+            cardQuestion.textContent = card.question;
+            cardAnswer.textContent = card.answer;
+            flashcard.classList.remove("flip");
+            updateCounter();
+
+            backButton.style.display = currentIndex === 0 ? "none" : "inline-block";
+            nextButton.style.display = currentIndex === shuffledFlashcards.length - 1 ? "none" : "inline-block";
+            endButtons.style.display = currentIndex === shuffledFlashcards.length - 1 ? "flex" : "none";
+        }
+
+        function startSession() {
+            shuffledFlashcards = shuffleArray([...flashcardsData]);
+            currentIndex = 0;
+            loadFlashcard(currentIndex);
+            startButton.style.display = "none";
+            mainPageButton.style.display = "none";
+            flashcardsContainer.style.display = "flex";
+        }
+
+        function nextFlashcard() {
+            if (currentIndex < shuffledFlashcards.length - 1) {
+                currentIndex++;
+                loadFlashcard(currentIndex);
+            }
+        }
+
+        function previousFlashcard() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadFlashcard(currentIndex);
+            }
+        }
+
+        function restartSession() {
+            shuffledFlashcards = shuffleArray([...flashcardsData]);
+            currentIndex = 0;
+            loadFlashcard(currentIndex);
+        }
+
+        mainPageButton.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+
+        startButton.addEventListener("click", startSession);
+        nextButton.addEventListener("click", nextFlashcard);
+        backButton.addEventListener("click", previousFlashcard);
+        restartButton.addEventListener("click", restartSession);
+        homeButton.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+
+        flashcard.addEventListener("click", () => {
+            flashcard.classList.toggle("flip");
+        });
+    </script>
+</body>
+</html>

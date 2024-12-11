@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">Making Promises Enforceable</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+  
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = [
+    {
+  "question": "Which of the following is NOT a requirement for the formation of a contract under the Restatement (Second) of Contracts?",
+  "options": [
+    "A. Offer",
+    "B. Acceptance",
+    "C. Intent to be legally bound",
+    "D. Consideration"
+  ],
+  "correct": 2,
+  "explanation": "While intent to be legally bound is a relevant factor in contract formation, it is not an essential element. The objective theory of assent focuses on outward manifestations of agreement rather than subjective intent."
+},
+{
+  "question": "Which of the following scenarios exemplifies a binding preliminary agreement of the \"Tribune I\" type?",
+  "options": [
+    "A. Two companies sign a letter of intent outlining their intention to merge, but key financial terms remain undecided.",
+    "B. A landlord and tenant agree on a monthly rent but plan to formalize the lease agreement in a written document later.",
+    "C. Two parties agree on all essential terms for a joint venture and shake hands, although the formal contract is yet to be drafted and signed.",
+    "D. A buyer and seller agree on a purchase price for a property but leave other terms, such as closing date and financing, for future negotiation."
+  ],
+  "correct": 2,
+  "explanation": "A \"Tribune I\" agreement is fully binding, meaning the parties have agreed on all essential terms and are legally obligated even though a formal document is pending. Option (c) represents this scenario. Options (a) and (d) are examples of \"Tribune II\" agreements, where parties are bound to negotiate in good faith but not to a final agreement. Option (b) represents an agreement to memorialize the agreement in writing but does not necessarily imply that all essential terms have been agreed upon."
+},
+{
+  "question": "An advertisement stating \"First come, first served, brand new TV for $50!\" is most likely considered:",
+  "options": [
+    "A. An invitation to negotiate",
+    "B. A binding offer",
+    "C. A statement of future intent",
+    "D. A preliminary negotiation"
+  ],
+  "correct": 1,
+  "explanation": "The advertisement's clear, definite terms (price, product, and method of acceptance) indicate an intent to be bound by the first person who accepts, creating a binding offer."
+},
+{
+  "question": "In Lucy v. Zehmer, the court ruled that:",
+  "options": [
+    "A. Zehmer’s claim of jest was valid, as subjective intent matters in contract formation.",
+    "B. The agreement lacked sufficient certainty to constitute a valid offer.",
+    "C. Zehmer’s outward actions, despite his alleged jest, demonstrated an intent to sell, forming a binding contract.",
+    "D. Lucy’s acceptance was invalid because she knew Zehmer was joking."
+  ],
+  "correct": 2,
+  "explanation": "The court in Lucy v. Zehmer emphasized the objective theory of assent. Despite Zehmer's claim of jest, his actions (drafting and signing the agreement) led a reasonable person to believe he intended to sell, creating a binding contract."
+},
+{
+  "question": "The \"mailbox rule\" generally states that:",
+  "options": [
+    "A. Acceptance is valid upon receipt by the offeror.",
+    "B. Acceptance is effective when dispatched by the offeree.",
+    "C. Offers are revocable until acceptance is received by the offeror.",
+    "D. Silence can constitute acceptance in certain commercial transactions."
+  ],
+  "correct": 1,
+  "explanation": "The mailbox rule establishes that acceptance is valid when sent or dispatched by the offeree (e.g., mailed), placing the risk of transmission on the offeror."
+},
+{
+  "question": "Under the UCC, if a merchant sends a written confirmation of an oral agreement for the sale of goods over $500, and the recipient does not object within 10 days:",
+  "options": [
+    "A. The contract is voidable due to lack of consideration.",
+    "B. The confirmation is treated as a counteroffer.",
+    "C. The Statute of Frauds does not apply, and the oral agreement is enforceable.",
+    "D. The written confirmation satisfies the Statute of Frauds, binding both parties."
+  ],
+  "correct": 3,
+  "explanation": "This scenario illustrates the merchant's confirmation exception in UCC § 2-201(2). The written confirmation, even if unsigned by the recipient, satisfies the Statute of Frauds if not objected to within 10 days."
+},
+{
+  "question": "Which of the following is NOT a recognized approach to resolving disputes over \"different\" (conflicting) terms in contracts under UCC § 2-207?",
+  "options": [
+    "A. Knockout rule",
+    "B. Last shot rule",
+    "C. Treating different terms as additional terms",
+    "D. First shot rule"
+  ],
+  "correct": 3,
+  "explanation": "While the knockout rule, last shot rule, and treating different terms as additional terms are established approaches, the \"first shot rule\" is not a recognized method in resolving \"battle of the forms\" disputes."
+},
+{
+  "question": "Hoffman v. Red Owl Stores is a significant case because it:",
+  "options": [
+    "A. Narrowly applied the Statute of Frauds in land-sale contracts.",
+    "B. Expanded the application of promissory estoppel to precontractual negotiations.",
+    "C. Established the mailbox rule for contract acceptance.",
+    "D. Clarified the distinction between offers and invitations to negotiate."
+  ],
+  "correct": 1,
+  "explanation": "Hoffman v. Red Owl Stores broadened the use of promissory estoppel, demonstrating that reliance on promises during precontractual negotiations, even without a finalized contract, can justify legal relief."
+},
+{
+  "question": "When determining whether a contract falls within the Statute of Frauds' one-year provision, courts generally consider:",
+  "options": [
+    "A. The likelihood of performance within one year.",
+    "B. The parties' subjective intentions regarding the duration of the contract.",
+    "C. Whether the contract's terms explicitly make performance within one year impossible.",
+    "D. The typical industry standard for similar contracts."
+  ],
+  "correct": 2,
+  "explanation": "The one-year provision focuses on the contract's explicit terms. Only if the terms make performance within one year impossible does the Statute of Frauds apply. The likelihood or subjective intentions are less relevant than the express terms of the agreement."
+},
+{
+  "question": "Which of the following is a key distinction between a surety and a guarantor?",
+  "options": [
+    "A. A surety is jointly and severally liable with the principal, while a guarantor is typically liable only after the principal defaults.",
+    "B. A surety's obligation is always in writing, while a guarantor's obligation can be oral.",
+    "C. A surety guarantees payment of a debt, while a guarantor guarantees performance of a specific action.",
+    "D. A surety agreement does not fall under the Statute of Frauds, while a guarantor agreement does."
+  ],
+  "correct": 0,
+  "explanation": "The primary difference lies in the extent of liability. A surety is directly and equally liable with the principal, while a guarantor's liability is secondary, arising only after the principal fails to perform. Both surety and guarantor agreements generally fall under the Statute of Frauds."
+},
+{
+  "question": "Which of the following is an element required to establish a claim for unjust enrichment?",
+  "options": [
+    "A. A valid and enforceable contract exists between the parties.",
+    "B. One party has conferred a benefit on another without receiving just compensation.",
+    "C. The party seeking restitution has fully performed their contractual obligations.",
+    "D. The parties had a clear and explicit agreement on the value of the benefit conferred."
+  ],
+  "correct": 1,
+  "explanation": "Unjust enrichment focuses on preventing one party from unfairly benefiting at the expense of another, even in the absence of a contract. A key element is that a benefit has been conferred without proper compensation."
+},
+{
+  "question": "In Specht v. Netscape Communications Corp., the court refused to enforce the browsewrap agreement’s arbitration clause because:",
+  "options": [
+    "A. The plaintiffs were minors and lacked capacity to contract.",
+    "B. The arbitration clause was unconscionable and favored Netscape unfairly.",
+    "C. Netscape failed to provide reasonably conspicuous notice of the terms and did not secure unambiguous assent from the plaintiffs.",
+    "D. The software downloaded by the plaintiffs was defective, breaching the implied warranty of merchantability."
+  ],
+  "correct": 2,
+  "explanation": "The court in Specht emphasized that for browsewrap agreements to be enforceable, users must be given clear notice of the terms and the opportunity to meaningfully consent. Hiding terms or failing to ensure users see them undermines valid contract formation."
+},
+{
+  "question": "Which of the following situations illustrates the concept of acceptance by silence?",
+  "options": [
+    "A. A buyer receives goods they did not order but does not return them, assuming they are a gift.",
+    "B. A seller sends a price quote, and the buyer does not respond, leading the seller to believe there is no interest.",
+    "C. A subscription service informs a customer that their subscription will automatically renew unless they cancel by a specific date, and the customer takes no action.",
+    "D. A merchant sends unsolicited goods to a consumer, hoping they will pay for them to avoid the hassle of returning them."
+  ],
+  "correct": 2,
+  "explanation": "Acceptance by silence is valid only in specific circumstances. Option (c) aligns with R2C § 69, where the offeror clearly states that silence implies acceptance, and the offeree intends to accept by remaining silent."
+},
+{
+  "question": "The main purpose rule, as illustrated in Central Ceilings, Inc. v. National Amusements, Inc., allows for the enforcement of an oral suretyship contract when:",
+  "options": [
+    "A. The surety receives direct financial compensation for their promise.",
+    "B. The surety's primary purpose in making the promise is to serve their own interests.",
+    "C. The principal debtor is a close relative of the surety.",
+    "D. The oral agreement is witnessed by a disinterested third party."
+  ],
+  "correct": 1,
+  "explanation": "The main purpose rule carves out an exception to the Statute of Frauds for suretyship contracts when the surety's promise primarily benefits themselves. In Central Ceilings, the court recognized that the promise served the promisor’s interest in ensuring project completion."
+},
+{
+  "question": "Under the UCC, if a contract for the sale of goods is modified to increase the price, bringing the total above $500, the modification:",
+  "options": [
+    "A. Is automatically enforceable because the original contract was in writing.",
+    "B. Can be enforced without a writing if both parties orally agree to the change.",
+    "C. Must be in writing and signed by the party against whom enforcement is sought to satisfy the Statute of Frauds.",
+    "D. Is unenforceable because modifications to contracts covered by the Statute of Frauds are always prohibited."
+  ],
+  "correct": 2,
+  "explanation": "When a modification alters the price or other terms, bringing the contract within the Statute of Frauds, the modification itself must comply with the writing requirements of UCC § 2-201. The modified contract is treated as a new agreement for purposes of the Statute of Frauds."
+},
+{
+  "question": "Which of the following accurately describes the distinction between the objective and subjective theories of assent in contract formation?",
+  "options": [
+    "A. The objective theory focuses on the parties' good faith intentions, while the subjective theory emphasizes the reasonable person standard.",
+    "B. The objective theory prioritizes outward manifestations of agreement, while the subjective theory seeks to uncover the parties' true internal intentions.",
+    "C. The objective theory applies only to written contracts, while the subjective theory governs oral agreements.",
+    "D. The objective theory is the modern approach favored by courts, while the subjective theory is an outdated concept."
+  ],
+  "correct": 1,
+  "explanation": "The objective theory, as articulated by Judge Learned Hand, prioritizes the outward actions and words of the parties. In contrast, the subjective theory, as discussed by Judge Jerome Frank, attempts to ascertain the actual meeting of the minds. However, as highlighted in the sources, courts tend to favor the objective approach."
+},
+{
+  "question": "Which of the following scenarios would likely result in a contract being voidable due to a mutual mistake under R2C § 152?",
+  "options": [
+    "A. A seller mistakenly prices an item too low, and the buyer, aware of the error, quickly accepts the offer.",
+    "B. A buyer purchases a painting believing it to be an original, but it turns out to be a high-quality reproduction.",
+    "C. Both parties enter into a contract for the sale of land, unaware that the land has been designated for public use by the government.",
+    "D. A contractor underestimates the cost of materials, leading to a higher bid that the other party accepts."
+  ],
+  "correct": 2,
+  "explanation": "Mutual mistake requires that both parties are mistaken about a basic assumption that materially impacts the agreement. Option (c) exemplifies this, as both parties are unaware of the government's designation, rendering the land unsuitable for the intended purpose."
+},
+{
+  "question": "In which of the following cases did the court apply promissory estoppel to enforce a promise despite the absence of a formal contract?",
+  "options": [
+    "A. Lucy v. Zehmer",
+    "B. Fairmount Glass Works v. Crunden-Martin Woodenware Co.",
+    "C. Hoffman v. Red Owl Stores",
+    "D. Raffles v. Wichelhaus"
+  ],
+  "correct": 2,
+  "explanation": "Hoffman v. Red Owl Stores is a landmark case where the court awarded reliance damages based on promissory estoppel. Red Owl's promises, even without a finalized contract, induced actions by Hoffman, justifying relief."
+},
+{
+  "question": "The concept of an \"agreement to agree\" is generally:",
+  "options": [
+    "A. Fully enforceable, as the parties have indicated their intent to form a binding contract.",
+    "B. Equivalent to a binding preliminary agreement of the \"Tribune I\" type.",
+    "C. Less likely to be enforced by courts unless the parties outline a clear process and specify essential terms for reaching a final agreement.",
+    "D. Prohibited under the Statute of Frauds as too indefinite to be legally binding."
+  ],
+  "correct": 2,
+  "explanation": "\"Agreements to agree\" involve agreeing to pursue a future deal but leaving key terms undecided. Courts are hesitant to enforce such agreements unless they demonstrate a concrete path toward a finalized contract."
+},
+{
+  "question": "Which of the following situations exemplifies a valid \"firm offer\" under UCC § 2-205?",
+  "options": [
+    "A. A merchant promises to keep an offer open for a friend as a favor, without any formal documentation.",
+    "B. A car dealership sends a signed email to a customer, stating that the offer to sell a specific vehicle at a certain price will remain open for 10 days.",
+    "C. A seller orally assures a buyer that the offer will remain open until the buyer returns from a trip.",
+    "D. A buyer includes a clause in a purchase order stating that the seller's offer must remain open for 30 days."
+  ],
+  "correct": 1,
+  "explanation": "UCC § 2-205 requires a \"firm offer\" to be in signed writing and clearly state that it will be held open for a specific period. Option (b) meets these criteria, creating an irrevocable offer for the stated duration."
+},
+{
+  "question": "The mailbox rule, as applied in United States Life Insurance Company v. Wilson, establishes that:",
+  "options": [
+    "A. Acceptance is effective only when received by the offeror, regardless of the mode of communication.",
+    "B. Offers can be revoked at any time before acceptance is communicated to the offeror.",
+    "C. Acceptance is generally valid when dispatched by the offeree, even if it is delayed or lost in transit.",
+    "D. The offeror can specify that acceptance must be received by a certain deadline for the contract to be binding."
+  ],
+  "correct": 2,
+  "explanation": "The mailbox rule provides a clear rule for determining when acceptance is effective, particularly in situations where communication is not instantaneous. As seen in United States Life Insurance Company v. Wilson, the court prioritized the offeree's act of dispatching the acceptance, shifting the risk of delay or loss to the offeror."
+},
+{
+  "question": "Which of the following terms describes a contract where the offeree's performance of a specific act serves as both acceptance and consideration, forming a binding agreement without a prior promise?",
+  "options": [
+    "A. Bilateral contract",
+    "B. Unilateral contract",
+    "C. Option contract",
+    "D. Implied contract"
+  ],
+  "correct": 1,
+  "explanation": "Unilateral contracts are defined by the offeree's performance as the mode of acceptance. The offeror's promise becomes binding only when the offeree completes the requested act. This structure is common in reward scenarios, where the act of finding and returning a lost item constitutes acceptance."
+},
+{
+  "question": "Under the \"knockout rule,\" as applied to conflicting terms in an offer and acceptance for the sale of goods:",
+  "options": [
+    "A. The offeror's terms prevail because they initiated the bargaining process.",
+    "B. The offeree's terms control as they represent the final expression of acceptance.",
+    "C. The contract is void for lack of mutual assent, as the parties never agreed on essential terms.",
+    "D. The conflicting terms are disregarded, and the UCC provides gap-filling provisions to supplement the agreement."
+  ],
+  "correct": 3,
+  "explanation": "The knockout rule aims to resolve \"battles of the forms\" fairly when both parties include conflicting terms. It recognizes that neither party agreed to the other's terms, so a neutral approach is adopted, incorporating the UCC's default rules."
+},
+{
+  "question": "The Statute of Frauds serves which of the following functions in contract law?",
+  "options": [
+    "A. To ensure that all contracts are fair and equitable to both parties.",
+    "B. To simplify contract interpretation by requiring the use of plain language.",
+    "C. To prevent parties from entering into agreements under duress or undue influence.",
+    "D. To provide evidence of the agreement and caution parties about the significance of their commitments, particularly for certain types of contracts."
+  ],
+  "correct": 3,
+  "explanation": "The Statute of Frauds focuses on preventing fraud and promoting careful deliberation, especially for contracts that are prone to disputes or involve significant value. The writing requirement serves as a tangible record of the agreement, while the signature requirement emphasizes the party's intent to be bound."
+},
+{
+  "question": "DF Activities Corp. v. Brown illustrates that:",
+  "options": [
+    "A. A party can be forced to admit to the existence of an oral contract through discovery, even if they have denied it under oath.",
+    "B. Oral contracts for the sale of goods priced at $500 or more are always enforceable, regardless of the Statute of Frauds.",
+    "C. The Statute of Frauds only applies to written contracts, not oral agreements.",
+    "D. Discovery is never allowed in contract cases involving the Statute of Frauds."
+  ],
+  "correct": 0,
+  "explanation": "DF Activities Corp. v. Brown reinforces the importance of the Statute of Frauds in preventing fraudulent claims based on alleged oral agreements. The court limited the exception for in-court admissions, safeguarding the Statute's purpose."
+},
+{
+  "question": "Which of the following is NOT a requirement for a valid offer under R2C § 24?",
+  "options": [
+    "A. The offer must be communicated to the offeree.",
+    "B. The offer must contain definite terms.",
+    "C. The offer must be supported by consideration.",
+    "D. The offer must manifest an intent to be bound upon acceptance."
+  ],
+  "correct": 2,
+  "explanation": "While consideration is a requirement for forming a binding contract, it is not a component of the offer itself. Consideration comes into play when the offeree accepts the offer, creating a mutual exchange of value."
+},
+{
+  "question": "Owen v. Tunison highlights the distinction between an offer and:",
+  "options": [
+    "A. Acceptance",
+    "B. An invitation to negotiate",
+    "C. A counteroffer",
+    "D. Revocation"
+  ],
+  "correct": 1,
+  "explanation": "The court in Owen v. Tunison found that Tunison's response was merely an invitation to negotiate, lacking the definitive nature required for an offer. This case emphasizes that preliminary discussions or expressions of potential interest do not automatically constitute binding offers."
+},
+{
+  "question": "Under the UCC, if a seller ships non-conforming goods but clearly indicates that the shipment is an accommodation, the shipment:",
+  "options": [
+    "A. Does not constitute acceptance of the buyer's offer, but acts as a counteroffer.",
+    "B. Forms a binding contract for the quantity of goods shipped, even if different from the buyer's order.",
+    "C. Breaches the contract, as the seller failed to deliver the goods as agreed.",
+    "D. Automatically terminates the offer, allowing the seller to avoid any liability."
+  ],
+  "correct": 0,
+  "explanation": "The UCC's accommodation exception recognizes that sellers may sometimes ship a partial quantity or slightly different goods to try to fulfill an order when faced with unforeseen circumstances. By labeling the shipment as an accommodation, the seller avoids inadvertently accepting the buyer's offer while offering an alternative solution."
+},
+{
+  "question": "Which of the following is an example of a situation where silence may constitute acceptance under R2C § 69?",
+  "options": [
+    "A. A buyer receives an unsolicited product in the mail with a note stating that payment is expected unless the product is returned within 10 days.",
+    "B. A homeowner has a longstanding agreement with a landscaper who regularly mows the lawn and bills for the service afterward.",
+    "C. A retailer receives a price list from a supplier without any further communication.",
+    "D. A party receives an offer that does not specify a method of acceptance."
+  ],
+  "correct": 1,
+  "explanation": "R2C § 69 outlines limited situations where silence can operate as acceptance. The example of the homeowner and landscaper reflects prior dealings that establish a pattern of acceptance through conduct. The homeowner's silence, in this case, implies consent to the continued service and the associated charges."
+},
+{
+  "question": "Wucherpfennig v. Dooley demonstrates that acceptance:",
+  "options": [
+    "A. Can be communicated through any means, including implied actions.",
+    "B. Must be unequivocal and mirror the terms of the offer to create a binding contract.",
+    "C. Can be revoked at any time before performance begins.",
+    "D. Is always effective upon dispatch, regardless of the offeror's knowledge."
+  ],
+  "correct": 1,
+  "explanation": "The court in Wucherpfennig v. Dooley emphasized the need for clear and unqualified acceptance, highlighting that responses that introduce new terms or request further clarification operate as counteroffers rather than acceptance. This case reinforces the mirror image rule in common law contract formation."
+},
+{
+  "question": "An option contract, as defined in R2C § 25:",
+  "options": [
+    "A. Allows the offeree to reject an offer without consequence.",
+    "B. Terminates an offer automatically after a reasonable time.",
+    "C. Limits the offeror's ability to revoke the offer for a specified period.",
+    "D. Excuses performance if unforeseen circumstances arise."
+  ],
+  "correct": 2,
+  "explanation": "Option contracts provide the offeree with a valuable right: the ability to decide whether to accept the offer within a set timeframe without the risk of revocation. This assurance is typically granted in exchange for consideration, making the offeror's promise to keep the offer open binding."
+},
+{
+  "question": "Dickinson v. Dodds established that:",
+  "options": [
+    "A. Revocation of an offer must always be communicated directly to the offeree for it to be effective.",
+    "B. An offer can be revoked indirectly if the offeree learns of actions by the offeror that are inconsistent with the offer, even without explicit communication.",
+    "C. Offers are always irrevocable unless they contain a specific deadline for acceptance.",
+    "D. Acceptance of an offer creates a binding contract, even if the offeror has already sold the subject matter to another party."
+  ],
+  "correct": 1,
+  "explanation": "Dickinson v. Dodds highlights the principle of indirect revocation, demonstrating that an offeree's knowledge of the offeror's actions that contradict the offer can terminate the offeree's power of acceptance. This case underscores that an offer is not a binding promise to keep the offer open unless supported by consideration (as in an option contract)."
+},
+{
+  "question": "Which of the following accurately describes a \"firm offer\" under UCC § 2-205?",
+  "options": [
+    "A. Any offer made by a merchant is considered a firm offer, regardless of its form or content.",
+    "B. An offer by a merchant to buy or sell goods, made in a signed writing that expressly states it will be held open, is irrevocable for the time stated or a reasonable time, not exceeding three months.",
+    "C. A firm offer requires consideration to be enforceable, just like any other contract.",
+    "D. A firm offer can be revoked at any time before acceptance, even if it is in writing."
+  ],
+  "correct": 1,
+  "explanation": "UCC § 2-205 carves out an exception to the general rule that offers are revocable at will. By requiring a signed writing and an explicit assurance that the offer will be held open, the UCC provides certainty in commercial transactions involving merchants."
+},
+{
+  "question": "The UCC's \"battle of the forms\" provision (UCC § 2-207) primarily addresses:",
+  "options": [
+    "A. The enforceability of oral agreements for the sale of goods.",
+    "B. Situations where the acceptance includes terms that differ from or add to the terms of the offer.",
+    "C. Disputes over the interpretation of ambiguous contract language.",
+    "D. Remedies available to a party who has breached a contract for the sale of goods."
+  ],
+  "correct": 1,
+  "explanation": "UCC § 2-207 recognizes the prevalence of standardized forms in commercial transactions and provides rules for determining which terms govern the contract when the parties' forms contain conflicting or additional provisions. This section departs from the common law's strict mirror image rule, allowing for contract formation despite variances in the forms."
+},
+{
+  "question": "In Dorton v. Collins & Aikman Corp., the court focused on whether the arbitration clause:",
+  "options": [
+    "A. Was clearly communicated to the buyer before the contract was formed.",
+    "B. Was a standard industry practice that the buyer should have expected.",
+    "C. Materially altered the agreement, potentially causing unreasonable surprise or hardship.",
+    "D. Was supported by consideration, making it a binding term of the contract."
+  ],
+  "correct": 2,
+  "explanation": "Dorton v. Collins & Aikman Corp. addressed the enforceability of an arbitration clause included in the seller's confirmation form. The court's analysis centered on whether the clause, as an additional term, would result in material alteration of the agreement. This case highlights the UCC's concern for fairness and preventing parties from being bound by unexpected or burdensome terms."
+},
+{
+  "question": "Itoh & Co. v. Jordan International Co. illustrates that:",
+  "options": [
+    "A. An arbitration clause is always considered a supplementary term that is implied into contracts for the sale of goods under the UCC.",
+    "B. If a contract is formed by conduct under UCC § 2-207(3), an arbitration clause included in one party's form but not expressly agreed to by the other party is not incorporated into the contract.",
+    "C. The knockout rule applies to all conflicting terms in a contract, including arbitration clauses.",
+    "D. Acceptance of goods and payment automatically signify assent to all additional terms in the seller's confirmation form, including an arbitration clause."
+  ],
+  "correct": 1,
+  "explanation": "Itoh & Co. v. Jordan International Co. clarified that the UCC's gap-filling provisions do not automatically incorporate arbitration clauses into contracts formed by conduct. This case demonstrates that parties must mutually assent to an arbitration clause for it to be enforceable, even in the context of a \"battle of the forms\" scenario."
+},
+{
+  "question": "Which of the following statements accurately describes the parol evidence rule?",
+  "options": [
+    "A. If a written contract is a complete and final expression of the agreement, evidence of prior or contemporaneous agreements that contradict the writing are generally inadmissible.",
+    "B. The parol evidence rule prevents the introduction of any evidence outside the written contract, even if it clarifies ambiguities or proves fraud.",
+    "C. The parol evidence rule only applies to contracts for the sale of goods governed by the UCC.",
+    "D. Courts always strictly enforce the parol evidence rule, even if it results in an unfair outcome."
+  ],
+  "correct": 0,
+  "explanation": "The parol evidence rule aims to preserve the integrity of written contracts that the parties intend to be the definitive embodiment of their agreement. However, the rule has exceptions, such as allowing evidence to prove fraud or clarify ambiguous terms."
+},
+{
+  "question": "Which of the following is NOT a recognized exception to the Statute of Frauds?",
+  "options": [
+    "A. Partial performance, particularly in land-sale contracts.",
+    "B. Promissory estoppel, when reliance on an oral promise has led to substantial detriment.",
+    "C. Judicial admission of a contract's existence in court proceedings.",
+    "D. Unilateral mistake, where one party misunderstood a key term of the agreement."
+  ],
+  "correct": 3,
+  "explanation": "Unilateral mistake, while potentially grounds for voiding a contract, is not an exception to the Statute of Frauds. The Statute of Frauds focuses on the form of the contract (requiring a writing for certain agreements), while unilateral mistake addresses a party's misunderstanding of the content of the agreement."
+},
+{
+  "question": "Beaver v. Brumlow underscores the importance of:",
+  "options": [
+    "A. Unequivocally referable actions in part performance, which can remove an oral land-sale contract from the Statute of Frauds.",
+    "B. The writing requirement in all contracts, regardless of the parties' relationship or the nature of the agreement.",
+    "C. The subjective intent of the parties, even if their actions do not clearly reflect their understanding.",
+    "D. Strict adherence to the Statute of Frauds, even in cases where it would result in unfairness or unjust enrichment."
+  ],
+  "correct": 0,
+  "explanation": "Beaver v. Brumlow demonstrates how part performance, specifically actions that are clearly linked to the oral agreement, can provide sufficient evidence of the contract's existence to override the Statute of Frauds. The court's decision rested on the buyers' actions (making improvements and taking possession) being unequivocally referable to the alleged oral contract."
+},
+{
+  "question": "In Monarco v. Lo Greco, the court prevented the defendant from relying on the Statute of Frauds to invalidate an oral promise based on:",
+  "options": [
+    "A. The main purpose rule, as the promise served the promisor's own interests.",
+    "B. Estoppel, due to the promisee's significant and detrimental reliance on the promise.",
+    "C. The existence of multiple writings that collectively documented the agreement.",
+    "D. Mutual mistake, as both parties misunderstood the legal consequences of their agreement."
+  ],
+  "correct": 1,
+  "explanation": "Monarco v. Lo Greco highlights the equitable doctrine of estoppel, which can bar a party from asserting a legal defense (in this case, the Statute of Frauds) if doing so would result in unconscionable harm due to the other party's reliance. The court's decision emphasized the promisee's lifelong reliance on the oral promise, justifying enforcement despite the lack of a writing."
+},
+{
+  "question": "Which of the following statements accurately reflects the distinction between a surety and a guarantor?",
+  "options": [
+    "A. A surety is primarily liable for the debt, while a guarantor's liability is secondary.",
+    "B. A surety's promise must be in writing to be enforceable, while a guarantor's promise can be oral.",
+    "C. A surety guarantees payment of a debt, while a guarantor guarantees performance of a specific action.",
+    "D. A surety agreement does not fall under the Statute of Frauds, while a guarantor agreement does."
+  ],
+  "correct": 1,
+  "explanation": "While both sureties and guarantors provide assurances of payment, the nature of their liability differs. A surety assumes primary responsibility alongside the debtor, while a guarantor's obligation is generally contingent on the debtor's failure to perform. However, it's important to note that both suretyship and guaranty agreements generally fall within the Statute of Frauds."
+},
+{
+  "question": "The concept of novation, as illustrated in the sources, involves:",
+  "options": [
+    "A. Modifying an existing contract to change the payment terms.",
+    "B. Assigning a party's rights and obligations under a contract to a third party.",
+    "C. Substituting a new party as the primary obligor, releasing the original debtor from liability.",
+    "D. Excusing performance due to the impossibility of fulfilling the contract's terms."
+  ],
+  "correct": 2,
+  "explanation": "Novation goes beyond a mere modification or assignment; it fundamentally alters the parties to the contract. The original debtor is discharged from their obligations, and the new party assumes full responsibility for performance. This process requires the consent of all parties involved."
+},
+{
+  "question": "Which of the following situations would likely trigger the Statute of Frauds' writing requirement?",
+  "options": [
+    "A. A contract for the purchase of a used car priced at $450.",
+    "B. An agreement to lease an apartment for two years.",
+    "C. A promise to pay a friend $50 for helping with yard work.",
+    "D. An oral contract for the sale of a piece of jewelry worth $200."
+  ],
+  "correct": 1,
+  "explanation": "The Statute of Frauds applies to contracts that cannot be performed within one year. Option (b), a two-year lease agreement, falls under this provision, requiring a written agreement to be enforceable."
+},
+{
+  "question": "The \"main purpose rule\" is an exception to the Statute of Frauds for suretyship contracts when:",
+  "options": [
+    "A. The surety is a close relative of the debtor.",
+    "B. The surety's primary purpose in making the promise is to benefit themselves.",
+    "C. The debt is related to a business transaction.",
+    "D. The creditor has already relied on the surety's promise."
+  ],
+  "correct": 1,
+  "explanation": "If the surety's promise is mainly for their own advantage, the contract is not considered a suretyship agreement and does not require a writing."
+},
+{
+  "question": "Under the UCC, if a merchant sends a written confirmation of an oral contract to another merchant, and the recipient does not object within 10 days:",
+  "options": [
+    "A. The contract is automatically void.",
+    "B. The recipient can still raise the Statute of Frauds as a defense.",
+    "C. The confirmation satisfies the Statute of Frauds, even if the recipient did not sign it.",
+    "D. The contract is enforceable only for half the quantity of goods."
+  ],
+  "correct": 2,
+  "explanation": "This is the merchant's confirmation exception. The recipient's failure to object in a timely manner binds them to the confirmed terms."
+},
+{
+  "question": "The doctrine of promissory estoppel is most likely to be applied when:",
+  "options": [
+    "A. A written contract exists but one party wants to modify the terms.",
+    "B. The parties have a clear agreement but fail to put it in writing.",
+    "C. One party reasonably relies on another party's promise to their detriment, even though no formal contract exists.",
+    "D. A contract is voidable due to a mutual mistake."
+  ],
+  "correct": 2,
+  "explanation": "Promissory estoppel protects a party who has acted in reliance on a promise that would be unjust not to enforce, even if a formal contract was never formed."
+},
+{
+  "question": "In Hoffman v. Red Owl Stores, the court awarded Hoffman reliance damages based on:",
+  "options": [
+    "A. The profits he would have earned if the franchise agreement had been finalized.",
+    "B. The expenses he incurred in preparing to open a Red Owl franchise store.",
+    "C. The emotional distress caused by Red Owl's breach of promise.",
+    "D. The difference between the price he paid for his existing store and its fair market value."
+  ],
+  "correct": 1,
+  "explanation": "The court recognized that Red Owl's assurances induced Hoffman's detrimental reliance. His damages were limited to the costs he incurred in reliance on those promises, not the potential profits he might have earned."
+},
+{
+  "question": "In precontractual negotiations, restitution is typically used to:",
+  "options": [
+    "A. Restore any benefit that one party conferred on the other.",
+    "B. Compensate a party for lost profits.",
+    "C. Punish a party for bad faith bargaining.",
+    "D. Force the parties to enter into a binding contract."
+  ],
+  "correct": 0,
+  "explanation": "Restitution aims to prevent unjust enrichment by requiring a party to return any value received from the other party during negotiations."
+},
+{
+  "question": "Which of the following is NOT required for the formation of a contract?",
+  "options": [
+    "A. Offer and Acceptance",
+    "B. Consideration",
+    "C. Intent to be legally bound",
+    "D. Mutual Assent"
+  ],
+  "correct": 2,
+  "explanation": "While the intent to be legally bound can be a factor in determining whether a contract exists, it is not strictly required. The outward manifestations of agreement are more important than the parties' internal thoughts about legal enforceability."
+},
+{
+  "question": "The objective theory of assent, as articulated by Judge Learned Hand, emphasizes:",
+  "options": [
+    "A. The subjective intentions of the parties.",
+    "B. The outward actions and words of the parties.",
+    "C. The fairness of the bargain.",
+    "D. The social context of the agreement."
+  ],
+  "correct": 1,
+  "explanation": "The objective theory focuses on what a reasonable person would understand the parties' actions and words to mean, regardless of their unexpressed intentions."
+},
+{
+  "question": "An advertisement is most likely to be considered a binding offer when:",
+  "options": [
+    "A. It is addressed to a specific individual.",
+    "B. It uses general language like \"prices may vary.\"",
+    "C. It contains clear, definite, and explicit terms.",
+    "D. It is published in a widely circulated newspaper."
+  ],
+  "correct": 2,
+  "explanation": "For an advertisement to constitute an offer, it must be clear, definite, and leave nothing open for negotiation, empowering the offeree to accept by meeting the stated terms."
+},
+{
+  "question": "Under the UCC's \"battle of the forms\" provision (UCC § 2-207), an acceptance that contains additional or different terms:",
+  "options": [
+    "A. May still form a contract, depending on the circumstances.",
+    "B. Automatically creates a counteroffer.",
+    "C. Is always invalid under the mirror image rule.",
+    "D. Requires the offeror's explicit consent to all new terms."
+  ],
+  "correct": 0,
+  "explanation": "The UCC rejects the common law's mirror image rule. An acceptance with different or additional terms can still form a contract unless acceptance is expressly conditional on the new terms. The treatment of those terms depends on factors like whether the parties are merchants and whether the terms materially alter the contract."
+},
+{
+  "question": "Which of the following is an example of a binding preliminary agreement under the Tribune II framework?",
+  "options": [
+    "A. Parties agree on a purchase price and commit to negotiating the remaining terms in good faith.",
+    "B. Two companies sign a letter of intent that expressly states it is not legally binding.",
+    "C. Individuals exchange emails outlining their interest in a potential business deal.",
+    "D. A seller provides a price quote that includes the phrase \"subject to final approval.\""
+  ],
+  "correct": 0,
+  "explanation": "In a Tribune II agreement, parties agree on certain major terms but leave others for future negotiation. They are bound to negotiate those terms in good faith, but failure to reach a final agreement is not a breach."
+},
+{
+  "question": "The primary purpose of the Statute of Frauds is to:",
+  "options": [
+    "A. Promote fairness in contractual negotiations.",
+    "B. Prevent fraud and perjury in proving the existence of certain contracts.",
+    "C. Limit the types of contracts that can be formed.",
+    "D. Standardize the language used in written contracts."
+  ],
+  "correct": 1,
+  "explanation": "The Statute of Frauds aims to ensure that certain important contracts, which are prone to disputes, are evidenced by a writing to avoid fraudulent claims."
+},
+{
+  "question": "Which of the following contracts is NOT generally required to be in writing under the Statute of Frauds?",
+  "options": [
+    "A. A contract for the sale of land",
+    "B. A contract that cannot be performed within one year",
+    "C. A suretyship contract",
+    "D. A contract for the sale of goods worth $400"
+  ],
+  "correct": 3,
+  "explanation": "The Statute of Frauds applies to sales of goods only if the price is $500 or more. Contracts for goods below that threshold do not require a writing."
+},
+{
+  "question": "An oral contract for a lifetime employment agreement is:",
+  "options": [
+    "A. Always unenforceable under the Statute of Frauds.",
+    "B. Generally enforceable because the employee's lifetime could be less than one year.",
+    "C. Only enforceable if there is partial performance.",
+    "D. Valid only if supported by a written confirmation."
+  ],
+  "correct": 1,
+  "explanation": "Lifetime contracts do not typically fall under the one-year provision because the uncertainty of human life means performance could occur within a year if the person dies."
+},
+{
+  "question": "The \"main purpose rule\" is an exception to the Statute of Frauds for suretyship contracts when:",
+  "options": [
+    "A. The surety is a close relative of the debtor.",
+    "B. The surety's primary purpose in making the promise is to benefit themselves.",
+    "C. The debt is related to a business transaction.",
+    "D. The creditor has already relied on the surety's promise."
+  ],
+  "correct": 1,
+  "explanation": "If the surety's promise is mainly for their own advantage, the contract is not considered a suretyship agreement and does not require a writing."
+},
+{
+  "question": "Under the UCC, if a merchant sends a written confirmation of an oral contract to another merchant, and the recipient does not object within 10 days:",
+  "options": [
+    "A. The contract is automatically void.",
+    "B. The recipient can still raise the Statute of Frauds as a defense.",
+    "C. The confirmation satisfies the Statute of Frauds, even if the recipient did not sign it.",
+    "D. The contract is enforceable only for half the quantity of goods."
+  ],
+  "correct": 2,
+  "explanation": "This is the merchant's confirmation exception. The recipient's failure to object in a timely manner binds them to the confirmed terms."
+},
+{
+  "question": "If a buyer and seller orally agree to modify a contract for the sale of 1,000 widgets, increasing the price from $450 to $550, the modification:",
+  "options": [
+    "A. Is enforceable because the original contract was oral.",
+    "B. Must be in writing and signed to be enforceable because it brings the total price above the UCC's $500 threshold.",
+    "C. Automatically terminates the original contract, requiring the formation of a new agreement.",
+    "D. Is valid as long as both parties agree to the new price, regardless of the form of the modification."
+  ],
+  "correct": 1,
+  "explanation": "UCC § 2-201(3) dictates that modifications that bring the contract within the Statute of Frauds' scope (in this case, by exceeding the $500 threshold) must comply with the writing and signature requirements."
+},
+{
+  "question": "DF Activities Corp. v. Brown highlights that:",
+  "options": [
+    "A. A party can be forced to admit to the existence of an oral contract through discovery, even if they have denied it under oath.",
+    "B. The UCC's exception for in-court admissions is limited and does not permit discovery aimed at eliciting an admission once a party has denied the contract under oath.",
+    "C. The Statute of Frauds is easily circumvented through clever legal tactics, making it an ineffective protection against fraud.",
+    "D. Courts generally favor enforcing oral contracts, even if they are not supported by written evidence."
+  ],
+  "correct": 1,
+  "explanation": "DF Activities Corp. v. Brown reinforces the purpose of the Statute of Frauds in preventing fraudulent claims based on alleged oral agreements. The court limited the exception for in-court admissions, safeguarding the Statute's protective function."
+},
+{
+  "question": "Partial performance can serve as an exception to the Statute of Frauds because:",
+  "options": [
+    "A. It proves that the parties had a subjective intent to form a contract, even without a writing.",
+    "B. It provides evidence that a contract likely existed, particularly when the actions are clearly referable to the alleged agreement.",
+    "C. It allows courts to ignore the Statute of Frauds whenever it would result in an unfair outcome.",
+    "D. It is based on the principle of unjust enrichment, requiring the breaching party to compensate the other party for their losses."
+  ],
+  "correct": 1,
+  "explanation": "The part performance exception to the Statute of Frauds relies on tangible actions as proof of the contract. When one party has already begun performing obligations that align with the alleged agreement, it strengthens the likelihood that a contract existed, even if it was not in writing."
+},
+{
+  "question": "Promissory estoppel can overcome the Statute of Frauds when:",
+  "options": [
+    "A. The promise is made in a commercial setting between experienced businesspeople.",
+    "B. One party reasonably relies on an oral promise, leading to a significant detriment that can only be avoided by enforcing the promise.",
+    "C. The promise is supported by partial payment, even if it is not the full amount agreed upon.",
+    "D. The promise relates to a contract that could theoretically be performed within one year, making the writing requirement unnecessary."
+  ],
+  "correct": 1,
+  "explanation": "Promissory estoppel focuses on the detrimental reliance that can arise from relying on an oral promise, even in cases where the Statute of Frauds would normally require a writing. When the promisee has acted in a way that is foreseeable and has suffered a significant loss, courts may enforce the promise to prevent injustice."
+},
+{
+  "question": "The key difference between reliance damages and restitution in precontractual liability is:",
+  "options": [
+    "A. Reliance damages are only available in cases involving fraud, while restitution is available for any breach of contract.",
+    "B. Restitution aims to compensate the non-breaching party for their losses, while reliance damages punish the breaching party for their wrongful conduct.",
+    "C. Restitution focuses on restoring any benefit conferred on the other party, while reliance damages seek to compensate for losses incurred due to reasonable reliance on a promise, even if no benefit was conferred.",
+    "D. Restitution is a common law remedy, while reliance damages are an equitable remedy created by courts."
+  ],
+  "correct": 2,
+  "explanation": "Restitution and reliance damages address distinct aspects of precontractual liability. Restitution aims to prevent unjust enrichment by requiring a party to return any value received. In contrast, reliance damages focus on the injured party's losses stemming from their reasonable actions in anticipation of a contract, even if the other party did not directly benefit."
+},
+{
+    "question": "Which of the following is NOT required for the formation of a contract?",
+    "options": [
+      "A. Offer and Acceptance",
+      "B. Consideration",
+      "C. Intent to be legally bound",
+      "D. Mutual Assent"
+    ],
+    "correct": 2,
+    "explanation": "While the intent to be legally bound can be a factor in determining whether a contract exists, it is not strictly required. The outward manifestations of agreement are more important than the parties' internal thoughts about legal enforceability."
+  },
+  {
+    "question": "The objective theory of assent, as articulated by Judge Learned Hand, emphasizes:",
+    "options": [
+      "A. The subjective intentions of the parties.",
+      "B. The outward actions and words of the parties.",
+      "C. The fairness of the bargain.",
+      "D. The social context of the agreement."
+    ],
+    "correct": 1,
+    "explanation": "The objective theory focuses on what a reasonable person would understand the parties' actions and words to mean, regardless of their unexpressed intentions."
+  },
+  {
+    "question": "An advertisement is most likely to be considered a binding offer when:",
+    "options": [
+      "A. It is addressed to a specific individual.",
+      "B. It uses general language like \"prices may vary.\"",
+      "C. It contains clear, definite, and explicit terms.",
+      "D. It is published in a widely circulated newspaper."
+    ],
+    "correct": 2,
+    "explanation": "For an advertisement to constitute an offer, it must be clear, definite, and leave nothing open for negotiation, empowering the offeree to accept by meeting the stated terms."
+  },
+  {
+    "question": "Under the UCC's \"battle of the forms\" provision (UCC § 2-207), an acceptance that contains additional or different terms:",
+    "options": [
+      "A. May still form a contract, depending on the circumstances.",
+      "B. Automatically creates a counteroffer.",
+      "C. Is always invalid under the mirror image rule.",
+      "D. Requires the offeror's explicit consent to all new terms."
+    ],
+    "correct": 0,
+    "explanation": "The UCC rejects the common law's mirror image rule. An acceptance with different or additional terms can still form a contract unless acceptance is expressly conditional on the new terms. The treatment of those terms depends on factors like whether the parties are merchants and whether the terms materially alter the contract."
+  },
+  {
+    "question": "Which of the following is an example of a binding preliminary agreement under the Tribune II framework?",
+    "options": [
+      "A. Parties agree on a purchase price and commit to negotiating the remaining terms in good faith.",
+      "B. Two companies sign a letter of intent that expressly states it is not legally binding.",
+      "C. Individuals exchange emails outlining their interest in a potential business deal.",
+      "D. A seller provides a price quote that includes the phrase \"subject to final approval.\""
+    ],
+    "correct": 0,
+    "explanation": "In a Tribune II agreement, parties agree on certain major terms but leave others for future negotiation. They are bound to negotiate those terms in good faith, but failure to reach a final agreement is not a breach."
+  },
+  {
+    "question": "The primary purpose of the Statute of Frauds is to:",
+    "options": [
+      "A. Promote fairness in contractual negotiations.",
+      "B. Prevent fraud and perjury in proving the existence of certain contracts.",
+      "C. Limit the types of contracts that can be formed.",
+      "D. Standardize the language used in written contracts."
+    ],
+    "correct": 1,
+    "explanation": "The Statute of Frauds aims to ensure that certain important contracts, which are prone to disputes, are evidenced by a writing to avoid fraudulent claims."
+  },
+  {
+    "question": "Which of the following contracts is NOT generally required to be in writing under the Statute of Frauds?",
+    "options": [
+      "A. A contract for the sale of land",
+      "B. A contract that cannot be performed within one year",
+      "C. A suretyship contract",
+      "D. A contract for the sale of goods worth $400"
+    ],
+    "correct": 3,
+    "explanation": "The Statute of Frauds applies to sales of goods only if the price is $500 or more. Contracts for goods below that threshold do not require a writing."
+  },
+  {
+    "question": "An oral contract for a lifetime employment agreement is:",
+    "options": [
+      "A. Always unenforceable under the Statute of Frauds.",
+      "B. Generally enforceable because the employee's lifetime could be less than one year.",
+      "C. Only enforceable if there is partial performance.",
+      "D. Valid only if supported by a written confirmation."
+    ],
+    "correct": 1,
+    "explanation": "Lifetime contracts do not typically fall under the one-year provision because the uncertainty of human life means performance could occur within a year if the person dies."
+  },
+  {
+    "question": "The \"main purpose rule\" is an exception to the Statute of Frauds for suretyship contracts when:",
+    "options": [
+      "A. The surety is a close relative of the debtor.",
+      "B. The surety's primary purpose in making the promise is to benefit themselves.",
+      "C. The debt is related to a business transaction.",
+      "D. The creditor has already relied on the surety's promise."
+    ],
+    "correct": 1,
+    "explanation": "If the surety's promise is mainly for their own advantage, the contract is not considered a suretyship agreement and does not require a writing."
+  },
+  {
+    "question": "Under the UCC, if a merchant sends a written confirmation of an oral contract to another merchant, and the recipient does not object within 10 days:",
+    "options": [
+      "A. The contract is automatically void.",
+      "B. The recipient can still raise the Statute of Frauds as a defense.",
+      "C. The confirmation satisfies the Statute of Frauds, even if the recipient did not sign it.",
+      "D. The contract is enforceable only for half the quantity of goods."
+    ],
+    "correct": 2,
+    "explanation": "This is the merchant's confirmation exception. The recipient's failure to object in a timely manner binds them to the confirmed terms."
+  },
+  {
+    "question": "The doctrine of promissory estoppel is most likely to be applied when:",
+    "options": [
+      "A. A written contract exists but one party wants to modify the terms.",
+      "B. The parties have a clear agreement but fail to put it in writing.",
+      "C. One party reasonably relies on another party's promise to their detriment, even though no formal contract exists.",
+      "D. A contract is voidable due to a mutual mistake."
+    ],
+    "correct": 2,
+    "explanation": "Promissory estoppel protects a party who has acted in reliance on a promise that would be unjust not to enforce, even if a formal contract was never formed."
+  },
+  {
+    "question": "In Hoffman v. Red Owl Stores, the court awarded Hoffman reliance damages based on:",
+    "options": [
+      "A. The profits he would have earned if the franchise agreement had been finalized.",
+      "B. The expenses he incurred in preparing to open a Red Owl franchise store.",
+      "C. The emotional distress caused by Red Owl's breach of promise.",
+      "D. The difference between the price he paid for his existing store and its fair market value."
+    ],
+    "correct": 1,
+    "explanation": "The court recognized that Red Owl's assurances induced Hoffman's detrimental reliance. His damages were limited to the costs he incurred in reliance on those promises, not the potential profits he might have earned."
+  },
+  {
+    "question": "In precontractual negotiations, restitution is typically used to:",
+    "options": [
+      "A. Restore any benefit that one party conferred on the other.",
+      "B. Compensate a party for lost profits.",
+      "C. Punish a party for bad faith bargaining.",
+      "D. Force the parties to enter into a binding contract."
+    ],
+    "correct": 0,
+    "explanation": "Restitution aims to prevent unjust enrichment by requiring a party to return any value received from the other party during negotiations."
+  }
+
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

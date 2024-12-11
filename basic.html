@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">General Concepts</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+   
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = [
+    {
+  "question": "Which of the following is NOT a key function served by the seal in early English contract law, as described by Lon Fuller?",
+  "options": [
+    "A. Evidentiary function: Providing reliable evidence of the contract's existence and terms.",
+    "B. Cautionary function: Encouraging parties to thoughtfully consider the gravity of their promise.",
+    "C. Channeling function: Formally marking the promise as legally enforceable, signaling the intent to be bound by legal standards.",
+    "D. Punitive function: Imposing a penalty on the breaching party to deter future breaches."
+  ],
+  "correct": 3,
+  "explanation": "The seal historically served three main functions: evidentiary, cautionary, and channeling. These functions helped ensure the seriousness and enforceability of promises. The seal did not have a punitive function. Punitive damages are generally not awarded in contract law, which focuses on compensation rather than punishment."
+},
+{
+  "question": "A homeowner offers a painter $5,000 to paint their house. The painter accepts and completes the job. This scenario best exemplifies which type of contract?",
+  "options": [
+    "A. Bilateral contract",
+    "B. Unilateral contract",
+    "C. Option contract",
+    "D. Quasi-contract"
+  ],
+  "correct": 0,
+  "explanation": "This is a bilateral contract because both parties made promises: the homeowner promised to pay $5,000, and the painter promised to paint the house. In a unilateral contract, only one party makes a promise in exchange for the other party's performance."
+},
+{
+  "question": "Which of the following accurately distinguishes promissory estoppel from equitable estoppel?",
+  "options": [
+    "A. Promissory estoppel is based on a statement of past or present fact, while equitable estoppel is based on a promise of a future act.",
+    "B. Promissory estoppel specifically applies to situations where a party detrimentally relied on a clear promise, while equitable estoppel is broader and prevents someone from taking a position contrary to previous representations, even without an explicit promise.",
+    "C. Promissory estoppel requires a written agreement, while equitable estoppel can be based on oral statements.",
+    "D. Promissory estoppel is only applicable in contracts for the sale of goods, while equitable estoppel applies to all types of contracts."
+  ],
+  "correct": 1,
+  "explanation": "Promissory estoppel focuses on detrimental reliance on a clear promise, making an otherwise unenforceable promise binding to prevent injustice. Equitable estoppel is a broader doctrine that prevents parties from going back on prior statements or actions, even if a promise wasn't explicitly made. It focuses on fairness and consistency in conduct."
+},
+{
+  "question": "Under the UCC, what is the general rule regarding the enforceability of “no-oral-modification” clauses in contracts for the sale of goods?",
+  "options": [
+    "A. No-oral-modification clauses are generally unenforceable, as parties should be free to modify their agreements orally.",
+    "B. No-oral-modification clauses are generally enforceable, meaning that any changes to the contract must be in writing and signed by both parties.",
+    "C. No-oral-modification clauses are only enforceable if the original contract was also in writing.",
+    "D. No-oral-modification clauses are only enforceable if both parties are merchants."
+  ],
+  "correct": 1,
+  "explanation": "Under UCC § 2-209(2), a signed agreement with a no-oral-modification clause cannot be modified orally unless explicitly waived. This differs from traditional common law, where such clauses were often viewed as ineffective. The UCC emphasizes the importance of written modifications in commercial transactions."
+},
+{
+  "question": "Which of the following is a distinguishing feature of the “knockout rule” used by some courts in resolving conflicting terms in contracts under UCC § 2-207?",
+  "options": [
+    "A. It gives preference to the terms in the last offer sent before performance began.",
+    "B. It requires both parties to explicitly agree to any additional or different terms before they become part of the contract.",
+    "C. It cancels out the conflicting terms and substitutes them with the relevant gap-filler provisions of the UCC.",
+    "D. It allows a court to rewrite the contract to create a fair and reasonable outcome."
+  ],
+  "correct": 2,
+  "explanation": "The knockout rule, favored by a majority of courts, eliminates conflicting terms and replaces them with neutral provisions from the UCC. This rule aims for fairness by preventing either party from having their conflicting terms prevail simply because they were the last to submit them."
+},
+{
+  "question": "A contract specifies that a builder will construct a house according to certain plans and specifications, and the homeowner will pay $300,000 upon completion. The builder completes the construction, but the homeowner notices minor defects, such as mismatched paint colors and slightly uneven flooring, which would cost $5,000 to fix. The homeowner refuses to pay the full amount. This scenario likely involves:",
+  "options": [
+    "A. A material breach by the builder, justifying the homeowner's refusal to pay.",
+    "B. A technical breach by the builder, entitling the homeowner to a reduction in price but not a complete refusal to pay.",
+    "C. An anticipatory breach by the homeowner, allowing the builder to sue for damages immediately.",
+    "D. Mutual mistake, voiding the contract."
+  ],
+  "correct": 1,
+  "explanation": "The builder's deviations from the contract likely constitute a technical breach. The defects are minor and do not significantly impact the overall value of the house or deprive the homeowner of the essential benefit of the bargain. The homeowner is entitled to a price adjustment to cover the cost of repairs but cannot refuse to pay entirely. A material breach would involve significant deviations that substantially affect the contract's purpose."
+},
+{
+  "question": "Which of the following best defines an \"illusory promise\" in contract law?",
+  "options": [
+    "A. A promise that is made in jest or without any intention of being legally bound.",
+    "B. A promise that appears to create an obligation but allows the promisor to avoid performance based on subjective discretion or a lack of commitment.",
+    "C. A promise that is unenforceable because it lacks consideration.",
+    "D. A promise that is impossible to perform due to circumstances beyond the promisor's control."
+  ],
+  "correct": 1,
+  "explanation": "An illusory promise lacks mutuality of obligation, meaning the promisor retains complete discretion to perform or not. This makes the promise unenforceable as a contract. For example, a promise to buy \"as many widgets as I want\" is illusory because the promisor has no real commitment."
+},
+{
+  "question": "Which of the following is NOT a recognized method for terminating the power of acceptance in contract law?",
+  "options": [
+    "A. Revocation of the offer by the offeror before acceptance.",
+    "B. Counteroffer by the offeree.",
+    "C. Lapse of time, if the offer specified a deadline for acceptance.",
+    "D. Performance by the offeree, even if the offer required acceptance by a promise."
+  ],
+  "correct": 3,
+  "explanation": "Performance by the offeree typically constitutes acceptance and creates a binding contract, rather than terminating the power of acceptance. The other options are recognized methods for terminating an offer: revocation by the offeror, counteroffer by the offeree, and the passage of a specified time limit."
+},
+{
+  "question": "The \"mailbox rule\" in contract law generally applies to which of the following situations?",
+  "options": [
+    "A. Acceptance of an offer is effective when the offeree sends the acceptance, regardless of when or if it is received.",
+    "B. Acceptance of an offer is generally effective upon dispatch (e.g., when mailed), unless the offer specified a different method or timing for acceptance.",
+    "C. Acceptance is only effective when the offeree communicates their acceptance directly to the offeror.",
+    "D. Acceptance is effective when the offeror receives the acceptance, even if it was delayed in transit."
+  ],
+  "correct": 1,
+  "explanation": "The mailbox rule, codified in R2C § 63, establishes that acceptance is typically valid upon dispatch (e.g., when placed in the mailbox), providing certainty in contract formation when parties communicate through the mail or other non-instantaneous methods. This rule protects the offeree by shifting the risk of delay or loss in transit to the offeror. However, the offeror can modify this rule by specifying a different method or timing for acceptance in the offer."
+},
+{
+  "question": "The \"duty to mitigate damages\" in contract law means:",
+  "options": [
+    "A. The breaching party must take steps to minimize their own losses resulting from the breach.",
+    "B. The non-breaching party has a responsibility to take reasonable steps to minimize their losses after the breach.",
+    "C. Both parties have a duty to negotiate in good faith to settle the dispute and avoid litigation.",
+    "D. The court will reduce damages if either party acted unreasonably, even if their actions contributed to the breach."
+  ],
+  "correct": 1,
+  "explanation": "The duty to mitigate damages falls on the non-breaching party. They are expected to take reasonable steps to reduce their losses after a breach. Failure to mitigate can result in a reduction of recoverable damages. This rule encourages efficiency and prevents the non-breaching party from passively incurring unnecessary losses."
+},
+{
+  "question": "Which of the following is an accurate statement regarding the distinction between \"vagueness\" and \"ambiguity\" in contract interpretation?",
+  "options": [
+    "A. Vagueness refers to unclear application in marginal cases, while ambiguity involves multiple distinct meanings, both of which could be reasonable.",
+    "B. Vagueness applies only to oral agreements, while ambiguity arises in written contracts.",
+    "C. Vagueness always renders a contract unenforceable, while ambiguity can be resolved through interpretation.",
+    "D. Vagueness is a question of fact for the jury, while ambiguity is always a question of law for the judge."
+  ],
+  "correct": 0,
+  "explanation": "Vagueness involves terms with unclear boundaries, making their application uncertain in specific situations. For example, \"reasonable time\" is vague because what's considered reasonable depends on the context. Ambiguity, on the other hand, arises when a word or phrase has multiple distinct meanings, each of which could be plausibly applied."
+},
+{
+  "question": "In Hawkins v. McGee (the \"hairy hand\" case), the court awarded damages based on:",
+  "options": [
+    "A. The pain and suffering Hawkins experienced as a result of the surgery.",
+    "B. The cost of the surgery itself and any related medical expenses.",
+    "C. The difference between the value of a \"perfect hand,\" as promised by Dr. McGee, and the actual condition of Hawkins' hand after the surgery.",
+    "D. Punitive damages to punish Dr. McGee for his breach of promise."
+  ],
+  "correct": 2,
+  "explanation": "The court in Hawkins v. McGee applied the \"expectation measure\" of damages, aiming to put Hawkins in the position he would have been in had the doctor's promise of a \"perfect hand\" been fulfilled. The court determined the difference in value between a perfect hand and the actual condition of his hand after the surgery represented the appropriate compensation."
+},
+{
+  "question": "A construction contract includes a provision stating that \"payment will be made upon the architect's certification of satisfactory completion.\" This provision is best described as:",
+  "options": [
+    "A. A promise by the architect to issue a certificate.",
+    "B. A duty imposed on the homeowner to ensure the work meets the architect's standards.",
+    "C. A condition precedent to the homeowner's obligation to make payment.",
+    "D. A condition subsequent that could terminate the homeowner's payment obligation."
+  ],
+  "correct": 2,
+  "explanation": "The provision is a condition precedent because it must be satisfied (the architect's certification) before the homeowner's duty to pay arises. Conditions determine when or if a party's obligation to perform becomes due."
+},
+{
+  "question": "Under the UCC's \"perfect tender\" rule, which statement is generally accurate?",
+  "options": [
+    "A. A buyer must accept goods even if they have minor defects, as long as the seller is willing to cure the defects later.",
+    "B. A buyer can reject goods for any reason, even if the reason is subjective or unrelated to the contract terms.",
+    "C. A buyer can generally reject goods if they do not conform to the contract in any way, even if the non-conformity is minor.",
+    "D. A buyer can only reject goods if the seller acted in bad faith or intentionally delivered non-conforming goods."
+  ],
+  "correct": 2,
+  "explanation": "The perfect tender rule gives buyers the right to reject goods that do not perfectly conform to the contract terms, even for minor defects. This rule protects buyers by ensuring they receive exactly what they bargained for. However, the UCC includes several exceptions and mitigating doctrines, such as the seller's right to cure, that balance this rule to promote fairness and commercial practicality."
+},
+{
+  "question": "The parol evidence rule generally bars the admission of which type of evidence?",
+  "options": [
+    "A. Evidence of prior or contemporaneous agreements (oral or written) that contradict the terms of a fully integrated written contract.",
+    "B. Evidence of subsequent agreements that modify the terms of the original written contract.",
+    "C. Evidence of industry customs or trade usage that is inconsistent with the express terms of the written contract.",
+    "D. Evidence offered to prove that one of the parties lacked the capacity to enter into a contract."
+  ],
+  "correct": 0,
+  "explanation": "The parol evidence rule is a principle that aims to protect the integrity of written contracts by preventing the introduction of extrinsic evidence (evidence outside the written contract itself) that contradicts or varies the terms of a written agreement that the parties intended to be the final and complete expression of their agreement."
+},
+{
+  "question": "Which of the following best describes the \"blue pencil rule\" in the context of non-compete agreements?",
+  "options": [
+    "A. A rule that requires courts to strictly enforce non-compete agreements as written, even if some terms are overly broad.",
+    "B. A rule that allows courts to modify or \"blue pencil\" overly broad non-compete agreements by striking out unreasonable restrictions while enforcing the remaining valid portions.",
+    "C. A rule that automatically voids any non-compete agreement that is found to be unreasonable in any respect.",
+    "D. A rule that requires employers to clearly identify restricted activities in non-compete agreements using blue ink."
+  ],
+  "correct": 1,
+  "explanation": "The blue pencil rule gives courts the power to modify overly broad non-compete agreements by striking unreasonable restrictions while preserving enforceable provisions. Some jurisdictions have rejected this rule in favor of voiding entire agreements if any part is unreasonable."
+},
+{
+  "question": "Which of the following is NOT a necessary element for a valid contract?",
+  "options": [
+    "A. Offer",
+    "B. Acceptance",
+    "C. Consideration",
+    "D. Writing"
+  ],
+  "correct": 3,
+  "explanation": "While some contracts must be in writing to be enforceable under the Statute of Frauds, writing itself is not a fundamental element for the formation of a contract. An oral contract can be valid and enforceable if it meets the requirements of offer, acceptance, and consideration."
+},
+{
+  "question": "A homeowner offers to pay a contractor $10,000 to build a deck. The contractor accepts the offer. What type of contract is this?",
+  "options": [
+    "A. Bilateral Contract",
+    "B. Unilateral Contract",
+    "C. Quasi-Contract",
+    "D. Illusory Contract"
+  ],
+  "correct": 0,
+  "explanation": "This is a bilateral contract because both the homeowner and the contractor have made promises. The homeowner promises to pay, and the contractor promises to build the deck. Each party is bound by their promise."
+},
+{
+  "question": "A store owner promises a $100 reward to anyone who returns their lost dog. This is an example of what kind of contract?",
+  "options": [
+    "A. Bilateral Contract",
+    "B. Unilateral Contract",
+    "C. Implied Contract",
+    "D. Voidable Contract"
+  ],
+  "correct": 1,
+  "explanation": "This is a unilateral contract because the store owner's promise is dependent on the performance of a specific act—returning the lost dog. Only upon completion of that act is a contract formed."
+},
+{
+  "question": "Under the common law “mirror image rule,” which of the following scenarios would result in a valid acceptance of an offer?",
+  "options": [
+    "A. The offeree accepts the offer but adds a new term.",
+    "B. The offeree accepts the offer exactly as it was stated.",
+    "C. The offeree remains silent after receiving the offer.",
+    "D. The offeree rejects the offer and makes a counteroffer."
+  ],
+  "correct": 1,
+  "explanation": "The mirror image rule requires the acceptance to precisely match the offer for a contract to form. Any alteration or addition of terms constitutes a counteroffer, not an acceptance."
+},
+{
+  "question": "A contractor agrees to build a house for a homeowner. The contract states that the homeowner will pay the contractor upon “satisfactory completion” of the house. What legal concept is represented by the phrase \"satisfactory completion\"?",
+  "options": [
+    "A. Anticipatory Breach",
+    "B. Condition Precedent",
+    "C. Material Breach",
+    "D. Impossibility of Performance"
+  ],
+  "correct": 1,
+  "explanation": "\"Satisfactory completion\" is a condition precedent. It means that the homeowner's obligation to pay the contractor is conditional upon the house being completed to their satisfaction. The duty to pay does not arise until the condition is met."
+},
+{
+  "question": "Which of the following is a valid defense to the enforcement of a contract?",
+  "options": [
+    "A. One party regretted entering into the contract.",
+    "B. One party was induced to enter the contract by fraud.",
+    "C. One party found a better deal after signing the contract.",
+    "D. One party misunderstood a non-material term of the contract."
+  ],
+  "correct": 1,
+  "explanation": "Fraud is a valid defense because it undermines the element of mutual assent. A contract induced by fraud is voidable by the defrauded party."
+},
+{
+  "question": "A music producer and a band sign a contract in 1970 for the production of an album. The contract grants the producer ownership rights to the album recordings. In 2023, the producer wants to license the recordings for use in a streaming service advertisement. The band objects, arguing that the original contract did not contemplate such use. If the contract is silent on the producer's rights to license the recordings for new technologies, what principle of contract interpretation would a court likely apply?",
+  "options": [
+    "A. The Parol Evidence Rule",
+    "B. The Mirror Image Rule",
+    "C. Interpretation Against the Drafter",
+    "D. Specific Performance"
+  ],
+  "correct": 2,
+  "explanation": "The court would likely apply the principle of **interpretation against the drafter (contra proferentem)**. As the producer drafted the contract, any ambiguity regarding the scope of their ownership rights would be resolved against them. The court would likely find that, since the contract did not explicitly grant rights to use the recordings for new technologies not in existence in 1970, the band's objection is valid."
+},
+{
+  "question": "In Hawkins v. McGee, the doctor guaranteed a \"100% perfect hand\" after surgery, but the surgery was unsuccessful. What type of damages did the court award Hawkins?",
+  "options": [
+    "A. Nominal Damages",
+    "B. Expectation Damages",
+    "C. Punitive Damages",
+    "D. Restitution"
+  ],
+  "correct": 1,
+  "explanation": "The court awarded expectation damages to place Hawkins in the position he would have been in had the doctor's promise been fulfilled. This means he was awarded the difference between the value of a perfect hand and the value of his hand after the unsuccessful surgery."
+},
+{
+  "question": "A buyer and a seller enter into a written contract for the sale of 1,000 widgets. The contract states, \"This writing constitutes the entire agreement between the parties.\" Later, the buyer alleges that the seller orally promised to deliver the widgets within one week. What is the likely outcome if the buyer attempts to introduce evidence of the seller's alleged oral promise?",
+  "options": [
+    "A. The evidence will be excluded under the parol evidence rule.",
+    "B. The evidence will be admitted because it does not contradict the written contract.",
+    "C. The evidence will be admitted because it clarifies an ambiguous term in the contract.",
+    "D. The evidence will be admitted because oral promises are always enforceable."
+  ],
+  "correct": 0,
+  "explanation": "The evidence will likely be excluded under the parol evidence rule. The contract's language indicating it is the entire agreement suggests that the parties intended the writing to be the final expression of their deal. The buyer's alleged oral promise contradicts the written terms, which do not specify a delivery timeframe."
+},
+{
+  "question": "Which of the following is NOT an exception to the Statute of Frauds?",
+  "options": [
+    "A. Partial Performance",
+    "B. Promissory Estoppel",
+    "C. Judicial Admission",
+    "D. Unilateral Mistake"
+  ],
+  "correct": 3,
+  "explanation": "**Unilateral mistake** is a doctrine that addresses situations where one party to a contract makes a mistake about a material fact. It is not an exception to the Statute of Frauds, which requires certain contracts to be in writing to prevent fraud and perjury."
+},
+{
+  "question": "A seller and a buyer enter into a contract for the sale of goods for $600. The contract is not in writing. Is the contract enforceable under the UCC Statute of Frauds?",
+  "options": [
+    "A. Yes, because the parties intended to create a contract.",
+    "B. No, because the contract for the sale of goods for $500 or more must be in writing.",
+    "C. Yes, because the Statute of Frauds does not apply to contracts for the sale of goods.",
+    "D. No, because all contracts must be in writing to be enforceable."
+  ],
+  "correct": 1,
+  "explanation": "The contract is not enforceable because the **UCC Statute of Frauds** requires contracts for the sale of goods for $500 or more to be in writing. This rule exists to prevent fraud and provide evidence of the agreement's terms."
+},
+{
+  "question": "What is the difference between an implied-in-fact contract and a quasi-contract?",
+  "options": [
+    "A. An implied-in-fact contract is based on the parties’ conduct, while a quasi-contract is imposed by law to prevent unjust enrichment.",
+    "B. An implied-in-fact contract is created by written agreement, while a quasi-contract is based on an oral agreement.",
+    "C. An implied-in-fact contract requires consideration, while a quasi-contract does not.",
+    "D. An implied-in-fact contract is enforceable, while a quasi-contract is not."
+  ],
+  "correct": 0,
+  "explanation": "An **implied-in-fact** contract arises when the parties’ conduct demonstrates an intention to form a contract, even without an express agreement. A **quasi-contract**, on the other hand, is a legal fiction created by the court to prevent one party from being unjustly enriched at the expense of another."
+},
+{
+  "question": "A seller delivers non-conforming goods to a buyer. Under the UCC’s “perfect tender rule,” what right does the buyer generally have?",
+  "options": [
+    "A. The buyer must accept the goods but can sue for damages.",
+    "B. The buyer must accept the goods if the defects are minor.",
+    "C. The buyer can reject the goods.",
+    "D. The buyer can only reject the goods if the seller cannot cure the defects."
+  ],
+  "correct": 2,
+  "explanation": "The UCC’s “perfect tender rule” grants the buyer the right to **reject goods** that do not conform to the contract’s terms. However, this rule is subject to several exceptions, including the seller’s right to cure the defects within a reasonable time."
+},
+{
+  "question": "Which of the following is an example of a “condition subsequent” in a contract?",
+  "options": [
+    "A. A buyer agrees to purchase a house if they can secure a mortgage.",
+    "B. An insurance policy will be voided if the insured commits fraud.",
+    "C. A contractor will be paid upon completion of a construction project.",
+    "D. A lease will begin on a specific date."
+  ],
+  "correct": 1,
+  "explanation": "A **condition subsequent** is an event that terminates a duty that has already arisen. In this case, the insurance policy is in effect, but the insured's duty to provide coverage ends if they commit fraud."
+},
+{
+  "question": "What is the main difference between a contract modification and a waiver?",
+  "options": [
+    "A. A contract modification must be supported by new consideration, while a waiver does not.",
+    "B. A contract modification changes the terms of the original contract, while a waiver excuses performance of a particular term.",
+    "C. Both a) and b) are correct.",
+    "D. Neither a) nor b) is correct."
+  ],
+  "correct": 2,
+  "explanation": "Both statements about contract modification and waiver are accurate. A **contract modification** requires consideration to be binding, while a **waiver**, which is a voluntary relinquishment of a known right, can be granted without new consideration."
+},
+{
+  "question": "Under the doctrine of anticipatory repudiation, what can a non-breaching party do if the other party clearly states they will not perform their contractual obligations?",
+  "options": [
+    "A. The non-breaching party must wait until the time of performance to sue for breach.",
+    "B. The non-breaching party can sue for damages only if they can prove actual harm.",
+    "C. The non-breaching party can treat the repudiation as a material breach and immediately sue for damages.",
+    "D. The non-breaching party must attempt to mitigate damages before they can sue for breach."
+  ],
+  "correct": 2,
+  "explanation": "**Anticipatory repudiation** allows the non-breaching party to treat the repudiation as a present breach and take immediate legal action, rather than waiting for the actual breach to occur. This allows for prompt resolution of the dispute and helps the non-breaching party mitigate potential losses."
+},
+{
+  "question": "In Jacob & Youngs v. Kent, the contractor unintentionally used the wrong brand of pipe, but the pipe was of the same quality as the one specified in the contract. What legal doctrine did the court apply in deciding the case?",
+  "options": [
+    "A. The Perfect Tender Rule",
+    "B. Substantial Performance",
+    "C. Impossibility of Performance",
+    "D. Frustration of Purpose"
+  ],
+  "correct": 1,
+  "explanation": "The court applied the doctrine of **substantial performance**, recognizing that the contractor had fulfilled its main obligation despite the minor deviation. The court concluded that requiring the contractor to replace the pipe would be economically wasteful and inequitable."
+},
+{
+  "question": "What is the purpose of the UCC's \"battle of the forms\" provision (UCC § 2-207)?",
+  "options": [
+    "A. To determine whether a contract was formed.",
+    "B. To resolve disputes over conflicting terms in standard forms exchanged between merchants.",
+    "C. To allow the party who sent the last form to dictate the contract's terms.",
+    "D. To void contracts that contain conflicting terms."
+  ],
+  "correct": 1,
+  "explanation": "The UCC's **battle of the forms** provision aims to address the complexities of modern commercial transactions where parties often exchange pre-printed forms (like purchase orders and invoices) with differing terms. The provision provides rules for determining which terms become part of the contract and helps prevent the \"last shot rule\" from unfairly favoring one party."
+},
+{
+  "question": "A contract for the sale of a house includes a liquidated damages clause stating that the buyer will forfeit 10% of the purchase price if they breach the contract. What is the legal standard for enforcing liquidated damages clauses?",
+  "options": [
+    "A. Liquidated damages must be an accurate prediction of the seller's actual losses.",
+    "B. Liquidated damages must be reasonable in light of anticipated or actual harm.",
+    "C. Liquidated damages must be specifically approved by a court before they can be enforced.",
+    "D. Liquidated damages are never enforceable."
+  ],
+  "correct": 1,
+  "explanation": "Liquidated damages clauses are enforceable if they represent a **reasonable** estimate of the harm that would result from a breach, and are not intended as a penalty. The clause must be designed to compensate the non-breaching party, not punish the breaching party."
+},
+{
+  "question": "In Alaska Packers’ Ass’n v. Domenico, a group of fishermen demanded higher wages after arriving in Alaska, threatening to stop working unless their demands were met. The company agreed to the new terms but later refused to pay. What legal principle did the court apply in deciding the case?",
+  "options": [
+    "A. Promissory Estoppel",
+    "B. Undue Influence",
+    "C. Mutual Mistake",
+    "D. The Pre-Existing Duty Rule"
+  ],
+  "correct": 3,
+  "explanation": "The court applied the **pre-existing duty rule**, which states that a promise to do what one is already legally obligated to do is not valid consideration for a contract modification. The fishermen were already contractually bound to perform the work, so their threat to breach the contract was not sufficient consideration for the company's promise to pay higher wages."
+},
+{
+  "question": "A court finds that a contract for the sale of a car is unconscionable. What options does the court have under the UCC?",
+  "options": [
+    "A. The court must void the entire contract.",
+    "B. The court can refuse to enforce the unconscionable clause, limit the application of the clause, or void the entire contract.",
+    "C. The court can rewrite the contract to make it fair.",
+    "D. The court must enforce the contract as written."
+  ],
+  "correct": 1,
+  "explanation": "The UCC provides courts with flexibility in addressing **unconscionable contracts**. The court can choose the most appropriate remedy, which may involve striking down the entire contract or only the offensive clause, or limiting the clause's application to avoid an unfair result."
+},
+{
+  "question": "What is the main purpose of the duty to mitigate damages in contract law?",
+  "options": [
+    "A. To punish the breaching party.",
+    "B. To minimize the economic harm caused by a breach of contract.",
+    "C. To allow the non-breaching party to recover punitive damages.",
+    "D. To make it more difficult for parties to prove breach of contract."
+  ],
+  "correct": 1,
+  "explanation": "The duty to **mitigate damages** encourages the non-breaching party to take reasonable steps to reduce their losses after a breach occurs. This principle promotes economic efficiency and prevents unnecessary waste by encouraging parties to take steps that can minimize the overall harm caused by a breach."
+},
+{
+  "question": "Which of the following is a distinguishing feature of a \"firm offer\" under the UCC?",
+  "options": [
+    "A. It applies to all offers made by merchants.",
+    "B. It does not require consideration to be enforceable.",
+    "C. It can remain open indefinitely.",
+    "D. It can only be revoked in writing."
+  ],
+  "correct": 1,
+  "explanation": "A **firm offer**, as defined in UCC § 2-205, is unique because it does not require the traditional element of consideration to be binding. A merchant can make a firm offer in writing that will remain open for a specified time, or a reasonable time if no time is stated (not to exceed three months), even without receiving anything in return."
+},
+{
+  "question": "Which of the following is an example of a contract that would fall under the Statute of Frauds?",
+  "options": [
+    "A. A contract for the purchase of a used car for $400",
+    "B. A contract for a one-year employment agreement that begins immediately.",
+    "C. A contract for the sale of land.",
+    "D. A contract to provide catering services for a wedding that will take place in six months."
+  ],
+  "correct": 2,
+  "explanation": "Contracts for the **sale of land** must be in writing to be enforceable under the Statute of Frauds. This requirement helps prevent fraudulent claims regarding ownership of real property, which is often a significant and valuable asset."
+},
+{
+  "question": "A general contractor hires a subcontractor to perform electrical work on a construction project. The subcontract states that the subcontractor will be paid \"when the general contractor receives payment from the homeowner.\" What legal issue does this language raise?",
+  "options": [
+    "A. Whether the subcontract is subject to the Statute of Frauds.",
+    "B. Whether the homeowner’s payment is a condition precedent to the general contractor’s duty to pay the subcontractor.",
+    "C. Whether the general contractor is assigning its right to payment to the subcontractor.",
+    "D. Whether the subcontract is unconscionable."
+  ],
+  "correct": 1,
+  "explanation": "The subcontract's language raises the issue of whether the homeowner's payment is a **condition precedent** to the general contractor's obligation to pay the subcontractor. If it is, the subcontractor cannot demand payment until the condition (the homeowner's payment) is met. However, courts may interpret such language to require payment within a reasonable time, even if the homeowner has not yet paid the general contractor."
+},
+{
+  "question": "Which type of damages aims to place the non-breaching party in the position they would have been in if the contract had been performed?",
+  "options": [
+    "A. Expectation damages.",
+    "B. Consequential damages.",
+    "C. Incidental damages.",
+    "D. Liquidated damages."
+  ],
+  "correct": 0,
+  "explanation": "Expectation damages are the primary measure of damages for breach of contract and aim to compensate the non-breaching party for the benefit they expected to receive from the contract."
+},
+{
+  "question": "Which of the following is NOT an equitable remedy available in contract disputes?",
+  "options": [
+    "A. Specific performance.",
+    "B. Injunction.",
+    "C. Rescission.",
+    "D. Punitive damages."
+  ],
+  "correct": 3,
+  "explanation": "Punitive damages, designed to punish the defendant, are generally not available for breach of contract unless the breach also constitutes a tort. Specific performance, injunctions, and rescission are equitable remedies often granted when monetary damages are insufficient."
+},
+{
+  "question": "Which of the following best describes the \"efficient breach\" hypothesis?",
+  "options": [
+    "A. Breach can be economically efficient if the breaching party's gains exceed the non-breaching party's losses.",
+    "B. Breach is always inefficient and should be discouraged by law.",
+    "C. Breach is only efficient if all parties benefit from it.",
+    "D. Breach is irrelevant to economic efficiency."
+  ],
+  "correct": 0,
+  "explanation": "The efficient breach hypothesis acknowledges that breach can sometimes be economically beneficial, leading to a net increase in social welfare if the breaching party's gains outweigh the losses to the non-breaching party."
+},
+{
+  "question": "What does the Coase Theorem suggest about resolving contract disputes?",
+  "options": [
+    "A. Courts should always decide contract disputes to ensure fairness.",
+    "B. Government intervention is necessary to achieve efficient outcomes.",
+    "C. Private bargaining can lead to efficient solutions, especially when transaction costs are low.",
+    "D. Efficient outcomes are impossible in contract disputes."
+  ],
+  "correct": 2,
+  "explanation": "The Coase Theorem highlights the potential for private bargaining to achieve efficient resolutions, particularly when transaction costs associated with negotiation are low and property rights are well-defined. This encourages settlements and mutually beneficial outcomes."
+}
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

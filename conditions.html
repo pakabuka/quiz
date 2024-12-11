@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">Conditions of Performance, Excuse & Remedy for Breach</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+    
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = 
+    [
+  {
+    "question": "Which of the following constitutes a material breach of contract?",
+    "options": [
+      "A. A delay in delivery of goods that does not substantially impair the value of the contract.",
+      "B. A minor defect in the goods that can be easily repaired.",
+      "C. Failure to deliver a vital component necessary for the other party's performance.",
+      "D. A delay in payment that is promptly remedied."
+    ],
+    "correct": 2,
+    "explanation": "A material breach is a significant violation of a contract term that undermines the purpose of the agreement. Option (c) represents a situation where the non-breaching party is deprived of a key benefit they reasonably expected, making it a material breach."
+  },
+  {
+    "question": "Under the UCC's Perfect Tender Rule, which of the following options is available to a buyer if the seller's delivery fails to conform to the contract in any respect?",
+    "options": [
+      "A. Only reject the entire shipment.",
+      "B. Reject the whole, accept the whole, or accept any commercial unit and reject the rest.",
+      "C. Only accept the conforming goods and reject the rest.",
+      "D. Demand a price reduction without rejecting any goods."
+    ],
+    "correct": 1,
+    "explanation": "The UCC's Perfect Tender Rule allows the buyer flexibility in responding to non-conforming goods. They can choose to reject the entire shipment, accept it entirely, or partially accept conforming goods while rejecting the rest."
+  },
+  {
+    "question": "In Kingston v. Preston, the court held that Preston's obligation to transfer his business was contingent upon Kingston providing security. What type of condition does this represent?",
+    "options": [
+      "A. Condition Subsequent",
+      "B. Condition Precedent",
+      "C. Concurrent Condition",
+      "D. Implied Condition"
+    ],
+    "correct": 1,
+    "explanation": "The court found that Kingston's provision of security was a prerequisite for Preston's duty to transfer the business. This is a classic example of a Condition Precedent, where an event must occur before a party's performance is due."
+  },
+  {
+    "question": "Which of the following is a valid excuse for non-performance of a contract?",
+    "options": [
+      "A. A slight increase in the cost of performance.",
+      "B. Destruction of the subject matter essential for performance.",
+      "C. A change in market conditions that makes the contract less profitable.",
+      "D. The breaching party's financial difficulties."
+    ],
+    "correct": 1,
+    "explanation": "The destruction of something essential for the contract's performance, like the music hall in Taylor v. Caldwell, constitutes impossibility and excuses both parties. Options (a), (c), and (d) do not generally excuse performance unless they rise to the level of impracticability or frustration of purpose."
+  },
+  {
+    "question": "What is the difference between consequential and incidental damages?",
+    "options": [
+      "A. Consequential damages are indirect losses, while incidental damages are direct expenses.",
+      "B. Consequential damages are always recoverable, while incidental damages require proof of foreseeability.",
+      "C. Consequential damages are calculated based on lost profits, while incidental damages are based on the cost of substitute performance.",
+      "D. There is no difference; both terms refer to the same type of damages."
+    ],
+    "correct": 0,
+    "explanation": "Consequential damages are indirect losses that flow from the breach, like lost profits, while incidental damages are the immediate costs associated with handling the breach, like storage or inspection fees."
+  },
+  {
+    "question": "When are liquidated damages considered unenforceable?",
+    "options": [
+      "A. When they are a reasonable estimate of anticipated damages.",
+      "B. When they are specified in clear and unambiguous language in the contract.",
+      "C. When they are excessively high and constitute a penalty.",
+      "D. When they are calculated based on the actual damages suffered by the non-breaching party."
+    ],
+    "correct": 2,
+    "explanation": "Liquidated damages are meant to be a reasonable pre-estimate of potential losses. If they are disproportionately large and act as a punishment rather than compensation, courts will deem them unenforceable."
+  },
+  {
+    "question": "In Hadley v. Baxendale, why were the plaintiffs denied recovery for lost profits?",
+    "options": [
+      "A. They failed to mitigate their damages by finding an alternative carrier.",
+      "B. Their lost profits were too speculative and uncertain to calculate.",
+      "C. The defendant was not aware of the special circumstances that caused the lost profits.",
+      "D. The plaintiffs did not provide sufficient evidence to prove causation between the breach and their lost profits."
+    ],
+    "correct": 2,
+    "explanation": "The court in Hadley v. Baxendale established the foreseeability rule for consequential damages. The defendant was not liable because they had no reason to know that the delayed crankshaft would shut down the entire mill, making the lost profits unforeseeable."
+  },
+  {
+    "question": "Under what circumstances might a court grant specific performance as a remedy?",
+    "options": [
+      "A. When the non-breaching party can easily purchase substitute goods or services.",
+      "B. When the subject matter of the contract is unique and monetary damages are inadequate.",
+      "C. When the breach is minor and does not substantially impair the value of the contract.",
+      "D. When the breaching party has a history of failing to meet their contractual obligations."
+    ],
+    "correct": 1,
+    "explanation": "Specific performance is an equitable remedy reserved for situations where money cannot adequately compensate the non-breaching party. This often occurs when the contract involves unique items, like land or rare goods, where a replacement cannot be readily found."
+  },
+  {
+    "question": "What is the purpose of the duty to mitigate damages?",
+    "options": [
+      "A. To punish the breaching party for their failure to perform.",
+      "B. To ensure that the non-breaching party receives the full benefit of the bargain.",
+      "C. To prevent unnecessary economic waste and reduce the overall cost of the breach.",
+      "D. To encourage parties to resolve their disputes through negotiation rather than litigation."
+    ],
+    "correct": 2,
+    "explanation": "The duty to mitigate requires the non-breaching party to take reasonable steps to minimize their losses after a breach. This principle aims to avoid inflating damages and encourages efficient resolution of contractual disputes."
+  },
+  {
+    "question": "In Jacob & Youngs v. Kent, the court applied the doctrine of substantial performance. What does this doctrine mean in the context of contract law?",
+    "options": [
+      "A. A party that performs most of its obligations can avoid all liability for breach.",
+      "B. A party that partially performs is entitled to the full contract price.",
+      "C. A party that substantially performs can recover the contract price minus the cost of minor defects.",
+      "D. A party that fails to fully perform is excused from all obligations under the contract."
+    ],
+    "correct": 2,
+    "explanation": "The substantial performance doctrine allows a party who has largely fulfilled the contract, despite minor deviations, to recover the contract price less the diminished value caused by the defects. This prevents harsh results for trivial imperfections."
+  },
+  {
+    "question": "Which of the following best describes the concept of \"perfect tender\" under the Uniform Commercial Code (UCC)?",
+    "options": [
+      "A. The seller must deliver goods that are aesthetically pleasing and free from any visual defects.",
+      "B. The seller must deliver goods that strictly conform to all contractual specifications.",
+      "C. The seller is allowed a reasonable margin of error in terms of quantity and quality.",
+      "D. The buyer must accept goods even if they do not meet all the agreed-upon terms."
+    ],
+    "correct": 1,
+    "explanation": "The UCC's \"perfect tender\" rule requires sellers to deliver goods that perfectly match the contract's terms. Any deviation, no matter how small, can give the buyer the right to reject the goods."
+  },
+  {
+    "question": "A homeowner contracts with a builder to construct a swimming pool. The contract specifies the pool's dimensions, materials, and design. During construction, the builder uses slightly different tiles than those specified in the contract, but the tiles are of equivalent quality and appearance. The homeowner refuses to pay the builder, arguing a breach of contract. What legal doctrine is most relevant to this scenario?",
+    "options": [
+      "A. Perfect Tender Rule",
+      "B. Substantial Performance",
+      "C. Anticipatory Repudiation",
+      "D. Frustration of Purpose"
+    ],
+    "correct": 1,
+    "explanation": "The doctrine of substantial performance is relevant here. It recognizes that minor deviations from the contract that do not significantly impact the outcome may not constitute a material breach. The homeowner likely cannot refuse payment based on a trivial difference in tiles."
+  },
+  {
+    "question": "In Bartus v. Riccardi, the seller delivered a hearing aid model different from the one specified in the contract. What was the key factor that allowed the seller to cure the non-conforming delivery?",
+    "options": [
+      "A. The buyer had previously accepted non-conforming goods from the seller.",
+      "B. The seller offered a significant discount to the buyer.",
+      "C. The seller reasonably believed the buyer would accept the substituted model.",
+      "D. The buyer failed to inspect the goods upon delivery."
+    ],
+    "correct": 2,
+    "explanation": "The court in *Bartus v. Riccardi* allowed the seller to cure the non-conforming delivery because the seller had a reasonable belief that the buyer would accept the substituted model. The UCC recognizes that minor discrepancies may be acceptable if the buyer would not be significantly harmed."
+  },
+  {
+    "question": "Which of the following scenarios exemplifies the concept of anticipatory repudiation?",
+    "options": [
+      "A. A seller ships the wrong quantity of goods but promptly corrects the error.",
+      "B. A buyer fails to make a payment on time but provides a valid excuse for the delay.",
+      "C. A manufacturer informs a retailer that it will not be able to fulfill an upcoming order due to supply chain issues.",
+      "D. A contractor completes a construction project with minor defects that do not affect functionality."
+    ],
+    "correct": 2,
+    "explanation": "Anticipatory repudiation occurs when one party clearly indicates their inability or unwillingness to perform their contractual obligations before the performance is due. In option (c), the manufacturer's statement is a clear repudiation, giving the retailer the right to seek immediate remedies."
+  },
+  {
+    "question": "A force majeure clause in a contract typically excuses performance due to which of the following circumstances?",
+    "options": [
+      "A. A change in market conditions that makes the contract less profitable.",
+      "B. The breaching party's financial difficulties.",
+      "C. Unforeseen events beyond the control of either party, such as natural disasters or government actions.",
+      "D. Minor delays or disruptions that do not significantly impact the contract's purpose."
+    ],
+    "correct": 2,
+    "explanation": "Force majeure clauses are designed to address extraordinary events that make performance impossible or impractical. They typically cover natural disasters, wars, government actions, or other similar occurrences that were not reasonably foreseeable at the time of contracting."
+  },
+  {
+    "question": "In Krell v. Henry, the contract was for the rental of a room with a view of the King's coronation procession. Why was the defendant excused from paying the rent?",
+    "options": [
+      "A. The defendant found a more affordable room elsewhere.",
+      "B. The plaintiff failed to provide adequate amenities in the room.",
+      "C. The coronation was canceled, frustrating the purpose of the contract.",
+      "D. The defendant became ill and was unable to travel to London."
+    ],
+    "correct": 2,
+    "explanation": "The cancellation of the coronation in *Krell v. Henry* made the contract's central purpose impossible. The court recognized the doctrine of frustration of purpose, excusing both parties from their obligations because the event the contract was based on no longer existed."
+  },
+  {
+    "question": "A buyer orders 1,000 widgets from a supplier. The contract specifies delivery in four equal installments. The first installment arrives with 240 widgets instead of the agreed-upon 250. Can the buyer reject the entire contract based on this discrepancy?",
+    "options": [
+      "A. No, unless the shortfall in the first installment substantially impairs the value of the whole contract.",
+      "B. Yes, the perfect tender rule allows rejection for any deviation from the contract terms.",
+      "C. Yes, but only if the buyer can prove they will suffer consequential damages due to the missing widgets.",
+      "D. No, the seller has the right to cure the non-conformity by delivering the missing widgets."
+    ],
+    "correct": 0,
+    "explanation": "In installment contracts, the perfect tender rule is modified. A buyer cannot reject the entire contract for a non-conforming installment unless the defect substantially impairs the value of the whole agreement. The missing 10 widgets may not justify rejecting the entire contract."
+  },
+  {
+    "question": "What is the primary difference between a condition precedent and a condition subsequent in contract law?",
+    "options": [
+      "A. A condition precedent must be written into the contract, while a condition subsequent can be implied.",
+      "B. A condition precedent must occur before a duty to perform arises, while a condition subsequent terminates an existing duty.",
+      "C. A condition precedent is more likely to be enforced by courts, while a condition subsequent is viewed as a technicality.",
+      "D. A condition precedent benefits the buyer, while a condition subsequent benefits the seller."
+    ],
+    "correct": 1,
+    "explanation": "A condition precedent is an event that must happen before a contractual obligation is triggered. A condition subsequent, on the other hand, is an event that, if it occurs, ends an existing duty to perform."
+  },
+  {
+    "question": "A buyer and a seller agree on a contract for the sale of a rare antique car. The contract includes a liquidated damages clause stating that if the seller breaches the contract, they will pay the buyer $10,000. The market value of the car is $8,000. Is the liquidated damages clause likely to be enforced?",
+    "options": [
+      "A. Yes, the parties are free to agree on any amount of liquidated damages.",
+      "B. No, the amount is excessively high and constitutes a penalty.",
+      "C. Yes, the uniqueness of the car justifies a higher amount of liquidated damages.",
+      "D. No, liquidated damages clauses are generally unenforceable in contracts for the sale of goods."
+    ],
+    "correct": 1,
+    "explanation": "Liquidated damages must be a reasonable pre-estimate of potential losses. In this case, the $10,000 is significantly higher than the car's market value, making it appear punitive. Courts generally disfavor penalty clauses, and this clause would likely be deemed unenforceable."
+  },
+  {
+    "question": "In Campbell Soup Co. v. Wentz, why did the court refuse to grant specific performance, even though the contract involved unique carrots?",
+    "options": [
+      "A. The seller had already sold the carrots to another buyer.",
+      "B. The buyer failed to demonstrate they would suffer irreparable harm.",
+      "C. The contract contained unconscionable terms that favored the seller.",
+      "D. The buyer waited too long to seek specific performance."
+    ],
+    "correct": 2,
+    "explanation": "Despite the carrots' uniqueness, the court in Campbell Soup Co. v. Wentz refused to grant specific performance because the contract contained terms that were deemed unfair and oppressive to the farmer. Courts have the discretion to deny equitable remedies in cases of unconscionability."
+  },
+  {
+    "question": "What is the purpose of awarding damages for breach of contract?",
+    "options": [
+      "A. To punish the breaching party for their wrongful conduct.",
+      "B. To compensate the non-breaching party for their losses and put them in the position they would have been in had the contract been performed.",
+      "C. To deter parties from entering into contracts in the future.",
+      "D. To force the breaching party to specifically perform their obligations under the contract."
+    ],
+    "correct": 1,
+    "explanation": "The goal of contract damages is to compensate the non-breaching party, not to punish the breaching party. The aim is to restore the injured party to the position they would have been in had the contract been fulfilled."
+  },
+  {
+    "question": "Which of the following is NOT a factor considered by courts in determining whether a breach is material?",
+    "options": [
+      "A. The extent to which the injured party will be deprived of the benefit they reasonably expected.",
+      "B. Whether the injured party can be adequately compensated for the breach.",
+      "C. The breaching party's subjective intent at the time of the breach.",
+      "D. The likelihood that the breaching party will cure the breach."
+    ],
+    "correct": 2,
+    "explanation": "While a breaching party's good faith or lack thereof can be relevant, the focus is on the objective impact of the breach, not the breaching party's subjective intent. Courts use a more objective standard to assess the severity of the breach."
+  },
+  {
+    "question": "In Groves v. John Wunder Co., the court awarded damages based on the cost of performance, even though it was significantly higher than the diminution in value of the land. What was the rationale for this decision?",
+    "options": [
+      "A. The diminution in value was too difficult to calculate accurately.",
+      "B. The plaintiff had a strong emotional attachment to the land.",
+      "C. The breach was willful and intentional.",
+      "D. The contract explicitly stated that the cost of performance would be the measure of damages."
+    ],
+    "correct": 2,
+    "explanation": "The court in Groves v. John Wunder Co. emphasized that the defendant's breach was willful and deliberate. To prevent the breaching party from profiting from their intentional wrongdoing, the court awarded damages based on the cost to fully rectify the breach, even though it was higher than the diminished land value."
+  },
+  {
+    "question": "What is the significance of the \"lost volume seller\" concept in contract law?",
+    "options": [
+      "A. It applies only to contracts for the sale of unique or custom-made goods.",
+      "B. It allows a seller to recover punitive damages in addition to compensatory damages.",
+      "C. It recognizes that a seller may have lost a sale even if they resell the goods to another buyer.",
+      "D. It shifts the burden of proof from the seller to the buyer to prove the extent of damages."
+    ],
+    "correct": 2,
+    "explanation": "The \"lost volume seller\" doctrine acknowledges that some sellers, particularly those with high-volume businesses, may have lost a sale even if they can resell the goods. It allows these sellers to recover lost profits based on the potential sale they would have made to the breaching buyer."
+  },
+  {
+    "question": "Which of the following is an example of an incidental damage that a buyer might incur as a result of a seller's breach?",
+    "options": [
+      "A. Lost profits from a business opportunity that was dependent on the timely delivery of the goods.",
+      "B. Storage fees for the non-conforming goods until they can be returned to the seller.",
+      "C. Damage to the buyer's reputation due to the seller's failure to perform.",
+      "D. Medical expenses incurred by the buyer due to a defect in the goods."
+    ],
+    "correct": 1,
+    "explanation": "Incidental damages cover the immediate costs associated with handling a breach. Storage fees for rejected goods are a direct expense incurred by the buyer to mitigate the effects of the seller's non-performance."
+  },
+  {
+    "question": "Under the UCC, when can a seller cure a non-conforming delivery after the contract deadline?",
+    "options": [
+      "A. Only if the buyer agrees to an extension of the deadline.",
+      "B. Only if the seller pays the buyer a penalty for the delay.",
+      "C. If the seller reasonably believed the buyer would accept the non-conforming goods and seasonably notifies the buyer of their intent to cure.",
+      "D. Never, the perfect tender rule requires strict adherence to the contract deadline."
+    ],
+    "correct": 2,
+    "explanation": "The UCC provides sellers with a limited right to cure even after the contract deadline if they had a reasonable belief that the buyer would accept the non-conforming goods and they promptly notify the buyer of their intent to cure. This rule adds flexibility to the strict perfect tender rule."
+  },
+  {
+    "question": "What is the purpose of an injunction as a remedy for breach of contract?",
+    "options": [
+      "A. To award monetary damages to the non-breaching party.",
+      "B. To void the contract and restore the parties to their pre-contractual positions.",
+      "C. To order a party to perform a specific act or refrain from a specific act.",
+      "D. To punish the breaching party for their wrongful conduct."
+    ],
+    "correct": 2,
+    "explanation": "An injunction is an equitable remedy that compels a party to take a specific action or prohibits them from taking a specific action. In contract law, it's often used to prevent a party from breaching a negative covenant or to enforce an exclusivity agreement."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the concept of economic waste in contract law?",
+    "options": [
+      "A. Courts always favor awarding damages based on the cost of performance, regardless of economic considerations.",
+      "B. Economic waste is never a factor in determining the appropriate measure of damages.",
+      "C. If the cost of performance is grossly disproportionate to the benefit conferred, damages may be limited to the diminution in value.",
+      "D. Economic waste only applies to contracts for the sale of goods, not to contracts for services or construction."
+    ],
+    "correct": 2,
+    "explanation": "The concept of economic waste recognizes that in some situations, enforcing the cost of performance would lead to an unreasonable and wasteful expenditure of resources. If the cost is significantly out of proportion to the actual benefit gained, courts may limit damages to the diminished value to prevent economic waste."
+  },
+  {
+    "question": "In United States v. Algernon Blair, Inc., what legal doctrine allowed the subcontractor to recover compensation despite the contractor's breach?",
+    "options": [
+      "A. Quantum meruit",
+      "B. Specific performance",
+      "C. Anticipatory repudiation",
+      "D. Perfect tender"
+    ],
+    "correct": 0,
+    "explanation": "The doctrine of quantum meruit (\"as much as deserved\") allows recovery for the value of services rendered even if there is no enforceable contract. In United States v. Algernon Blair, Inc., the subcontractor was able to recover for the work already performed, even though the contractor had breached the agreement."
+  },
+  {
+    "question": "Which of the following is a limitation on the recoverability of damages for breach of contract?",
+    "options": [
+      "A. The non-breaching party must have suffered actual harm.",
+      "B. The damages must have been caused by the breach.",
+      "C. The damages must be proven with reasonable certainty.",
+      "D. All of the above."
+    ],
+    "correct": 3,
+    "explanation": "To recover damages, the non-breaching party must prove that they suffered actual harm, that the harm was directly caused by the breach, and that the amount of damages can be calculated with reasonable certainty. These limitations prevent speculative or excessive damage awards."
+  }
+];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

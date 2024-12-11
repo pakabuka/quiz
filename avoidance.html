@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">Avoidance of Contractual Duties</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+    onclick="location.href='index.html'" 
+    style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Main Page
+</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+   
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = [
+    {
+    "question": "Which of the following BEST describes the concept of \"arm's length transaction?\"",
+    "options": [
+      "A. A transaction between parties with a pre-existing fiduciary duty.",
+      "B. A transaction where one party has significantly more bargaining power than the other.",
+      "C. A transaction between unrelated parties acting independently and in their self-interest.",
+      "D. A transaction involving the sale of real estate at a discounted price to a family member."
+    ],
+    "correct": 2,
+    "explanation": "An arm's length transaction refers to a business deal where unrelated parties act in their own best interest without any undue influence or pressure. Options (a), (b), and (d) describe situations that are not considered arm's length transactions."
+  },
+  {
+    "question": "Under the Restatement (Second) of Contracts, when is a non-disclosure equivalent to an assertion?",
+    "options": [
+      "A. When the non-disclosing party believes the fact to be immaterial.",
+      "B. When the non-disclosing party knows that disclosure is necessary to correct the other party's mistake about a basic assumption of the contract.",
+      "C. When the non-disclosing party unintentionally forgets to mention a relevant fact.",
+      "D. When the non-disclosing party is in a competitive bidding situation."
+    ],
+    "correct": 1,
+    "explanation": "The Restatement (Second) of Contracts states that non-disclosure is equivalent to an assertion when the party knows that disclosure is needed to correct a mistake of the other party regarding a basic assumption on which the contract is being made. This underscores the duty to act in good faith and fair dealing."
+  },
+  {
+    "question": "What is the primary difference between a material breach and a technical breach of contract?",
+    "options": [
+      "A. A material breach occurs when a party completely fails to perform, while a technical breach involves partial performance.",
+      "B. A material breach deprives the non-breaching party of the substantial benefit of the bargain, while a technical breach is a less serious violation that does not significantly impact the overall agreement.",
+      "C. A material breach can only be remedied by monetary damages, while a technical breach can be resolved through specific performance.",
+      "D. A material breach always results in the automatic termination of the contract, while a technical breach requires a court order for termination."
+    ],
+    "correct": 1,
+    "explanation": "The key distinction lies in the severity of the breach and its impact on the contract's purpose. A material breach undermines the core of the agreement, while a technical breach involves minor deviations that don't substantially affect the parties' rights and obligations."
+  },
+  {
+    "question": "Which of the following is an example of a condition precedent in a contract?",
+    "options": [
+      "A. A clause stating that the contract will be terminated if one party files for bankruptcy.",
+      "B. A provision requiring a buyer to obtain financing before a real estate sale can be finalized.",
+      "C. A term allowing a party to terminate the agreement upon thirty days' notice.",
+      "D. A statement that the contract is binding only if both parties sign it."
+    ],
+    "correct": 1,
+    "explanation": "A condition precedent is an event that must occur before a contractual duty becomes active. In this case, the buyer's duty to purchase the property is contingent upon securing the necessary financing."
+  },
+  {
+    "question": "According to the sources, what is the \"blue pencil rule\" in the context of non-compete agreements?",
+    "options": [
+      "A. A rule requiring courts to interpret non-compete agreements narrowly to protect employee rights.",
+      "B. A doctrine allowing courts to modify or \"blue pencil\" overly broad non-compete agreements to make them enforceable.",
+      "C. A principle stating that non-compete agreements must be written in blue ink to be legally binding.",
+      "D. A rule mandating that non-compete agreements must be reviewed by a neutral third party before enforcement."
+    ],
+    "correct": 1,
+    "explanation": "The blue pencil rule permitted courts to strike down only the unreasonable portions of a non-compete agreement while enforcing the rest. However, the Wyoming Supreme Court rejected this rule in Hassler v. Circle C Resources, holding that overly broad agreements should be entirely voided."
+  },
+  {
+    "question": "Which of the following contracts is MOST likely to be considered unconscionable under the Restatement (Second) of Contracts?",
+    "options": [
+      "A. A contract between two sophisticated businesses with equal bargaining power.",
+      "B. A contract for the sale of goods at a price slightly above market value.",
+      "C. A contract with excessively one-sided terms that were not clearly explained to a party with limited education and understanding of legal language.",
+      "D. A contract that is slightly inconvenient for one party but still provides them with some benefit."
+    ],
+    "correct": 2,
+    "explanation": "Unconscionability focuses on contracts that are fundamentally unfair and oppressive. A contract is likely to be found unconscionable if it includes terms that heavily favor one party, especially if the other party lacked the capacity to understand the implications of the agreement."
+  },
+  {
+    "question": "Which of the following BEST describes the concept of \"arm's length\" transaction under the Uniform Commercial Code (UCC)?",
+    "options": [
+      "A. The seller must deliver goods that are aesthetically pleasing and free from minor defects.",
+      "B. Buyers can reject goods only if they are fundamentally different from what was ordered.",
+      "C. Sellers are excused from performance if they experience unforeseen difficulties in production.",
+      "D. Buyers have the right to reject goods that do not conform to the contract in any way, even if the discrepancies are minor."
+    ],
+    "correct": 3,
+    "explanation": "The UCC's \"perfect tender\" rule requires sellers to deliver goods that perfectly match the contract's terms. Any deviation, no matter how small, can give the buyer the right to reject the goods."
+  },
+  {
+    "question": "A homeowner contracts with a builder to construct a swimming pool. The contract includes a liquidated damages clause stating that if the builder breaches the contract, they will pay the homeowner $10,000. The market value of the pool is $8,000. Is the liquidated damages clause likely to be enforced?",
+    "options": [
+      "A. Yes, the parties are free to agree on any amount of liquidated damages.",
+      "B. No, the amount is excessively high and constitutes a penalty.",
+      "C. Yes, the uniqueness of the pool justifies a higher amount of liquidated damages.",
+      "D. No, liquidated damages clauses are generally unenforceable in contracts for the sale of goods."
+    ],
+    "correct": 1,
+    "explanation": "Liquidated damages must be a reasonable pre-estimate of potential losses. In this case, the $10,000 is significantly higher than the pool's market value, making it appear punitive. Courts generally disfavor penalty clauses, and this clause would likely be deemed unenforceable."
+  },
+  {
+    "question": "In Campbell Soup Co. v. Wentz, why did the court consider the cross-collateralization clause in the installment contract potentially unconscionable?",
+    "options": [
+      "A. The clause was printed in small font and difficult to read.",
+      "B. The buyers had ample opportunity to negotiate the contract terms.",
+      "C. The clause allowed the seller to repossess all previously purchased items upon default, even if payments were current on some items, and targeted vulnerable, low-income consumers.",
+      "D. The buyers fully understood the implications of the clause before signing the contract."
+    ],
+    "correct": 2,
+    "explanation": "The cross-collateralization clause was considered unconscionable because it gave the seller an excessive advantage and placed a disproportionate burden on the buyers, who were primarily low-income consumers. The court recognized that such a clause could lead to harsh consequences and lacked fairness in its application."
+  },
+  {
+    "question": "How does the Restatement (Second) of Contracts address the issue of conspicuousness in contract terms?",
+    "options": [
+      "A. The Restatement requires all contract terms to be printed in boldface type.",
+      "B. The Restatement mandates that certain terms, like limitations on warranties, be presented in a way that a reasonable person ought to notice them.",
+      "C. The Restatement prohibits the use of any technical or legal jargon in consumer contracts.",
+      "D. The Restatement requires all contracts to be reviewed and approved by a neutral third party to ensure fairness."
+    ],
+    "correct": 1,
+    "explanation": "The UCC's focus on \"conspicuousness\" aims to ensure that important terms, especially those that limit a party's rights or remedies, are not hidden or obscured in the fine print. The goal is to make sure these key provisions are sufficiently noticeable to a reasonable person reviewing the contract."
+  },
+  {
+    "question": "Which of the following is TRUE regarding a contract that violates public policy?",
+    "options": [
+      "A. It is always illegal and subject to criminal prosecution.",
+      "B. It is unenforceable, meaning courts will not assist in its execution.",
+      "C. It can be modified by the court to align with public policy objectives.",
+      "D. It is automatically void and treated as if it never existed."
+    ],
+    "correct": 1,
+    "explanation": "A contract that contradicts public policy is not necessarily illegal but is considered unenforceable. This means that courts will refuse to uphold or enforce its provisions because doing so would conflict with broader societal interests or legal principles."
+  },
+  {
+    "question": "In Blossom Farm Products Co. v. Kasson Cheese Co., Inc., why did the court refuse to enforce the contract between the two companies?",
+    "options": [
+      "A. The contract was not in writing.",
+      "B. One of the parties lacked the capacity to enter into a contract.",
+      "C. There was a mutual mistake about a material fact.",
+      "D. The contract facilitated Kasson Cheese Co.’s violation of food labeling laws, contravening public policy."
+    ],
+    "correct": 3,
+    "explanation": "The court in Blossom Farm Products Co. v. Kasson Cheese Co., Inc. emphasized the importance of consumer protection and market integrity. Enforcing a contract that enabled the misbranding of food products would have undermined these public policy objectives, leading to the court's decision to invalidate the agreement."
+  },
+  {
+    "question": "Why did the Wyoming Supreme Court overrule the \"blue pencil rule\" in Hassler v. Circle C Resources?",
+    "options": [
+      "A. The court found that the blue pencil rule was too difficult to apply in practice.",
+      "B. The court believed that modifying overly broad non-compete agreements would encourage employers to draft excessively restrictive provisions, hoping courts would simply revise them to be enforceable.",
+      "C. The court determined that all non-compete agreements are inherently against public policy.",
+      "D. The court felt that the blue pencil rule gave too much power to employees in negotiating employment contracts."
+    ],
+    "correct": 1,
+    "explanation": "The Wyoming Supreme Court's rejection of the \"blue pencil rule\" reflects a stance against overreaching non-compete agreements. The court's rationale highlights the potential for abuse if employers could rely on judicial modification to salvage overly broad restrictions. Invalidating such agreements entirely, rather than revising them, incentivizes employers to draft more reasonable and enforceable provisions from the outset."
+  },
+  {
+    "question": "What is the key difference between a \"material breach\" and a \"technical breach\" in contract law?",
+    "options": [
+      "A. A material breach is always a violation of state law, while a technical breach only violates the terms of the contract.",
+      "B. A material breach can only be committed intentionally, while a technical breach can be accidental.",
+      "C. A material breach significantly deprives the non-breaching party of the benefits they expected from the contract, while a technical breach involves a minor deviation from the terms that doesn't significantly impact the overall agreement.",
+      "D. A material breach can only occur in contracts for the sale of goods, while a technical breach can happen in any type of contract."
+    ],
+    "correct": 2,
+    "explanation": "The distinction between a material breach and a technical breach lies in the severity of the breach and its impact on the non-breaching party. A material breach undermines the core purpose of the contract, while a technical breach might involve a minor oversight or a deviation from a non-essential term."
+  },
+  {
+    "question": "Under the common law \"substantial performance\" rule, what must occur for a non-breaching party to be justified in stopping their performance under a contract?",
+    "options": [
+      "A. The non-breaching party must simply decide they no longer want to perform their obligations, regardless of the other party's actions.",
+      "B. The non-breaching party must prove that they would incur a financial loss if they continued to perform.",
+      "C. Any breach by the other party, no matter how minor, automatically justifies stopping performance.",
+      "D. The other party must have committed a material breach of the contract, depriving the non-breaching party of the substantial benefit of their bargain."
+    ],
+    "correct": 3,
+    "explanation": "The \"substantial performance\" doctrine aims to prevent parties from escaping their contractual obligations based on trivial or easily remedied breaches. For a non-breaching party to stop performing, they must demonstrate that the other party's breach was significant enough to undermine the essence of the agreement."
+  },
+  {
+    "question": "How does the UCC's \"perfect tender\" rule differ from the common law's \"substantial performance\" rule?",
+    "options": [
+      "A. The \"perfect tender\" rule only applies to contracts for the sale of real estate, while the \"substantial performance\" rule governs all other types of contracts.",
+      "B. The \"perfect tender\" rule requires that all parties to a contract perform their obligations perfectly, while the \"substantial performance\" rule allows for minor deviations.",
+      "C. The \"perfect tender\" rule, applicable to contracts for the sale of goods, allows a buyer to reject goods that don't perfectly conform to the contract, while the \"substantial performance\" rule, rooted in common law, requires a material breach to justify non-performance.",
+      "D. The \"perfect tender\" rule is based on the principle of fairness, while the \"substantial performance\" rule emphasizes efficiency."
+    ],
+    "correct": 2,
+    "explanation": "The \"perfect tender\" rule gives buyers greater leverage in contracts for the sale of goods, allowing them to demand precise adherence to the contract terms. This contrasts with the common law's \"substantial performance\" standard, which takes a more lenient approach by focusing on whether the breaching party has fulfilled the essential purpose of the agreement."
+  },
+  {
+    "question": "What are the potential legal consequences if one party to a contract clearly and unequivocally states that they will not perform their obligations, even before the performance is due?",
+    "options": [
+      "A. There are no legal consequences until the actual time for performance arrives.",
+      "B. The other party must wait until the performance is due and then file a lawsuit for breach of contract.",
+      "C. The other party can treat this statement as a repudiation, a serious breach that allows them to immediately pursue remedies such as damages or rescission of the contract.",
+      "D. The other party is obligated to renegotiate the contract in good faith to try to resolve the issue."
+    ],
+    "correct": 2,
+    "explanation": "A clear and unambiguous statement of non-performance before the due date is considered a repudiation of the contract. Repudiation is a serious breach that gives the non-breaching party immediate legal recourse. They are not obligated to wait for the actual performance date to seek remedies."
+  },
+  {
+    "question": "What is the primary function of a \"condition\" in contract law?",
+    "options": [
+      "A. Conditions are promises made by one party to another in exchange for consideration.",
+      "B. Conditions are warranties that guarantee the quality or performance of goods or services.",
+      "C. Conditions are events or circumstances that determine when or if certain contractual duties become due.",
+      "D. Conditions are penalties imposed on a party for breaching the contract."
+    ],
+    "correct": 2,
+    "explanation": "Conditions introduce a level of contingency into contracts, creating a framework for the activation or discharge of obligations. They clarify the circumstances under which parties must perform, adding precision and flexibility to contractual agreements."
+  },
+  {
+    "question": "What is a \"condition precedent\" in contract law?",
+    "options": [
+      "A. An event that automatically terminates a contract.",
+      "B. An event that occurs after a duty is active, potentially ending that duty.",
+      "C. An event that must occur before a party's duty to perform arises.",
+      "D. A duty that arises only if a specific event happens in the future."
+    ],
+    "correct": 2,
+    "explanation": "A condition precedent acts as a gateway to performance, making the occurrence of a specified event a prerequisite for triggering a party's obligation. Until the condition precedent is met, the duty remains suspended."
+  },
+  {
+    "question": "In contrast to a \"condition precedent,\" what is a \"condition subsequent\" in contract law?",
+    "options": [
+      "A. A condition that both parties must fulfill simultaneously.",
+      "B. A condition that, if it occurs after a duty to perform is active, will discharge that duty, potentially ending the contract.",
+      "C. A condition that is implied by law rather than explicitly stated in the contract.",
+      "D. A condition that is minor and does not affect the parties' main obligations."
+    ],
+    "correct": 1,
+    "explanation": "A condition subsequent operates as a potential \"off switch,\" outlining an event that, if it happens after a duty is already in effect, can extinguish that duty and potentially terminate the contract. It introduces an element of uncertainty, as the continued existence of the obligation depends on the non-occurrence of the specified event."
+  }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

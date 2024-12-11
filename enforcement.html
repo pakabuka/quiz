@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">Enforcement of Promises and Agreements</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+  
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = 
+    [
+  {
+    "question": "Which of the following is NOT a theory of promissory liability?",
+    "options": [
+      "A. Consent theory",
+      "B. Reliance theory",
+      "C. Estoppel theory",
+      "D. Formation theory"
+    ],
+    "correct": 3,
+    "explanation": "The sources describe consent theory, reliance theory, and estoppel as theories related to promissory liability. Formation theory is not mentioned as a basis for enforcing promises."
+  },
+  {
+    "question": "Which of the following is an example of a remedy for breach of promise?",
+    "options": [
+      "A. Expectation damages",
+      "B. Punitive damages",
+      "C. Imprisonment",
+      "D. Forfeiture of personal property"
+    ],
+    "correct": 0,
+    "explanation": "The sources state that expectation damages, which aim to put the promisee in the same position they would have been in had the contract been performed, are the most common remedy for breach of contract. Punitive damages, imprisonment, and forfeiture are not typically remedies for breach of promise."
+  },
+  {
+    "question": "What is the main difference between gratuitous promises and contractual promises?",
+    "options": [
+      "A. Gratuitous promises are always written, while contractual promises can be oral.",
+      "B. Gratuitous promises lack consideration, while contractual promises require consideration.",
+      "C. Gratuitous promises are always enforceable, while contractual promises are not.",
+      "D. Gratuitous promises involve a transfer of property, while contractual promises involve a promise of future action."
+    ],
+    "correct": 1,
+    "explanation": "The sources explain that gratuitous promises, being gifts, do not require consideration for immediate transfer, but future gratuitous promises without consideration are unenforceable. Contractual promises, on the other hand, require consideration to be legally binding."
+  },
+  {
+    "question": "What is the purpose of the consideration doctrine?",
+    "options": [
+      "A. To ensure that all promises are legally binding.",
+      "B. To punish parties who breach contracts.",
+      "C. To promote predictability and enforce mutually beneficial exchanges.",
+      "D. To protect parties from unfair or unconscionable contracts."
+    ],
+    "correct": 2,
+    "explanation": "The consideration doctrine helps distinguish between enforceable and unenforceable promises by requiring a bargained-for exchange, promoting predictability in contractual relationships."
+  },
+  {
+    "question": "Which of the following constitutes valid consideration for a promise?",
+    "options": [
+      "A. A past action performed without the promisor's request",
+      "B. A moral obligation to perform",
+      "C. A forbearance from exercising a legal right",
+      "D. A promise to perform an illegal act"
+    ],
+    "correct": 2,
+    "explanation": "Forbearance, or refraining from a legal right, can be valid consideration when bargained for in exchange for a promise. Past actions, moral obligations, and promises to perform illegal acts generally do not constitute valid consideration."
+  },
+  {
+    "question": "What is an illusory promise?",
+    "options": [
+      "A. A promise made without any intention of performing it.",
+      "B. A promise that is too vague or indefinite to be enforced.",
+      "C. A promise that does not actually obligate the promisor to do anything.",
+      "D. A promise made in jest or without serious intent."
+    ],
+    "correct": 2,
+    "explanation": "An illusory promise appears to be a promise but lacks a firm commitment from the promisor, rendering it unenforceable due to the absence of mutual obligation."
+  },
+  {
+    "question": "Which of the following is a key element of promissory estoppel?",
+    "options": [
+      "A. A written contract.",
+      "B. Detrimental reliance on a promise.",
+      "C. Unjust enrichment of the promisor.",
+      "D. A breach of a contractual obligation."
+    ],
+    "correct": 1,
+    "explanation": "Promissory estoppel allows for the enforcement of a promise, even without formal consideration, when a party reasonably relies on that promise to their detriment, and injustice can only be avoided by enforcing the promise."
+  },
+  {
+    "question": "What is the difference between quantum meruit and quantum valebant?",
+    "options": [
+      "A. Quantum meruit applies to services, while quantum valebant applies to goods.",
+      "B. Quantum meruit is a legal remedy, while quantum valebant is an equitable remedy.",
+      "C. Quantum meruit requires a written contract, while quantum valebant does not.",
+      "D. Quantum meruit is based on the value of the benefit conferred, while quantum valebant is based on the cost of the goods or services provided."
+    ],
+    "correct": 0,
+    "explanation": "Quantum meruit, meaning \"as much as is deserved,\" is used to recover the value of services provided in the absence of a contract, whereas quantum valebant applies to the recovery of the value of goods."
+  },
+  {
+    "question": "Which of the following is an exception to the officious intermeddler rule?",
+    "options": [
+      "A. A party who mistakenly performs a service for someone else.",
+      "B. A party who voluntarily provides a service without being asked.",
+      "C. A party who provides necessary services to an unconscious accident victim.",
+      "D. A party who performs a service expecting to be paid but without a formal agreement."
+    ],
+    "correct": 2,
+    "explanation": "The officious intermeddler rule prevents recovery for unsolicited benefits, but an exception exists for necessary services provided to someone incapable of consent, such as emergency medical care given to an unconscious victim."
+  },
+  {
+    "question": "Under the objective theory of assent, what is the primary factor in determining whether a contract exists?",
+    "options": [
+      "A. The subjective intentions of the parties.",
+      "B. The outward manifestations of the parties' actions and words.",
+      "C. The fairness of the agreement.",
+      "D. The adequacy of the consideration."
+    ],
+    "correct": 1,
+    "explanation": "The objective theory focuses on how a reasonable person would interpret the parties' words and actions, rather than their internal thoughts or intentions."
+  },
+  {
+    "question": "Which of the following best illustrates the concept of \"benefit of the bargain\"?",
+    "options": [
+      "A. A court orders a breaching party to pay the non-breaching party's legal fees.",
+      "B. A court punishes a breaching party with a fine for acting in bad faith.",
+      "C. A court awards damages to put the non-breaching party in the position they would have been in if the contract had been performed.",
+      "D. A court orders the breaching party to specifically perform their contractual obligations."
+    ],
+    "correct": 2,
+    "explanation": "The sources define \"benefit of the bargain\" as the advantage a person would have received if the contract had been fully performed. This is achieved by awarding damages to compensate for the loss caused by the breach, putting the injured party in the position they would have been in if the contract had been fulfilled."
+  },
+  {
+    "question": "What is the purpose of disgorgement damages in contract law?",
+    "options": [
+      "A. To punish the breaching party for their wrongful conduct.",
+      "B. To prevent the breaching party from profiting from their breach.",
+      "C. To compensate the non-breaching party for their reliance losses.",
+      "D. To force the breaching party to specifically perform the contract."
+    ],
+    "correct": 1,
+    "explanation": "The sources explain that disgorgement damages aim to prevent the promisor from gaining at the expense of the promisee when the breaching party benefits from the breach."
+  },
+  {
+    "question": "Which of the following is a limitation on the availability of specific performance as a remedy for breach of contract?",
+    "options": [
+      "A. The non-breaching party must prove they suffered actual damages.",
+      "B. The breaching party must have acted in bad faith.",
+      "C. The contract must be for the sale of goods.",
+      "D. The promised goods or services must be unique or irreplaceable."
+    ],
+    "correct": 3,
+    "explanation": "The sources list several limitations on specific performance, including situations where the promised goods or services are unique and no longer available. Specific performance may also be impractical for long-term service contracts that require ongoing judicial supervision."
+  },
+  {
+    "question": "What is the efficient breach hypothesis?",
+    "options": [
+      "A. A breach of contract is always economically efficient, regardless of the circumstances.",
+      "B. A breach of contract is never economically efficient.",
+      "C. A breach of contract is only economically efficient if the breaching party pays punitive damages.",
+      "D. A breach of contract is economically efficient if the promisor's gain from breaching exceeds the promisee's loss."
+    ],
+    "correct": 3,
+    "explanation": "The sources describe the efficient breach hypothesis as the concept that a breach is economically efficient if the promisor’s gain exceeds the promisee’s loss, ensuring that overall economic welfare is maximized."
+  },
+  {
+    "question": "According to Lon Fuller, what is the cautionary function of a seal in contract law?",
+    "options": [
+      "A. To encourage parties to recognize the seriousness of their promise.",
+      "B. To provide evidence of the existence and terms of a contract.",
+      "C. To mark the promise as legally enforceable.",
+      "D. To indicate the presence of consideration."
+    ],
+    "correct": 0,
+    "explanation": "The sources explain that, historically, seals served various functions in contract law. One such function was the cautionary function, encouraging parties to carefully consider the significance of their promise before sealing the agreement."
+  },
+  {
+    "question": "Which of the following is an example of a promise that is enforceable despite lacking consideration?",
+    "options": [
+      "A. A promise to make a gift to a family member.",
+      "B. A promise to donate money to a charity.",
+      "C. A promise to pay a debt that has been discharged in bankruptcy.",
+      "D. A promise to perform a pre-existing legal duty."
+    ],
+    "correct": 2,
+    "explanation": "A promise to pay a debt discharged in bankruptcy is enforceable without new consideration, as per R2C § 83. This exception exists to allow debtors to reaffirm their obligations even after bankruptcy proceedings."
+  },
+  {
+    "question": "What is the material benefit rule?",
+    "options": [
+      "A. A promise is enforceable if it is made for the benefit of a third party.",
+      "B. A promise is enforceable if it is made in recognition of a material benefit previously received by the promisor.",
+      "C. A promise is enforceable if it is made under seal.",
+      "D. A promise is enforceable if it is made in writing."
+    ],
+    "correct": 1,
+    "explanation": "The material benefit rule allows enforcement of a subsequent promise tied to a material benefit received by the promisor. This exception combines moral obligation with tangible benefit to create consideration."
+  },
+  {
+    "question": "Which of the following statements about quasi-contracts is TRUE?",
+    "options": [
+      "A. They are based on a clear and definite promise.",
+      "B. They require proof of detrimental reliance on a promise.",
+      "C. They aim to punish the party unjustly enriched.",
+      "D. They are imposed by courts to prevent unjust enrichment."
+    ],
+    "correct": 3,
+    "explanation": "Quasi-contracts, also known as implied-in-law contracts, are not based on actual agreements but imposed by courts to prevent unjust enrichment. While detrimental reliance can be a factor in some cases, it's not a requirement for a quasi-contract. The focus is on restoring fairness, not punishing the unjustly enriched party."
+  },
+  {
+    "question": "What distinguishes promissory estoppel from equitable estoppel?",
+    "options": [
+      "A. Promissory estoppel is based on a statement of fact, while equitable estoppel is based on a promise.",
+      "B. Promissory estoppel prevents a party from denying a promise, while equitable estoppel prevents a party from asserting a right.",
+      "C. Promissory estoppel is based on a promise of future action, while equitable estoppel is based on a statement of past or present fact.",
+      "D. Promissory estoppel is a broader doctrine that encompasses equitable estoppel."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel specifically applies to situations where a party detrimentally relied on a clear promise, while equitable estoppel is a broader doctrine that can apply even without an explicit promise. Both doctrines aim to prevent unfair outcomes based on a party's words or conduct."
+  },
+  {
+    "question": "A contractor agrees to build a swimming pool for a homeowner. The contract states that the homeowner will pay the contractor in full upon completion of the pool. This is an example of a:",
+    "options": [
+      "A. Condition precedent",
+      "B. Condition subsequent",
+      "C. Illusory promise",
+      "D. Unilateral contract"
+    ],
+    "correct": 0,
+    "explanation": "The homeowner's payment being due upon completion of the pool is a condition precedent. The contractor's duty to pay is not triggered until the specified event (completion of the pool) occurs."
+  },
+  {
+    "question": "In Callano v. Oakwood Park Homes Corp., the court held that:",
+    "options": [
+      "A. Oakwood was unjustly enriched and therefore liable for the value of the shrubbery.",
+      "B. The Callanos could not recover from Oakwood under quasi-contract because there was no direct relationship between them.",
+      "C. The officious intermeddler rule prevented the Callanos from recovering because they provided the shrubbery without a request.",
+      "D. Quantum meruit allowed the Callanos to recover the reasonable value of the shrubbery from Oakwood."
+    ],
+    "correct": 1,
+    "explanation": "The court in Callano emphasized the need for a direct relationship between the parties for a quasi-contract claim to succeed. The Callanos' contract was with Pendergast, not Oakwood, and Oakwood did not unjustly benefit from the shrubbery."
+  },
+  {
+    "question": "Which of the following statements accurately describes the relationship between rights and duties in contract law?",
+    "options": [
+      "A. A right is an obligation to perform, while a duty is an entitlement to another's performance.",
+      "B. Rights and duties are correlative: one party's right to performance corresponds to the other party's duty to perform.",
+      "C. In a unilateral contract, both parties have rights and duties.",
+      "D. In a bilateral contract, only the promisor has a duty, and only the promisee has a right."
+    ],
+    "correct": 1,
+    "explanation": "Rights and duties in contracts are interconnected. One party's right to receive a certain performance is matched by the other party's duty to render that performance."
+  },
+  {
+    "question": "Which of the following is NOT a typical element of promissory estoppel?",
+    "options": [
+      "A. A clear and definite promise.",
+      "B. Reasonable and foreseeable reliance on the promise.",
+      "C. Detriment suffered by the promisee due to reliance.",
+      "D. Proof that the promisor intended to deceive the promisee."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel does not require an intent to deceive. It focuses on the promisee's justifiable reliance on a promise, even if the promisor did not intend to mislead them."
+  },
+  {
+    "question": "Which of the following scenarios is an example of a situation where a court might award restitution?",
+    "options": [
+      "A. A party breaches a contract, and the injured party seeks to recover their lost profits.",
+      "B. A party makes a gift to a friend, and later regrets the decision and wants the gift returned.",
+      "C. A mechanic performs unauthorized repairs on a car, and the owner is forced to pay to have the work corrected.",
+      "D. A party fulfills their contractual obligations, and the other party pays the agreed-upon price."
+    ],
+    "correct": 2,
+    "explanation": "Restitution aims to prevent unjust enrichment. In scenario C), the mechanic has unjustly benefited from the unauthorized repairs, and the court may order restitution to compensate the owner."
+  },
+  {
+    "question": "Which of the following theories of promissory liability emphasizes the promisee's reliance on a promise?",
+    "options": [
+      "A. Consent theory",
+      "B. Reliance theory",
+      "C. Economic efficiency theory",
+      "D. Fairness theory"
+    ],
+    "correct": 1,
+    "explanation": "The reliance theory focuses on the detrimental reliance of the promisee. Even if the promisor didn't intend to create a legal obligation, the law may enforce the promise if the promisee reasonably relied on it and suffered harm."
+  },
+  {
+    "question": "Which of the following is NOT a requirement for a valid liquidated damages clause?",
+    "options": [
+      "A. The damages must be difficult to calculate at the time of contracting.",
+      "B. The damages must be intended as a penalty for breach.",
+      "C. The damages must be a reasonable estimate of the anticipated harm.",
+      "D. The clause must be included in a written contract."
+    ],
+    "correct": 1,
+    "explanation": "Liquidated damages are meant to compensate for actual or anticipated losses, not to punish the breaching party. If a court determines a liquidated damages provision is intended as a penalty, it will be unenforceable."
+  },
+  {
+    "question": "In Hawkins v. McGee, the court awarded damages based on the:",
+    "options": [
+      "A. Reliance interest.",
+      "B. Restitution interest.",
+      "C. Expectation interest.",
+      "D. Punitive interest."
+    ],
+    "correct": 2,
+    "explanation": "The court in Hawkins v. McGee awarded expectation damages to the plaintiff, aiming to put him in the position he would have been in had the doctor's promise of a \"perfect hand\" been fulfilled. The damages were based on the difference between the promised outcome and the actual result of the surgery."
+  },
+  {
+    "question": "A homeowner hires a contractor to renovate their kitchen. The homeowner breaches the contract before work begins. Which of the following types of damages is the contractor MOST LIKELY to recover?",
+    "options": [
+      "A. Restitution damages",
+      "B. Reliance damages",
+      "C. Disgorgement damages",
+      "D. Specific performance"
+    ],
+    "correct": 1,
+    "explanation": "Since no work has been done, the contractor likely hasn't incurred significant restitution interests (benefits conferred on the homeowner). Disgorgement, which focuses on stripping the breaching party of their gains, is less likely in this scenario. Specific performance (compelling the homeowner to allow the renovation) is often impractical in service contracts. The contractor is most likely to seek reliance damages for expenses already incurred in preparation for the renovation."
+  },
+  {
+    "question": "A music teacher offers a student a free lesson if they win a local competition. The student wins. Is the teacher's promise enforceable?",
+    "options": [
+      "A. No, because the promise is a gift.",
+      "B. Yes, because the student's performance constitutes valid consideration.",
+      "C. No, because the teacher didn't receive any benefit.",
+      "D. Yes, because the promise induced the student to practice harder."
+    ],
+    "correct": 1,
+    "explanation": "This is a unilateral contract where the teacher seeks performance (winning the competition) as acceptance of the offer. The student's performance is the bargained-for consideration, making the teacher's promise enforceable."
+  },
+  {
+    "question": "Which case exemplifies the enforceability of a promise based on a past material benefit?",
+    "options": [
+      "A. Kirksey v. Kirksey",
+      "B. Feinberg v. Pfeiffer Co.",
+      "C. Mills v. Wyman",
+      "D. Webb v. McGowin"
+    ],
+    "correct": 3,
+    "explanation": "In Webb v. McGowin, the court enforced a promise to pay for a life-saving act that occurred before the promise was made. This decision highlights the material benefit rule, an exception to the general rule that past consideration is insufficient."
+  },
+  {
+    "question": "Which of the following statements best reflects the holding in Lake Land Employment Group of Akron, LLC v. Columber?",
+    "options": [
+      "A. Continued at-will employment can be sufficient consideration for a non-competition agreement.",
+      "B. Non-competition agreements are always enforceable, regardless of consideration.",
+      "C. Consideration is not required for non-competition agreements.",
+      "D. At-will employment cannot provide valid consideration for any post-employment agreements."
+    ],
+    "correct": 0,
+    "explanation": "The Ohio Supreme Court in Lake Land held that an employee's continued employment, even at-will, could constitute valid consideration for a non-competition agreement signed after the employment relationship began. The employer's forbearance from terminating the employee was deemed sufficient legal value."
+  },
+  {
+    "question": "In Cohen v. Cowles Media Co., the court held that:",
+    "options": [
+      "A. The First Amendment always protects newspapers from liability for broken promises of confidentiality.",
+      "B. Promissory estoppel can be applied to enforce a newspaper's promise of confidentiality, even in a journalistic context.",
+      "C. Journalistic ethics are irrelevant in legal disputes involving confidentiality agreements.",
+      "D. Reliance on a promise of confidentiality is never reasonable in dealings with the media."
+    ],
+    "correct": 1,
+    "explanation": "The court in Cohen ruled that while the First Amendment protects freedom of the press, it doesn't excuse newspapers from liability for breach of promises. Cohen's reliance on the confidentiality agreement was deemed reasonable, and the newspapers were held liable for damages caused by the broken promise."
+  },
+  {
+    "question": "The concept of quantum meruit allows recovery for:",
+    "options": [
+      "A. The value of goods provided, even without a formal contract.",
+      "B. The reasonable value of services rendered, when no fixed price was agreed upon.",
+      "C. Damages for emotional distress caused by a breach of contract.",
+      "D. Punitive damages to deter future wrongdoing by the breaching party."
+    ],
+    "correct": 1,
+    "explanation": "Quantum meruit, meaning \"as much as is deserved,\" is a legal principle that allows for recovery of the reasonable value of services provided when there's no formal contract or fixed price. It is often used in cases where one party has benefited from another's services but has not paid for them."
+  },
+  {
+    "question": "Which of the following is NOT a key function of the seal in early English contract law, as outlined by Lon Fuller?",
+    "options": [
+      "A. Evidentiary Function: Providing reliable evidence of the contract's existence and terms.",
+      "B. Cautionary Function: Encouraging parties to carefully consider the significance of their promise.",
+      "C. Channeling Function: Clearly marking the promise as legally enforceable.",
+      "D. Interpretative Function: Providing a clear and unambiguous interpretation of the contract's terms."
+    ],
+    "correct": 3,
+    "explanation": "While the seal served evidentiary, cautionary, and channeling functions, it did not have a specific interpretative function. Interpretation of contracts relies on principles of contract law and the language used in the agreement."
+  },
+  {
+    "question": "Which of the following is an example of a gratuitous promise that is generally unenforceable?",
+    "options": [
+      "A. A promise to pay a debt that has been discharged in bankruptcy.",
+      "B. A promise to pay for emergency medical services rendered to an unconscious person.",
+      "C. A promise to give a friend $100 as a birthday gift.",
+      "D. A promise to compensate someone for a past act that saved the promisor's life."
+    ],
+    "correct": 2,
+    "explanation": "A gratuitous promise is a promise made without consideration, essentially a gift. The law typically does not enforce such promises. Options A, B, and D all involve situations where the law may recognize an obligation despite the absence of traditional bargained-for consideration."
+  },
+  {
+    "question": "Which of the following cases MOST CLEARLY illustrates the concept of promissory estoppel?",
+    "options": [
+      "A. Hamer v. Sidway",
+      "B. Webb v. McGowin",
+      "C. Feinberg v. Pfeiffer Co.",
+      "D. Kirksey v. Kirksey"
+    ],
+    "correct": 2,
+    "explanation": "In Feinberg v. Pfeiffer Co., the court enforced a promise of a pension based on the plaintiff's detrimental reliance on that promise. This case is a classic example of promissory estoppel, where a promise lacking traditional consideration is enforced to prevent injustice."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the objective theory of assent?",
+    "options": [
+      "A. The law prioritizes the subjective intentions of the parties over their outward manifestations of assent.",
+      "B. Mental reservations or unexpressed intentions can invalidate a contract, even if the parties' words and actions indicate agreement.",
+      "C. A party is bound by the reasonable interpretation of their words and actions, even if they had a different subjective intent.",
+      "D. Mutual assent can only be established through clear and explicit statements of agreement."
+    ],
+    "correct": 2,
+    "explanation": "The objective theory of assent centers on how a reasonable person would interpret the parties' actions and words, regardless of their private thoughts or intentions. Option C) accurately captures this principle."
+  },
+  {
+    "question": "Which of the following is a key distinction between promissory estoppel and equitable estoppel?",
+    "options": [
+      "A. Promissory estoppel is based on a statement of fact, while equitable estoppel is based on a promise.",
+      "B. Promissory estoppel prevents a party from denying a promise, while equitable estoppel prevents a party from asserting a right.",
+      "C. Promissory estoppel is based on a promise of future action, while equitable estoppel is based on a statement of past or present fact.",
+      "D. Promissory estoppel is a broader doctrine that encompasses equitable estoppel."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel specifically applies to situations where a party detrimentally relied on a clear promise, while equitable estoppel is a broader doctrine that can apply even without an explicit promise. Both doctrines aim to prevent unfair outcomes based on a party's words or conduct."
+  },
+  {
+    "question": "A contractor agrees to build a swimming pool for a homeowner. The contract states that the homeowner will pay the contractor in full upon completion of the pool. This is an example of a:",
+    "options": [
+      "A. Condition precedent",
+      "B. Condition subsequent",
+      "C. Illusory promise",
+      "D. Unilateral contract"
+    ],
+    "correct": 0,
+    "explanation": "The homeowner's payment being due upon completion of the pool is a condition precedent. The contractor's duty to pay is not triggered until the specified event (completion of the pool) occurs."
+  },
+  {
+    "question": "In Callano v. Oakwood Park Homes Corp., the court held that:",
+    "options": [
+      "A. Oakwood was unjustly enriched and therefore liable for the value of the shrubbery.",
+      "B. The Callanos could not recover from Oakwood under quasi-contract because there was no direct relationship between them.",
+      "C. The officious intermeddler rule prevented the Callanos from recovering because they provided the shrubbery without a request.",
+      "D. Quantum meruit allowed the Callanos to recover the reasonable value of the shrubbery from Oakwood."
+    ],
+    "correct": 1,
+    "explanation": "The court in Callano emphasized the need for a direct relationship between the parties for a quasi-contract claim to succeed. The Callanos' contract was with Pendergast, not Oakwood, and Oakwood did not unjustly benefit from the shrubbery."
+  },
+  {
+    "question": "Which of the following statements accurately describes the relationship between rights and duties in contract law?",
+    "options": [
+      "A. A right is an obligation to perform, while a duty is an entitlement to another's performance.",
+      "B. Rights and duties are correlative: one party's right to performance corresponds to the other party's duty to perform.",
+      "C. In a unilateral contract, both parties have rights and duties.",
+      "D. In a bilateral contract, only the promisor has a duty, and only the promisee has a right."
+    ],
+    "correct": 1,
+    "explanation": "Rights and duties in contracts are interconnected. One party's right to receive a certain performance is matched by the other party's duty to render that performance."
+  },
+  {
+    "question": "Which of the following is NOT a typical element of promissory estoppel?",
+    "options": [
+      "A. A clear and definite promise.",
+      "B. Reasonable and foreseeable reliance on the promise.",
+      "C. Detriment suffered by the promisee due to reliance.",
+      "D. Proof that the promisor intended to deceive the promisee."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel does not require an intent to deceive. It focuses on the promisee's justifiable reliance on a promise, even if the promisor did not intend to mislead them."
+  },
+  {
+    "question": "Which of the following scenarios is an example of a situation where a court might award restitution?",
+    "options": [
+      "A. A party breaches a contract, and the injured party seeks to recover their lost profits.",
+      "B. A party makes a gift to a friend, and later regrets the decision and wants the gift returned.",
+      "C. A mechanic performs unauthorized repairs on a car, and the owner is forced to pay to have the work corrected.",
+      "D. A party fulfills their contractual obligations, and the other party pays the agreed-upon price."
+    ],
+    "correct": 2,
+    "explanation": "Restitution aims to prevent unjust enrichment. In scenario C), the mechanic has unjustly benefited from the unauthorized repairs, and the court may order restitution to compensate the owner."
+  },
+  {
+    "question": "Which of the following theories of promissory liability emphasizes the promisee's reliance on a promise?",
+    "options": [
+      "A. Consent theory",
+      "B. Reliance theory",
+      "C. Economic efficiency theory",
+      "D. Fairness theory"
+    ],
+    "correct": 1,
+    "explanation": "The reliance theory focuses on the detrimental reliance of the promisee. Even if the promisor didn't intend to create a legal obligation, the law may enforce the promise if the promisee reasonably relied on it and suffered harm."
+  },
+  {
+    "question": "Which of the following is NOT a requirement for a valid liquidated damages clause?",
+    "options": [
+      "A. The damages must be difficult to calculate at the time of contracting.",
+      "B. The damages must be intended as a penalty for breach.",
+      "C. The damages must be a reasonable estimate of the anticipated harm.",
+      "D. The clause must be included in a written contract."
+    ],
+    "correct": 1,
+    "explanation": "Liquidated damages are meant to compensate for actual or anticipated losses, not to punish the breaching party. If a court determines a liquidated damages provision is intended as a penalty, it will be unenforceable."
+  },
+  {
+    "question": "In Hawkins v. McGee, the court awarded damages based on the:",
+    "options": [
+      "A. Reliance interest.",
+      "B. Restitution interest.",
+      "C. Expectation interest.",
+      "D. Punitive interest."
+    ],
+    "correct": 2,
+    "explanation": "The court in Hawkins v. McGee awarded expectation damages to the plaintiff, aiming to put him in the position he would have been in had the doctor's promise of a \"perfect hand\" been fulfilled. The damages were based on the difference between the promised outcome and the actual result of the surgery."
+  },
+  {
+    "question": "A homeowner hires a contractor to renovate their kitchen. The homeowner breaches the contract before work begins. Which of the following types of damages is the contractor MOST LIKELY to recover?",
+    "options": [
+      "A. Restitution damages",
+      "B. Reliance damages",
+      "C. Disgorgement damages",
+      "D. Specific performance"
+    ],
+    "correct": 1,
+    "explanation": "Since no work has been done, the contractor likely hasn't incurred significant restitution interests (benefits conferred on the homeowner). Disgorgement, which focuses on stripping the breaching party of their gains, is less likely in this scenario. Specific performance (compelling the homeowner to allow the renovation) is often impractical in service contracts. The contractor is most likely to seek reliance damages for expenses already incurred in preparation for the renovation."
+  },
+  {
+    "question": "A music teacher offers a student a free lesson if they win a local competition. The student wins. Is the teacher's promise enforceable?",
+    "options": [
+      "A. No, because the promise is a gift.",
+      "B. Yes, because the student's performance constitutes valid consideration.",
+      "C. No, because the teacher didn't receive any benefit.",
+      "D. Yes, because the promise induced the student to practice harder."
+    ],
+    "correct": 1,
+    "explanation": "This is a unilateral contract where the teacher seeks performance (winning the competition) as acceptance of the offer. The student's performance is the bargained-for consideration, making the teacher's promise enforceable."
+  },
+  {
+    "question": "Which case exemplifies the enforceability of a promise based on a past material benefit?",
+    "options": [
+      "A. Kirksey v. Kirksey",
+      "B. Feinberg v. Pfeiffer Co.",
+      "C. Mills v. Wyman",
+      "D. Webb v. McGowin"
+    ],
+    "correct": 3,
+    "explanation": "In Webb v. McGowin, the court enforced a promise to pay for a life-saving act that occurred before the promise was made. This decision highlights the material benefit rule, an exception to the general rule that past consideration is insufficient."
+  },
+  {
+    "question": "Which of the following statements best reflects the holding in Lake Land Employment Group of Akron, LLC v. Columber?",
+    "options": [
+      "A. Continued at-will employment can be sufficient consideration for a non-competition agreement.",
+      "B. Non-competition agreements are always enforceable, regardless of consideration.",
+      "C. Consideration is not required for non-competition agreements.",
+      "D. At-will employment cannot provide valid consideration for any post-employment agreements."
+    ],
+    "correct": 0,
+    "explanation": "The Ohio Supreme Court in Lake Land held that an employee's continued employment, even at-will, could constitute valid consideration for a non-competition agreement signed after the employment relationship began. The employer's forbearance from terminating the employee was deemed sufficient legal value."
+  },
+  {
+    "question": "In Cohen v. Cowles Media Co., the court held that:",
+    "options": [
+      "A. The First Amendment always protects newspapers from liability for broken promises of confidentiality.",
+      "B. Promissory estoppel can be applied to enforce a newspaper's promise of confidentiality, even in a journalistic context.",
+      "C. Journalistic ethics are irrelevant in legal disputes involving confidentiality agreements.",
+      "D. Reliance on a promise of confidentiality is never reasonable in dealings with the media."
+    ],
+    "correct": 1,
+    "explanation": "The court in Cohen ruled that while the First Amendment protects freedom of the press, it doesn't excuse newspapers from liability for breach of promises. Cohen's reliance on the confidentiality agreement was deemed reasonable, and the newspapers were held liable for damages caused by the broken promise."
+  },
+  {
+    "question": "The concept of quantum meruit allows recovery for:",
+    "options": [
+      "A. The value of goods provided, even without a formal contract.",
+      "B. The reasonable value of services rendered, when no fixed price was agreed upon.",
+      "C. Damages for emotional distress caused by a breach of contract.",
+      "D. Punitive damages to deter future wrongdoing by the breaching party."
+    ],
+    "correct": 1,
+    "explanation": "Quantum meruit, meaning \"as much as is deserved,\" is a legal principle that allows for recovery of the reasonable value of services provided when there's no formal contract or fixed price. It is often used in cases where one party has benefited from another's services but has not paid for them."
+  },
+  {
+    "question": "Which of the following is NOT a key function of the seal in early English contract law, as outlined by Lon Fuller?",
+    "options": [
+      "A. Evidentiary Function: Providing reliable evidence of the contract's existence and terms.",
+      "B. Cautionary Function: Encouraging parties to carefully consider the significance of their promise.",
+      "C. Channeling Function: Clearly marking the promise as legally enforceable.",
+      "D. Interpretative Function: Providing a clear and unambiguous interpretation of the contract's terms."
+    ],
+    "correct": 3,
+    "explanation": "While the seal served evidentiary, cautionary, and channeling functions, it did not have a specific interpretative function. Interpretation of contracts relies on principles of contract law and the language used in the agreement."
+  },
+  {
+    "question": "Which of the following is an example of a gratuitous promise that is generally unenforceable?",
+    "options": [
+      "A. A promise to pay a debt that has been discharged in bankruptcy.",
+      "B. A promise to pay for emergency medical services rendered to an unconscious person.",
+      "C. A promise to give a friend $100 as a birthday gift.",
+      "D. A promise to compensate someone for a past act that saved the promisor's life."
+    ],
+    "correct": 2,
+    "explanation": "A gratuitous promise is a promise made without consideration, essentially a gift. The law typically does not enforce such promises. Options A, B, and D all involve situations where the law may recognize an obligation despite the absence of traditional bargained-for consideration."
+  },
+  {
+    "question": "Which of the following cases MOST CLEARLY illustrates the concept of promissory estoppel?",
+    "options": [
+      "A. Hamer v. Sidway",
+      "B. Webb v. McGowin",
+      "C. Feinberg v. Pfeiffer Co.",
+      "D. Kirksey v. Kirksey"
+    ],
+    "correct": 2,
+    "explanation": "In Feinberg v. Pfeiffer Co., the court enforced a promise of a pension based on the plaintiff's detrimental reliance on that promise. This case is a classic example of promissory estoppel, where a promise lacking traditional consideration is enforced to prevent injustice."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the objective theory of assent?",
+    "options": [
+      "A. The law prioritizes the subjective intentions of the parties over their outward manifestations of assent.",
+      "B. Mental reservations or unexpressed intentions can invalidate a contract, even if the parties' words and actions indicate agreement.",
+      "C. A party is bound by the reasonable interpretation of their words and actions, even if they had a different subjective intent.",
+      "D. Mutual assent can only be established through clear and explicit statements of agreement."
+    ],
+    "correct": 2,
+    "explanation": "The objective theory of assent centers on how a reasonable person would interpret the parties' actions and words, regardless of their private thoughts or intentions. Option C) accurately captures this principle."
+  },
+  {
+    "question": "Which of the following is a key distinction between promissory estoppel and equitable estoppel?",
+    "options": [
+      "A. Promissory estoppel is based on a statement of fact, while equitable estoppel is based on a promise.",
+      "B. Promissory estoppel prevents a party from denying a promise, while equitable estoppel prevents a party from asserting a right.",
+      "C. Promissory estoppel is based on a promise of future action, while equitable estoppel is based on a statement of past or present fact.",
+      "D. Promissory estoppel is a broader doctrine that encompasses equitable estoppel."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel specifically applies to situations where a party detrimentally relied on a clear promise, while equitable estoppel is a broader doctrine that can apply even without an explicit promise. Both doctrines aim to prevent unfair outcomes based on a party's words or conduct."
+  },
+  {
+    "question": "A contractor agrees to build a swimming pool for a homeowner. The contract states that the homeowner will pay the contractor in full upon completion of the pool. This is an example of a:",
+    "options": [
+      "A. Condition precedent",
+      "B. Condition subsequent",
+      "C. Illusory promise",
+      "D. Unilateral contract"
+    ],
+    "correct": 0,
+    "explanation": "The homeowner's payment being due upon completion of the pool is a condition precedent. The contractor's duty to pay is not triggered until the specified event (completion of the pool) occurs."
+  },
+  {
+    "question": "In Callano v. Oakwood Park Homes Corp., the court held that:",
+    "options": [
+      "A. Oakwood was unjustly enriched and therefore liable for the value of the shrubbery.",
+      "B. The Callanos could not recover from Oakwood under quasi-contract because there was no direct relationship between them.",
+      "C. The officious intermeddler rule prevented the Callanos from recovering because they provided the shrubbery without a request.",
+      "D. Quantum meruit allowed the Callanos to recover the reasonable value of the shrubbery from Oakwood."
+    ],
+    "correct": 1,
+    "explanation": "The court in Callano emphasized the need for a direct relationship between the parties for a quasi-contract claim to succeed. The Callanos' contract was with Pendergast, not Oakwood, and Oakwood did not unjustly benefit from the shrubbery."
+  },
+  {
+    "question": "Which of the following statements accurately describes the relationship between rights and duties in contract law?",
+    "options": [
+      "A. A right is an obligation to perform, while a duty is an entitlement to another's performance.",
+      "B. Rights and duties are correlative: one party's right to performance corresponds to the other party's duty to perform.",
+      "C. In a unilateral contract, both parties have rights and duties.",
+      "D. In a bilateral contract, only the promisor has a duty, and only the promisee has a right."
+    ],
+    "correct": 1,
+    "explanation": "Rights and duties in contracts are interconnected. One party's right to receive a certain performance is matched by the other party's duty to render that performance."
+  },
+  {
+    "question": "Which of the following is NOT a typical element of promissory estoppel?",
+    "options": [
+      "A. A clear and definite promise.",
+      "B. Reasonable and foreseeable reliance on the promise.",
+      "C. Detriment suffered by the promisee due to reliance.",
+      "D. Proof that the promisor intended to deceive the promisee."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel does not require an intent to deceive. It focuses on the promisee's justifiable reliance on a promise, even if the promisor did not intend to mislead them."
+  },
+  {
+    "question": "Which of the following scenarios is an example of a situation where a court might award restitution?",
+    "options": [
+      "A. A party breaches a contract, and the injured party seeks to recover their lost profits.",
+      "B. A party makes a gift to a friend, and later regrets the decision and wants the gift returned.",
+      "C. A mechanic performs unauthorized repairs on a car, and the owner is forced to pay to have the work corrected.",
+      "D. A party fulfills their contractual obligations, and the other party pays the agreed-upon price."
+    ],
+    "correct": 2,
+    "explanation": "Restitution aims to prevent unjust enrichment. In scenario C), the mechanic has unjustly benefited from the unauthorized repairs, and the court may order restitution to compensate the owner."
+  },
+  {
+    "question": "Which of the following theories of promissory liability emphasizes the promisee's reliance on a promise?",
+    "options": [
+      "A. Consent theory",
+      "B. Reliance theory",
+      "C. Economic efficiency theory",
+      "D. Fairness theory"
+    ],
+    "correct": 1,
+    "explanation": "The reliance theory focuses on the detrimental reliance of the promisee. Even if the promisor didn't intend to create a legal obligation, the law may enforce the promise if the promisee reasonably relied on it and suffered harm."
+  },
+  {
+    "question": "Which of the following is NOT a requirement for a valid liquidated damages clause?",
+    "options": [
+      "A. The damages must be difficult to calculate at the time of contracting.",
+      "B. The damages must be intended as a penalty for breach.",
+      "C. The damages must be a reasonable estimate of the anticipated harm.",
+      "D. The clause must be included in a written contract."
+    ],
+    "correct": 1,
+    "explanation": "Liquidated damages are meant to compensate for actual or anticipated losses, not to punish the breaching party. If a court determines a liquidated damages provision is intended as a penalty, it will be unenforceable."
+  },
+  {
+    "question": "In Hawkins v. McGee, the court awarded damages based on the:",
+    "options": [
+      "A. Reliance interest.",
+      "B. Restitution interest.",
+      "C. Expectation interest.",
+      "D. Punitive interest."
+    ],
+    "correct": 2,
+    "explanation": "The court in Hawkins v. McGee awarded expectation damages to the plaintiff, aiming to put him in the position he would have been in had the doctor's promise of a \"perfect hand\" been fulfilled. The damages were based on the difference between the promised outcome and the actual result of the surgery."
+  },
+  {
+    "question": "A homeowner hires a contractor to renovate their kitchen. The homeowner breaches the contract before work begins. Which of the following types of damages is the contractor MOST LIKELY to recover?",
+    "options": [
+      "A. Restitution damages",
+      "B. Reliance damages",
+      "C. Disgorgement damages",
+      "D. Specific performance"
+    ],
+    "correct": 1,
+    "explanation": "Since no work has been done, the contractor likely hasn't incurred significant restitution interests (benefits conferred on the homeowner). Disgorgement, which focuses on stripping the breaching party of their gains, is less likely in this scenario. Specific performance (compelling the homeowner to allow the renovation) is often impractical in service contracts. The contractor is most likely to seek reliance damages for expenses already incurred in preparation for the renovation."
+  },
+  {
+    "question": "A music teacher offers a student a free lesson if they win a local competition. The student wins. Is the teacher's promise enforceable?",
+    "options": [
+      "A. No, because the promise is a gift.",
+      "B. Yes, because the student's performance constitutes valid consideration.",
+      "C. No, because the teacher didn't receive any benefit.",
+      "D. Yes, because the promise induced the student to practice harder."
+    ],
+    "correct": 1,
+    "explanation": "This is a unilateral contract where the teacher seeks performance (winning the competition) as acceptance of the offer. The student's performance is the bargained-for consideration, making the teacher's promise enforceable."
+  },
+  {
+    "question": "Which case exemplifies the enforceability of a promise based on a past material benefit?",
+    "options": [
+      "A. Kirksey v. Kirksey",
+      "B. Feinberg v. Pfeiffer Co.",
+      "C. Mills v. Wyman",
+      "D. Webb v. McGowin"
+    ],
+    "correct": 3,
+    "explanation": "In Webb v. McGowin, the court enforced a promise to pay for a life-saving act that occurred before the promise was made. This decision highlights the material benefit rule, an exception to the general rule that past consideration is insufficient."
+  },
+  {
+    "question": "Which of the following statements best reflects the holding in Lake Land Employment Group of Akron, LLC v. Columber?",
+    "options": [
+      "A. Continued at-will employment can be sufficient consideration for a non-competition agreement.",
+      "B. Non-competition agreements are always enforceable, regardless of consideration.",
+      "C. Consideration is not required for non-competition agreements.",
+      "D. At-will employment cannot provide valid consideration for any post-employment agreements."
+    ],
+    "correct": 0,
+    "explanation": "The Ohio Supreme Court in Lake Land held that an employee's continued employment, even at-will, could constitute valid consideration for a non-competition agreement signed after the employment relationship began. The employer's forbearance from terminating the employee was deemed sufficient legal value."
+  },
+  {
+    "question": "In Cohen v. Cowles Media Co., the court held that:",
+    "options": [
+      "A. The First Amendment always protects newspapers from liability for broken promises of confidentiality.",
+      "B. Promissory estoppel can be applied to enforce a newspaper's promise of confidentiality, even in a journalistic context.",
+      "C. Journalistic ethics are irrelevant in legal disputes involving confidentiality agreements.",
+      "D. Reliance on a promise of confidentiality is never reasonable in dealings with the media."
+    ],
+    "correct": 1,
+    "explanation": "The court in Cohen ruled that while the First Amendment protects freedom of the press, it doesn't excuse newspapers from liability for breach of promises. Cohen's reliance on the confidentiality agreement was deemed reasonable, and the newspapers were held liable for damages caused by the broken promise."
+  },
+  {
+    "question": "The concept of quantum meruit allows recovery for:",
+    "options": [
+      "A. The value of goods provided, even without a formal contract.",
+      "B. The reasonable value of services rendered, when no fixed price was agreed upon.",
+      "C. Damages for emotional distress caused by a breach of contract.",
+      "D. Punitive damages to deter future wrongdoing by the breaching party."
+    ],
+    "correct": 1,
+    "explanation": "Quantum meruit, meaning \"as much as is deserved,\" is a legal principle that allows for recovery of the reasonable value of services provided when there's no formal contract or fixed price. It is often used in cases where one party has benefited from another's services but has not paid for them."
+  },
+  {
+    "question": "Which of the following is NOT a key function of the seal in early English contract law, as outlined by Lon Fuller?",
+    "options": [
+      "A. Evidentiary Function: Providing reliable evidence of the contract's existence and terms.",
+      "B. Cautionary Function: Encouraging parties to carefully consider the significance of their promise.",
+      "C. Channeling Function: Clearly marking the promise as legally enforceable.",
+      "D. Interpretative Function: Providing a clear and unambiguous interpretation of the contract's terms."
+    ],
+    "correct": 3,
+    "explanation": "While the seal served evidentiary, cautionary, and channeling functions, it did not have a specific interpretative function. Interpretation of contracts relies on principles of contract law and the language used in the agreement."
+  },
+  {
+    "question": "Which of the following is an example of a gratuitous promise that is generally unenforceable?",
+    "options": [
+      "A. A promise to pay a debt that has been discharged in bankruptcy.",
+      "B. A promise to pay for emergency medical services rendered to an unconscious person.",
+      "C. A promise to give a friend $100 as a birthday gift.",
+      "D. A promise to compensate someone for a past act that saved the promisor's life."
+    ],
+    "correct": 2,
+    "explanation": "A gratuitous promise is a promise made without consideration, essentially a gift. The law typically does not enforce such promises. Options A, B, and D all involve situations where the law may recognize an obligation despite the absence of traditional bargained-for consideration."
+  },
+  {
+    "question": "Which of the following cases MOST CLEARLY illustrates the concept of promissory estoppel?",
+    "options": [
+      "A. Hamer v. Sidway",
+      "B. Webb v. McGowin",
+      "C. Feinberg v. Pfeiffer Co.",
+      "D. Kirksey v. Kirksey"
+    ],
+    "correct": 2,
+    "explanation": "In Feinberg v. Pfeiffer Co., the court enforced a promise of a pension based on the plaintiff's detrimental reliance on that promise. This case is a classic example of promissory estoppel, where a promise lacking traditional consideration is enforced to prevent injustice."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the objective theory of assent?",
+    "options": [
+      "A. The law prioritizes the subjective intentions of the parties over their outward manifestations of assent.",
+      "B. Mental reservations or unexpressed intentions can invalidate a contract, even if the parties' words and actions indicate agreement.",
+      "C. A party is bound by the reasonable interpretation of their words and actions, even if they had a different subjective intent.",
+      "D. Mutual assent can only be established through clear and explicit statements of agreement."
+    ],
+    "correct": 2,
+    "explanation": "The objective theory of assent centers on how a reasonable person would interpret the parties' actions and words, regardless of their private thoughts or intentions. Option C) accurately captures this principle."
+  },
+  {
+    "question": "Which of the following is a key distinction between promissory estoppel and equitable estoppel?",
+    "options": [
+      "A. Promissory estoppel is based on a statement of fact, while equitable estoppel is based on a promise.",
+      "B. Promissory estoppel prevents a party from denying a promise, while equitable estoppel prevents a party from asserting a right.",
+      "C. Promissory estoppel is based on a promise of future action, while equitable estoppel is based on a statement of past or present fact.",
+      "D. Promissory estoppel is a broader doctrine that encompasses equitable estoppel."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel specifically applies to situations where a party detrimentally relied on a clear promise, while equitable estoppel is a broader doctrine that can apply even without an explicit promise. Both doctrines aim to prevent unfair outcomes based on a party's words or conduct."
+  },
+  {
+    "question": "A contractor agrees to build a swimming pool for a homeowner. The contract states that the homeowner will pay the contractor in full upon completion of the pool. This is an example of a:",
+    "options": [
+      "A. Condition precedent",
+      "B. Condition subsequent",
+      "C. Illusory promise",
+      "D. Unilateral contract"
+    ],
+    "correct": 0,
+    "explanation": "The homeowner's payment being due upon completion of the pool is a condition precedent. The contractor's duty to pay is not triggered until the specified event (completion of the pool) occurs."
+  },
+  {
+    "question": "In Callano v. Oakwood Park Homes Corp., the court held that:",
+    "options": [
+      "A. Oakwood was unjustly enriched and therefore liable for the value of the shrubbery.",
+      "B. The Callanos could not recover from Oakwood under quasi-contract because there was no direct relationship between them.",
+      "C. The officious intermeddler rule prevented the Callanos from recovering because they provided the shrubbery without a request.",
+      "D. Quantum meruit allowed the Callanos to recover the reasonable value of the shrubbery from Oakwood."
+    ],
+    "correct": 1,
+    "explanation": "The court in Callano emphasized the need for a direct relationship between the parties for a quasi-contract claim to succeed. The Callanos' contract was with Pendergast, not Oakwood, and Oakwood did not unjustly benefit from the shrubbery."
+  },
+  {
+    "question": "Which of the following statements accurately describes the relationship between rights and duties in contract law?",
+    "options": [
+      "A. A right is an obligation to perform, while a duty is an entitlement to another's performance.",
+      "B. Rights and duties are correlative: one party's right to performance corresponds to the other party's duty to perform.",
+      "C. In a unilateral contract, both parties have rights and duties.",
+      "D. In a bilateral contract, only the promisor has a duty, and only the promisee has a right."
+    ],
+    "correct": 1,
+    "explanation": "Rights and duties in contracts are interconnected. One party's right to receive a certain performance is matched by the other party's duty to render that performance."
+  },
+  {
+    "question": "Which of the following is NOT a typical element of promissory estoppel?",
+    "options": [
+      "A. A clear and definite promise.",
+      "B. Reasonable and foreseeable reliance on the promise.",
+      "C. Detriment suffered by the promisee due to reliance.",
+      "D. Proof that the promisor intended to deceive the promisee."
+    ],
+    "correct": 3,
+    "explanation": "Promissory estoppel does not require an intent to deceive. It focuses on the promisee's justifiable reliance on a promise, even if the promisor did not intend to mislead them."
+  },
+  {
+    "question": "Which of the following scenarios is an example of a situation where a court might award restitution?",
+    "options": [
+      "A. A party breaches a contract, and the injured party seeks to recover their lost profits.",
+      "B. A party makes a gift to a friend, and later regrets the decision and wants the gift returned.",
+      "C. A mechanic performs unauthorized repairs on a car, and the owner is forced to pay to have the work corrected.",
+      "D. A party fulfills their contractual obligations, and the other party pays the agreed-upon price."
+    ],
+    "correct": 2,
+    "explanation": "Restitution aims to prevent unjust enrichment. In scenario c), the mechanic has unjustly benefited from the unauthorized repairs, and the court may order restitution to compensate the owner."
+  }
+];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+#result-screen {
+  max-height: 80vh; /* Adjust height as needed */
+  overflow-y: auto;
+}
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.review-table th, .review-table td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Yale Law Contracts I (Brooks)</h4>
+      <h5 style="text-align: center;">Interpreting Contracts</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+      onclick="location.href='index.html'" 
+      style="font-size: 12px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Main Page
+  </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+    </div>
+  
+    <footer>
+        © 2024 Frederick Liu. All rights reserved.
+    </footer>
+    
+  </div>
+  
+
+  <script>
+    const questions = [
+    {
+    "question": "Which of the following is NOT an exception to the Statute of Frauds?",
+    "options": [
+      "A. Admission of Contract",
+      "B. Written Confirmation Between Merchants",
+      "C. Promissory Estoppel",
+      "D. Unilateral Contract"
+    ],
+    "correct": 3,
+    "explanation": "Options (a), (b), and (c) are all specific exceptions to the Statute of Frauds outlined in the provided source. A unilateral contract is not an exception to the Statute of Frauds."
+  },
+  {
+    "question": "Under the UCC, a \"no-oral-modification\" clause:",
+    "options": [
+      "A. Is always unenforceable.",
+      "B. Is generally enforceable but can be waived.",
+      "C. Is only enforceable if separately signed by both parties.",
+      "D. Is only enforceable between merchants."
+    ],
+    "correct": 1,
+    "explanation": "The UCC takes a different approach than common law regarding \"no-oral-modification\" clauses. They are generally enforceable but may be waived under certain circumstances, such as when a party materially relies on the waiver."
+  },
+  {
+    "question": "The Parol Evidence Rule prevents the admission of extrinsic evidence to:",
+    "options": [
+      "A. Clarify ambiguous terms in a fully integrated agreement.",
+      "B. Prove the existence of a condition precedent to a written contract.",
+      "C. Show that a written contract was the result of fraud.",
+      "D. Contradict the terms of a completely integrated agreement."
+    ],
+    "correct": 3,
+    "explanation": "The Parol Evidence Rule specifically bars the use of extrinsic evidence to contradict the terms of a final, written contract. Options (a), (b), and (c) are instances where extrinsic evidence might be admissible."
+  },
+  {
+    "question": "When interpreting an ambiguous contract, the doctrine of contra proferentem favors:",
+    "options": [
+      "A. The party with the greater bargaining power.",
+      "B. The party who drafted the contract.",
+      "C. The party who did not draft the contract.",
+      "D. The party who performed first under the contract."
+    ],
+    "correct": 2,
+    "explanation": "Contra proferentem dictates that ambiguities in a contract are interpreted against the party who drafted the contract. This is a principle of fairness designed to prevent the drafter from benefiting from unclear language."
+  },
+  {
+    "question": "In which of the following scenarios would a court be MOST likely to allow extrinsic evidence to interpret a contract term?",
+    "options": [
+      "A. When the contract contains a merger clause explicitly stating that the writing is the complete agreement.",
+      "B. When a term is vague and its meaning depends on industry custom.",
+      "C. When the contract is clear and unambiguous on its face.",
+      "D. When the parties have equal bargaining power."
+    ],
+    "correct": 1,
+    "explanation": "Courts are more likely to allow extrinsic evidence when a term is vague and requires context, such as industry custom, to determine its meaning. The presence of a merger clause or a clear and unambiguous contract would generally make extrinsic evidence inadmissible. The parties' bargaining power is less relevant to the admissibility of extrinsic evidence."
+  },
+  {
+    "question": "According to the UCC, the obligation of good faith in contracts:",
+    "options": [
+      "A. Applies only to merchants.",
+      "B. Can be waived by agreement.",
+      "C. Requires honesty in fact and adherence to reasonable commercial standards.",
+      "D. Allows courts to impose moral standards on contractual performance."
+    ],
+    "correct": 2,
+    "explanation": "The UCC defines good faith as requiring both subjective honesty (\"honesty in fact\") and objective adherence to reasonable commercial standards. It is a mandatory term that cannot be waived. While good faith promotes fair dealing, it is not intended to allow courts to impose their own moral judgments on contracts."
+  },
+  {
+    "question": "Which of the following is a key difference between New York and California approaches to extrinsic evidence in contract interpretation?",
+    "options": [
+      "A. New York courts generally adhere to the \"four corners\" rule, while California courts are more lenient in allowing extrinsic evidence.",
+      "B. New York courts allow extrinsic evidence to create ambiguity, while California courts do not.",
+      "C. New York courts apply the UCC more strictly than California courts.",
+      "D. New York courts favor the use of trade usage evidence more than California courts."
+    ],
+    "correct": 0,
+    "explanation": "New York courts typically follow the stricter \"four corners\" rule, meaning they rely primarily on the contract's written language to determine meaning. California courts tend to be more flexible, allowing a wider range of extrinsic evidence, even to potentially create ambiguity."
+  },
+  {
+    "question": "In Frigaliment Importing Co. v. B.N.S. International Sales Corp., the court's decision highlights:",
+    "options": [
+      "A. The importance of clear and unambiguous language in contracts.",
+      "B. The irrelevance of trade usage in interpreting ambiguous terms.",
+      "C. The burden of proof on the party seeking a narrower interpretation of a term.",
+      "D. The court's power to rewrite contracts to reflect industry standards."
+    ],
+    "correct": 2,
+    "explanation": "The Frigaliment case demonstrates that the party seeking a specific interpretation of a vague term bears the burden of proving that their interpretation is the correct one. In this case, the plaintiff failed to meet this burden, leading the court to accept the broader, more common interpretation of the term \"chicken.\""
+  },
+  {
+    "question": "Which of the following is NOT a factor courts typically consider when deciding whether to admit parol evidence?",
+    "options": [
+      "A. Whether the alleged term contradicts the written agreement.",
+      "B. Whether the writing appears to be the final expression of the agreement.",
+      "C. Whether the alleged term falls within the scope of the written agreement.",
+      "D. Whether the contract involves a sale of goods."
+    ],
+    "correct": 3,
+    "explanation": "While the Parol Evidence Rule applies to both goods and services contracts, the specific factors courts consider focus on the nature and completeness of the written agreement itself. Whether a contract involves goods is not a direct factor in determining the admissibility of parol evidence."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the concept of “integration” in the context of the Parol Evidence Rule?",
+    "options": [
+      "A. Integration refers to the process of incorporating extrinsic evidence into the written contract.",
+      "B. Integration relates to whether the written contract is intended to be the final and complete expression of the parties' agreement.",
+      "C. Integration always requires the inclusion of a merger clause in the written contract.",
+      "D. Integration allows for the admission of any prior oral or written statements to modify the written agreement."
+    ],
+    "correct": 1,
+    "explanation": "Integration, in the context of the Parol Evidence Rule, centers on whether the written contract represents the entirety of the parties' agreement. If it does, it is considered integrated, limiting the admissibility of extrinsic evidence."
+  },
+  {
+    "question": "A court is likely to consider a written contract \"completely integrated\" when:",
+    "options": [
+      "A. It deals with a simple transaction.",
+      "B. The parties involved are both merchants.",
+      "C. It contains a merger clause and appears comprehensive in its terms.",
+      "D. It is signed by both parties."
+    ],
+    "correct": 2,
+    "explanation": "While a signature is necessary for a valid contract, a complete integration hinges on the contract encompassing all agreed-upon terms. This is often evidenced by a merger clause and the contract's thoroughness."
+  },
+  {
+    "question": "The case of Mitchill v. Lath exemplifies which of the following principles related to the Parol Evidence Rule?",
+    "options": [
+      "A. Extrinsic evidence is always admissible to explain ambiguous terms.",
+      "B. Oral agreements must be collateral, consistent, and not ordinarily included to be admissible.",
+      "C. Merger clauses conclusively bar the admission of any parol evidence.",
+      "D. The Parol Evidence Rule is a rule of evidence, not a substantive rule of contract law."
+    ],
+    "correct": 1,
+    "explanation": "Mitchill v. Lath demonstrates the three-pronged test used to determine whether an oral agreement is admissible as a separate, collateral agreement. This test aims to ensure that the oral agreement does not undermine the written contract's integrity."
+  },
+  {
+    "question": "Which of the following cases highlights the admissibility of extrinsic evidence to prove a mutual mistake that warrants contract reformation?",
+    "options": [
+      "A. Mitchill v. Lath",
+      "B. Masterson v. Sine",
+      "C. Bollinger v. Central Pennsylvania Quarry Stripping and Construction Co.",
+      "D. Pacific Gas & Electric Co. v. G.W. Thomas Drayage & Rigging Co."
+    ],
+    "correct": 2,
+    "explanation": "Bollinger v. Central Pennsylvania Quarry Stripping and Construction Co. showcases the court's power to reform a contract based on a demonstrable mutual mistake, allowing extrinsic evidence to reveal the true intentions of the parties."
+  },
+  {
+    "question": "In contract interpretation, the maxim ejusdem generis means:",
+    "options": [
+      "A. Ambiguous terms are construed against the drafter.",
+      "B. Specific terms take precedence over general terms.",
+      "C. General terms following a list are limited to the same class as the listed items.",
+      "D. Words are interpreted in light of their surrounding context."
+    ],
+    "correct": 0,
+    "explanation": "Ejusdem generis is a rule of interpretation that limits the scope of general terms appearing after specific items to those of a similar nature. This prevents overly broad interpretations that might deviate from the parties' intended scope."
+  },
+  {
+    "question": "Which of the following is a valid distinction between \"vagueness\" and \"ambiguity\" in contract language?",
+    "options": [
+      "A. Vagueness applies to broad terms, while ambiguity involves specific terms.",
+      "B. Vagueness can be resolved by the judge, while ambiguity is a question for the jury.",
+      "C. Vagueness refers to unclear application in marginal cases, while ambiguity involves multiple distinct meanings.",
+      "D. Vagueness arises from poor drafting, while ambiguity stems from external factors."
+    ],
+    "correct": 2,
+    "explanation": "Vagueness concerns terms with unclear boundaries, making their application uncertain in specific situations. Ambiguity, on the other hand, arises when a term has multiple potential meanings, all of which could be reasonable in the context."
+  },
+  {
+    "question": "Pacific Gas & Electric Co. v. G.W. Thomas Drayage & Rigging Co. underscores:",
+    "options": [
+      "A. The admissibility of extrinsic evidence even when contract language appears clear on its face.",
+      "B. The strict application of the \"four corners\" rule in California.",
+      "C. The inadmissibility of trade usage evidence in interpreting indemnity clauses.",
+      "D. The conclusive nature of merger clauses in barring extrinsic evidence."
+    ],
+    "correct": 0,
+    "explanation": "Pacific Gas & Electric Co. v. G.W. Thomas Drayage & Rigging Co. emphasizes that extrinsic evidence can be crucial in revealing the parties' true intentions, even if the contract language initially appears unambiguous. This showcases the California Supreme Court's flexible approach to interpretation."
+  },
+  {
+    "question": "The case of Nanakuli Paving & Rock Co. v. Shell Oil Co. demonstrates how courts:",
+    "options": [
+      "A. Strictly adhere to the express terms of a contract, excluding any implied terms.",
+      "B. May use trade usage, course of performance, and the UCC's good faith requirement to supplement contract terms.",
+      "C. Favor the interests of large corporations over smaller businesses in contract disputes.",
+      "D. Interpret the UCC narrowly, focusing only on the literal language of its provisions."
+    ],
+    "correct": 1,
+    "explanation": "Nanakuli Paving & Rock Co. v. Shell Oil Co. highlights the court's willingness to draw upon trade practices, past dealings, and the UCC's good faith principle to supplement a contract and ensure a just outcome, reflecting a contextual approach to interpretation."
+  },
+  {
+    "question": "A merger clause in a contract:",
+    "options": [
+      "A. Guarantees that the written agreement is fully integrated.",
+      "B. May be given varying weight by courts in determining integration.",
+      "C. Is irrelevant to the application of the Parol Evidence Rule.",
+      "D. Always prevents the admission of any extrinsic evidence."
+    ],
+    "correct": 1,
+    "explanation": "While merger clauses indicate an intention for the contract to be complete, courts differ in how much weight they give them. Some treat them as dispositive, while others view them as persuasive but not conclusive, particularly in cases involving unsophisticated parties or standard form contracts."
+  },
+  {
+    "question": "The case of Mitchill v. Lath establishes that:",
+    "options": [
+      "A. Oral agreements are always admissible alongside written contracts.",
+      "B. The Parol Evidence Rule never applies to real estate transactions.",
+      "C. An oral agreement must be collateral, consistent, and not ordinarily included to be admissible.",
+      "D. Merger clauses are conclusive evidence of complete integration."
+    ],
+    "correct": 2,
+    "explanation": "Mitchill v. Lath articulated a three-prong test for admitting oral agreements: they must be collateral to the written contract, not contradict its terms, and not be the kind typically included in such agreements."
+  },
+  {
+    "question": "Extrinsic evidence is admissible to show:",
+    "options": [
+      "A. That a party was mistaken about the meaning of a clear contract term.",
+      "B. That a party regrets entering into the contract.",
+      "C. Mutual mistake leading to the omission of a term from a written agreement.",
+      "D. That one party orally promised something different from the written terms."
+    ],
+    "correct": 2,
+    "explanation": "Extrinsic evidence can be used to establish mutual mistake, which might justify reforming the contract to reflect the parties' true agreement. Cases like Bollinger v. Central Pennsylvania Quarry illustrate this principle."
+  },
+  {
+    "question": "Which of the following is a characteristic of the New York approach to contract interpretation?",
+    "options": [
+      "A. Preference for admitting extrinsic evidence to reveal ambiguity.",
+      "B. Adherence to the \"four corners\" rule, limiting interpretation to the written text.",
+      "C. Reliance on subjective intent over objective meaning.",
+      "D. Use of contra proferentem as the primary interpretive tool."
+    ],
+    "correct": 1,
+    "explanation": "New York courts generally adhere to the \"four corners\" rule, meaning they focus on the plain meaning of the contract's language and are less inclined to use extrinsic evidence to create ambiguity."
+  },
+  {
+    "question": "Frigaliment Importing Co. v. B.N.S. International Sales Corp. highlights the importance of:",
+    "options": [
+      "A. Always using precise language to avoid ambiguity.",
+      "B. Excluding all trade usage evidence in international sales contracts.",
+      "C. Meeting the burden of proof when alleging a specific trade usage.",
+      "D. Ignoring the objective meaning of contract terms."
+    ],
+    "correct": 2,
+    "explanation": "In Frigaliment, the plaintiff failed to prove their specific interpretation of \"chicken\" as referring only to young chickens, highlighting that parties relying on trade usage must demonstrate that their interpretation is the prevailing one within the industry."
+  },
+  {
+    "question": "Under the UCC, price protection:",
+    "options": [
+      "A. Is always an implied term in contracts for the sale of goods.",
+      "B. Can be an implied term based on trade usage or course of performance.",
+      "C. Is prohibited by the Statute of Frauds.",
+      "D. Overrides any express price term in the contract."
+    ],
+    "correct": 1,
+    "explanation": "Nanakuli Paving & Rock Co. v. Shell Oil Co. showed that price protection can be implied based on industry practices or the parties' prior conduct, even when not explicitly stated in the written agreement."
+  },
+  {
+    "question": "Which of the following is NOT an element of the UCC's definition of \"good faith\"?",
+    "options": [
+      "A. Honesty in fact",
+      "B. Observance of reasonable commercial standards of fair dealing",
+      "C. Strict adherence to the literal terms of the contract",
+      "D. Fairness in performance and enforcement"
+    ],
+    "correct": 2,
+    "explanation": "While good faith requires honesty and adherence to commercial standards, it does not mandate rigid adherence to the contract's literal terms if such an approach would undermine the parties' reasonable expectations or the contract's intended purpose."
+  },
+  {
+    "question": "In Dalton v. Educational Testing Service, the court held that:",
+    "options": [
+      "A. Standardized testing companies have absolute discretion in scoring decisions.",
+      "B. ETS breached its contract by failing to adequately consider Dalton's evidence.",
+      "C. The implied covenant of good faith and fair dealing applies only to commercial contracts.",
+      "D. Dalton was entitled to have his score immediately released."
+    ],
+    "correct": 1,
+    "explanation": "The court in Dalton found that ETS had a duty to exercise its discretion reasonably and in good faith when reviewing Dalton's evidence, demonstrating that even contracts with discretionary elements are subject to good faith obligations."
+  },
+  {
+    "question": "Which of the following statements accurately reflects the relationship between Parol Evidence and Extrinsic Evidence?",
+    "options": [
+      "A. All Parol Evidence is Extrinsic Evidence, and all Extrinsic Evidence is Parol Evidence.",
+      "B. All Parol Evidence is Extrinsic Evidence, but not all Extrinsic Evidence is Parol Evidence.",
+      "C. All Extrinsic Evidence is Parol Evidence, but not all Parol Evidence is Extrinsic Evidence.",
+      "D. Parol Evidence and Extrinsic Evidence are distinct concepts with no overlap."
+    ],
+    "correct": 1,
+    "explanation": "Parol Evidence, which encompasses prior or contemporaneous agreements not included in the final written contract, is a subset of Extrinsic Evidence. Extrinsic evidence can include a broader range of evidence outside the written contract, such as trade usage, course of dealing, or course of performance."
+  },
+  {
+    "question": "The two-stage process of contract interpretation involves:",
+    "options": [
+      "A. Determining the intent of the parties, then applying the plain meaning rule.",
+      "B. Assessing ambiguity, then interpreting with or without extrinsic evidence.",
+      "C. Applying contra proferentem, then considering trade usage.",
+      "D. Consulting dictionaries, then referring to case law."
+    ],
+    "correct": 1,
+    "explanation": "Contract interpretation begins with the judge determining whether the language is ambiguous. If it is unambiguous, the judge interprets the contract based on the plain meaning of the text. If it is ambiguous, the judge may admit extrinsic evidence to clarify the meaning."
+  },
+  {
+    "question": "Which of the following describes the principle of ejusdem generis?",
+    "options": [
+      "A. Ambiguous terms are construed against the drafter.",
+      "B. Specific terms take precedence over general terms.",
+      "C. General terms following a list are limited to the same class as the listed items.",
+      "D. Words are interpreted in light of their surrounding context."
+    ],
+    "correct": 2,
+    "explanation": "Ejusdem generis dictates that when a contract lists specific items followed by a general term, the general term encompasses only items of the same kind as those specifically enumerated. For instance, in \"cars, trucks, and other vehicles,\" ejusdem generis would likely exclude airplanes from the scope of \"other vehicles.\""
+  },
+  {
+    "question": "In Masterson v. Sine, the court allowed extrinsic evidence to demonstrate:",
+    "options": [
+      "A. That the written deed contained a typographical error.",
+      "B. That the parties had a side agreement not reflected in the deed.",
+      "C. That an option to repurchase land was intended to be personal and non-assignable.",
+      "D. That the deed was obtained through fraud."
+    ],
+    "correct": 2,
+    "explanation": "The court in Masterson v. Sine allowed extrinsic evidence to show the parties' intention that an option to repurchase was non-assignable, even though this was not explicitly stated in the deed. This illustrates the principle that extrinsic evidence can be used to clarify terms not addressed in a partially integrated agreement."
+  },
+  {
+    "question": "Which of the following is NOT a maxim of contract interpretation?",
+    "options": [
+      "A. Ejusdem Generis",
+      "B. Expressio Unius Est Exclusio Alterius",
+      "C. Noscitur a Sociis",
+      "D. Caveat Emptor"
+    ],
+    "correct": 3,
+    "explanation": "Caveat Emptor, meaning \"let the buyer beware,\" is a legal principle related to the allocation of risk in sales transactions, not a maxim of contract interpretation. The other options are established maxims used to guide courts in resolving ambiguities in contracts."
+  },
+  {
+    "question": "When interpreting a contract, the role of the jury is typically to:",
+    "options": [
+      "A. Determine the legal meaning of contract terms.",
+      "B. Decide whether a contract exists.",
+      "C. Evaluate the credibility of extrinsic evidence when ambiguity exists.",
+      "D. Rewrite unfair contract terms."
+    ],
+    "correct": 2,
+    "explanation": "While judges typically handle the interpretation of clear contract language, juries often play a role when ambiguity necessitates considering extrinsic evidence. They assess the credibility and weight of this evidence to determine the meaning of the disputed terms."
+  },
+  {
+    "question": "The case of Pacific Gas & Electric Co. v. G.W. Thomas Drayage & Rigging Co. established that:",
+    "options": [
+      "A. Indemnity clauses are always interpreted narrowly.",
+      "B. Extrinsic evidence can be used to interpret even seemingly clear language.",
+      "C. Trade usage cannot be used to interpret indemnity clauses.",
+      "D. Contracts must always be interpreted in favor of the indemnitee."
+    ],
+    "correct": 1,
+    "explanation": "In Pacific Gas, the court held that extrinsic evidence was admissible to interpret the scope of an indemnity clause, even though the language appeared unambiguous on its face. This decision underscores the principle that understanding the parties' intent may require considering evidence beyond the literal words of the contract."
+  },
+  {
+    "question": "In Nanakuli Paving & Rock Co. v. Shell Oil Co., the court held that:",
+    "options": [
+      "A. Shell's posted price term allowed for unlimited price increases.",
+      "B. Price protection was an express term in the contract.",
+      "C. Price protection was an implied term based on trade usage and course of performance.",
+      "D. The UCC does not apply to contracts for the sale of asphalt."
+    ],
+    "correct": 2,
+    "explanation": "The Nanakuli case demonstrated that terms not explicitly written in a contract can still be part of the agreement. The court found that price protection was implied based on industry practices and the parties' past dealings, highlighting the significance of commercial context in interpreting contracts."
+  },
+  {
+    "question": "Which of the following best describes the purpose of “gap fillers” in contract law?",
+    "options": [
+      "A. To impose penalties for breach of contract",
+      "B. To supply missing terms and complete agreements that are inherently incomplete",
+      "C. To allow parties to unilaterally modify contracts",
+      "D. To excuse non-performance due to unforeseen circumstances"
+    ],
+    "correct": 1,
+    "explanation": "Gap fillers, often provided by statutes like the UCC or derived from common law principles, serve to supplement contracts by addressing terms not explicitly negotiated by the parties. They provide default rules for common omissions, ensuring a more comprehensive and workable agreement."
+  },
+  {
+    "question": "Which of the following situations illustrates a violation of the good faith requirement under the UCC?",
+    "options": [
+      "A. A seller makes a minor error in calculating the price of goods.",
+      "B. A buyer refuses to accept goods due to a slight delay in delivery.",
+      "C. A seller knowingly misrepresents the quality of goods to induce a purchase.",
+      "D. A buyer cancels an order due to unforeseen financial difficulties."
+    ],
+    "correct": 2,
+    "explanation": "Good faith under the UCC requires honesty in fact and adherence to reasonable commercial standards. Knowingly misrepresenting product quality violates both elements, as it involves dishonesty and breaches industry norms of fair dealing."
+  },
+  {
+    "question": "In Douglass v. Pflueger Hawaii, Inc., the court held that:",
+    "options": [
+      "A. Minors can never enter into binding employment contracts.",
+      "B. The arbitration clause lacked sufficient notice and consent, rendering it unenforceable.",
+      "C. Hawaii's child labor laws completely barred minors from agreeing to arbitration.",
+      "D. The entire employment agreement was voidable because Douglass was a minor."
+    ],
+    "correct": 1,
+    "explanation": "While recognizing that Douglass could not disaffirm the entire employment contract, the court in Douglass v. Pflueger found the arbitration clause to be unenforceable because it lacked clear consent. This decision highlights the need for fairness and transparency in contractual provisions, especially those involving minors."
+  }
+];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.toggle("selected", userAnswers[currentQuestionIndex] === index);
+        button.addEventListener("click", () => handleAnswer(index, button));
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex, button) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+  quizScreen.classList.add("hidden");
+  resultScreen.classList.remove("hidden");
+
+  const correctAnswers = userAnswers.filter((answer, index) => answer === questions[index].correct).length;
+  finalScore.textContent = `You got ${correctAnswers} out of ${questions.length} questions correct.`;
+
+  reviewTableBody.innerHTML = "";
+  questions.forEach((question, index) => {
+    const row = document.createElement("tr");
+    row.classList.add(userAnswers[index] === question.correct ? "correct" : "wrong");
+
+    const questionCell = document.createElement("td");
+    questionCell.textContent = question.question;
+
+    const statusCell = document.createElement("td");
+    statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+    row.appendChild(questionCell);
+    row.appendChild(statusCell);
+    reviewTableBody.appendChild(row);
+
+    // Add click event to review the question
+    row.addEventListener("click", () => reviewQuestion(index));
+  });
+}
+function reviewQuestion(index) {
+  currentQuestionIndex = index;
+  resultScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  loadQuestion();
+
+  // Check if the button already exists
+  let backToResultsButton = document.getElementById("back-to-results-button");
+
+  if (!backToResultsButton) {
+    // Create the button if it doesn't exist
+    backToResultsButton = document.createElement("button");
+    backToResultsButton.id = "back-to-results-button";
+    backToResultsButton.textContent = "Back to Results";
+    backToResultsButton.style.marginTop = "20px";
+    backToResultsButton.style.backgroundColor = "#6c757d";
+    backToResultsButton.style.color = "white";
+    backToResultsButton.style.padding = "10px 20px";
+    backToResultsButton.style.border = "none";
+    backToResultsButton.style.borderRadius = "5px";
+    backToResultsButton.style.cursor = "pointer";
+    backToResultsButton.style.display = "block";
+    backToResultsButton.style.marginLeft = "auto";
+    backToResultsButton.style.marginRight = "auto";
+    backToResultsButton.addEventListener("click", showResults);
+
+    // Append the button
+    quizScreen.appendChild(backToResultsButton);
+  }
+}
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

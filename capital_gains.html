@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Federal Income Tax – Capital Gains & Losses Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+    #result-screen {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Federal Income Tax</h4>
+      <h5 style="text-align: center;">Capital Gains &amp; Losses</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+    <footer>
+      © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Under § 1221, which of the following is generally NOT a capital asset?",
+        options: [
+          "A. Shares of stock held for investment",
+          "B. A personal-use car",
+          "C. Inventory held for sale to customers in the ordinary course of business",
+          "D. Land held by an individual as an investment"
+        ],
+        correct: 2,
+        explanation: "Inventory and property held primarily for sale to customers in the ordinary course of a trade or business are excluded from the definition of capital asset under § 1221(a)(1)."
+      },
+      {
+        question: "Taxpayer buys stock for $5,000 and sells it 14 months later for $8,000. How is the $3,000 gain characterized?",
+        options: [
+          "A. Short-term capital gain",
+          "B. Long-term capital gain",
+          "C. Ordinary income",
+          "D. § 1231 gain"
+        ],
+        correct: 1,
+        explanation: "A holding period greater than 1 year generally yields long-term capital gain treatment. Here, 14 months is long-term."
+      },
+      {
+        question: "Basis of property purchased for cash generally is:",
+        options: [
+          "A. Fair market value at time of sale",
+          "B. Cost under § 1012 (including cash and liabilities assumed)",
+          "C. Zero unless adjusted by depreciation",
+          "D. Determined solely by appraised value"
+        ],
+        correct: 1,
+        explanation: "§ 1012 states that basis is cost, which includes cash, the fair market value of other property or services given, and liabilities assumed as part of the purchase."
+      },
+      {
+        question: "T receives Blackacre as a gift from her aunt. Aunt's adjusted basis is $100,000; FMV at the time of the gift is $80,000. T later sells Blackacre for $90,000. Under the dual basis rule for gifts, what is T's gain or loss?",
+        options: [
+          "A. $10,000 gain",
+          "B. $10,000 loss",
+          "C. $0 gain or loss",
+          "D. $90,000 ordinary income"
+        ],
+        correct: 2,
+        explanation: "For gains, donee takes donor's basis ($100,000). For losses, donee uses FMV at gift date ($80,000). A sale at $90,000 is between the two, so no gain or loss is recognized."
+      },
+      {
+        question: "T inherits stock worth $200,000 from her father when he dies. Father's basis was $50,000. Under § 1014, what is T's initial basis in the stock (assuming no alternate valuation date)?",
+        options: [
+          "A. $50,000",
+          "B. $200,000",
+          "C. $0",
+          "D. Average of $50,000 and $200,000"
+        ],
+        correct: 1,
+        explanation: "§ 1014 generally provides a \"step-up\" (or down) to fair market value at the decedent's date of death for property acquired from a decedent."
+      },
+      {
+        question: "T buys land for $300,000, paying $60,000 cash and taking a $240,000 recourse mortgage. Years later, T sells the land for $350,000 cash, and the buyer assumes the $240,000 mortgage. T's adjusted basis is still $300,000. What is T's amount realized?",
+        options: [
+          "A. $350,000",
+          "B. $590,000",
+          "C. $410,000",
+          "D. $300,000"
+        ],
+        correct: 2,
+        explanation: "Amount realized includes cash received plus liabilities from which the seller is relieved. Here, $350,000 cash + $240,000 debt relief = $590,000 amount realized. Gain is $590,000 - $300,000 = $290,000, but the question asks only for amount realized."
+      },
+      {
+        question: "Individual T has $10,000 of net capital loss for the year and no capital gains. How is this handled for an individual?",
+        options: [
+          "A. Entire $10,000 is deductible against ordinary income in the current year",
+          "B. None is deductible; capital losses are never deductible",
+          "C. Up to $3,000 may be deducted against ordinary income; the rest is carried forward",
+          "D. All must be carried back to prior years"
+        ],
+        correct: 2,
+        explanation: "Individuals may deduct up to $3,000 of net capital loss against ordinary income per year, with any excess carried forward indefinitely."
+      },
+      {
+        question: "Which rule disallows a loss on the sale of stock when the taxpayer purchases substantially identical stock within 30 days before or after the sale?",
+        options: [
+          "A. § 121 principal residence exclusion",
+          "B. § 1091 wash sale rule",
+          "C. § 267 related-party loss rule",
+          "D. § 1031 like-kind exchange rule"
+        ],
+        correct: 1,
+        explanation: "§ 1091 is the wash sale rule, which disallows a loss if the taxpayer acquires substantially identical stock or securities within the statutory 61-day window around the sale."
+      },
+      {
+        question: "T sells her principal residence, which she has owned and used as her main home for 5 years, realizing a $400,000 gain. She is single. Which statement is most accurate under § 121 (assuming other requirements are satisfied)?",
+        options: [
+          "A. Entire $400,000 gain is taxable",
+          "B. Up to $250,000 of gain is excludible; the rest is taxable",
+          "C. Up to $500,000 of gain is excludible because any homeowner qualifies",
+          "D. None of the gain is excludible because she has lived there more than 2 years"
+        ],
+        correct: 1,
+        explanation: "§ 121 allows an exclusion of up to $250,000 of gain for single taxpayers (and $500,000 for certain married taxpayers) if the ownership and use tests are met. The remaining $150,000 would be taxable."
+      },
+      {
+        question: "Which of the following BEST states the relationship between realization and recognition for capital gains?",
+        options: [
+          "A. Gain is recognized only when realized, and realized only when recognized",
+          "B. Realization refers to a change in value; recognition refers to when the Code requires that gain be taken into account, usually at realization unless a nonrecognition rule applies",
+          "C. Realization and recognition are synonymous terms",
+          "D. Realization never occurs in property transactions"
+        ],
+        correct: 1,
+        explanation: "Realization is an economic concept (typically triggered by a sale or exchange); recognition is the tax concept of including the realized gain or loss in taxable income unless a specific nonrecognition rule applies."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(question, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === question.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = question.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

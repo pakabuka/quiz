@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Federal Income Tax – Big Concepts Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+    #result-screen {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Federal Income Tax</h4>
+      <h5 style="text-align: center;">Big Concepts</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+    <footer>
+      © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+           {
+        question: "In the \"any tax = rate × base\" framework, which of the following is a correct comparison of tax bases?",
+        options: [
+          "A. An income tax base taxes only wage earners while a consumption tax base taxes only investors",
+          "B. An income tax base generally reaches both labor and capital income, while a consumption tax base focuses on what is spent, and a wealth tax base focuses on the stock of assets held at a point in time",
+          "C. Income, consumption, and wealth tax bases are interchangeable and have no distributional or timing differences",
+          "D. A wealth tax base is simply an income tax with a higher rate"
+        ],
+        correct: 1,
+        explanation: "Under the rate × base identity, the choice of base matters. Income taxes target flows of labor and capital income; consumption taxes target what is spent; wealth taxes target the stock of assets. Those choices change who pays and when."
+      },
+      {
+        question: "Which of the following best captures the contrast between positive and normative tax policy analysis?",
+        options: [
+          "A. Positive analysis asks whether a tax is constitutional; normative analysis asks whether it is administrable",
+          "B. Positive analysis asks what the law should be; normative analysis asks what the law is",
+          "C. Positive analysis focuses on describing distributional effects, behavioral responses, and administrative feasibility, while normative analysis asks whether those outcomes are fair or desirable",
+          "D. There is no meaningful distinction between positive and normative analysis in tax"
+        ],
+        correct: 2,
+        explanation: "Positive analysis is descriptive: who bears the tax, how behavior changes, and how the system is administered. Normative analysis evaluates whether those outcomes are fair, efficient, or otherwise desirable."
+      },
+      {
+        question: "Which of the following is NOT a standard way the government could deliver a $1,000 subsidy to college students?",
+        options: [
+          "A. A refundable income tax credit",
+          "B. A direct spending grant administered by an agency",
+          "C. A regulation requiring universities to cut tuition by $1,000 per student",
+          "D. A constitutional amendment prohibiting tuition above a certain level"
+        ],
+        correct: 3,
+        explanation: "Refundable credits, direct grants, and regulatory mandates can all deliver similar economic support. A constitutional amendment setting tuition caps is not a standard policy instrument and is qualitatively different from ordinary delivery mechanisms."
+      },
+      {
+        question: "Which pair of definitions most accurately describes horizontal and vertical equity in tax design?",
+        options: [
+          "A. Horizontal: treat rich and poor differently; Vertical: treat rich and poor the same",
+          "B. Horizontal: equal treatment of those with equal ability to pay; Vertical: higher burdens on those with greater ability to pay",
+          "C. Horizontal: focusing on efficiency; Vertical: focusing on administration",
+          "D. Horizontal: taxing only labor; Vertical: taxing only capital"
+        ],
+        correct: 1,
+        explanation: "Horizontal equity is equal treatment of equals (same ability to pay). Vertical equity is differential treatment of unequals, often implemented via progressive rate structures or targeted benefits."
+      },
+      {
+        question: "Which of the following tradeoffs BEST describes the tension between progressivity, efficiency, and revenue sufficiency?",
+        options: [
+          "A. More progressivity always increases total revenue with no efficiency cost",
+          "B. Highly progressive systems may create larger behavioral distortions, potentially shrinking the tax base and complicating revenue sufficiency goals",
+          "C. Revenue sufficiency is unrelated to the shape of the rate schedule",
+          "D. Efficiency concerns arise only under regressive tax systems"
+        ],
+        correct: 1,
+        explanation: "More progressivity may improve vertical equity but can increase behavioral responses (e.g., reduced labor supply, more avoidance) and thus affect efficiency and overall revenue raised."
+      },
+      {
+        question: "How does a uniform head (poll) tax score on horizontal and vertical equity?",
+        options: [
+          "A. Strong horizontal equity and strong vertical equity",
+          "B. Weak horizontal equity and strong vertical equity",
+          "C. Strong horizontal equity (everyone pays the same amount) but poor vertical equity (burden is heavier on the poor)",
+          "D. Weak horizontal equity but strong efficiency"
+        ],
+        correct: 2,
+        explanation: "A head tax charges everyone the same dollar amount, which looks horizontally equal but is vertically regressive because that flat amount is a much larger share of a poor person’s income."
+      },
+      {
+        question: "Which statement best summarizes the roles of Congress, Treasury/IRS, and the courts in tax law?",
+        options: [
+          "A. Congress administers the Code, Treasury writes statutes, courts enforce political norms",
+          "B. Congress enacts statutes, Treasury/IRS issues regulations and guidance to implement them, and courts interpret and apply these rules in disputes",
+          "C. Treasury enacts the Internal Revenue Code, Congress issues regulations, and courts handle collections",
+          "D. Courts write tax regulations and Congress reviews them every year"
+        ],
+        correct: 1,
+        explanation: "Congress enacts the Internal Revenue Code; Treasury and the IRS issue regulations, rulings, and other guidance; courts interpret those authorities in litigation between taxpayers and the government."
+      },
+      {
+        question: "Which of the following correctly distinguishes Tax Court from a federal district court for a federal tax dispute?",
+        options: [
+          "A. Tax Court requires prepayment of tax; district court does not",
+          "B. Tax Court does not require prepayment of the disputed deficiency; district court generally requires full payment and then a refund suit",
+          "C. Both forums always provide jury trials",
+          "D. Appeals from both go only to the Federal Circuit"
+        ],
+        correct: 1,
+        explanation: "Tax Court is a prepayment forum; you can litigate without first paying the deficiency. District court generally requires full payment followed by a refund claim. District courts can provide jury trials; Tax Court does not."
+      },
+      {
+        question: "Why are third-party information reports (like Forms W-2 and 1099) crucial to the functioning of the income tax?",
+        options: [
+          "A. They reduce the need for taxpayers to file returns",
+          "B. They give the IRS independent data to verify taxpayer reports, increasing compliance and allowing targeted audits",
+          "C. They are required only for high-income taxpayers",
+          "D. They eliminate the need for withholding"
+        ],
+        correct: 1,
+        explanation: "Third-party reports create cross-checking: when payors report wages or interest, the IRS can match that data to returns, which greatly increases compliance and shapes where audit resources are focused."
+      },
+      {
+        question: "Which of the following best captures the contrast between the Haig–Simons and § 61 approaches to defining income?",
+        options: [
+          "A. Haig–Simons focuses on realized gains only; § 61 includes unrealized appreciation",
+          "B. Haig–Simons defines income conceptually as consumption plus change in net wealth, while § 61 uses a sources-based list of specific types of accessions to wealth",
+          "C. Haig–Simons is used only for corporations; § 61 is used only for individuals",
+          "D. Haig–Simons is an accounting concept; § 61 is an economic concept"
+        ],
+        correct: 1,
+        explanation: "Haig–Simons is a conceptual, uses-based definition (C + ΔS). Section 61 is a statutory, sources-based list (compensation, business income, interest, rents, etc.) used in positive law."
+      },
+      {
+        question: "Which of the following best states the lesson of Old Colony Trust Co. v. Commissioner about \"who has income\"?",
+        options: [
+          "A. The person who writes the check to the IRS always has the income",
+          "B. Employer-paid taxes are deductible by the employee",
+          "C. When an employer pays an employee's tax liability, the economic benefit is income to the employee, even though the employer remits the tax",
+          "D. Taxes paid on behalf of an employee are excluded under § 132"
+        ],
+        correct: 2,
+        explanation: "Old Colony treats the employer's payment of Wood's income tax as additional compensation to Wood. Economic benefit and payor’s motive (compensation) determine who has the income."
+      },
+      {
+        question: "Why does the Old Colony \"gross-up\" logic imply that Wood's pre-tax salary must be higher than the desired after-tax amount?",
+        options: [
+          "A. Because employers cannot deduct wages for income tax purposes",
+          "B. Because paying an employee's tax increases the employee's income, which itself is taxed, requiring a higher face salary to net the same after-tax amount",
+          "C. Because the IRS requires a 50% surcharge on all gross-ups",
+          "D. Because statutory incidence cannot be shifted"
+        ],
+        correct: 1,
+        explanation: "Once the employer-paid tax is itself taxable compensation, you have to solve for a salary S such that S minus tax(S) yields the desired net. This typically requires S to exceed the target net amount, creating the gross-up."
+      },
+      {
+        question: "Which of the following best defines a \"tax expenditure\"?",
+        options: [
+          "A. Any government audit",
+          "B. Any item in the Code that increases gross income",
+          "C. A deviation from a chosen baseline tax system (e.g., exclusion, deduction, credit, preferential rate) that operates like spending through the tax code",
+          "D. The IRS’s annual budget"
+        ],
+        correct: 2,
+        explanation: "Tax expenditures are tax-code provisions that reduce liability relative to a normative baseline income tax and function like spending programs delivered through the tax system."
+      },
+      {
+        question: "Why do deductions often create \"upside-down\" subsidies compared with refundable credits?",
+        options: [
+          "A. Deductions are only available to low-income taxpayers",
+          "B. The value of a deduction rises with the taxpayer's marginal rate, so higher-bracket taxpayers get larger dollar benefits than lower-bracket taxpayers for the same deduction amount",
+          "C. Credits are always smaller than deductions",
+          "D. Deductions are refundable; credits are not"
+        ],
+        correct: 1,
+        explanation: "Because deductions reduce taxable income, their value equals the deduction amount times the marginal tax rate. High-bracket taxpayers therefore get more benefit from the same deduction than low-bracket taxpayers."
+      },
+      {
+        question: "Which of the following best describes the difference between refundable and nonrefundable credits?",
+        options: [
+          "A. Nonrefundable credits can exceed tax liability; refundable credits cannot",
+          "B. Refundable credits can generate a refund even when tax liability is zero; nonrefundable credits are limited to reducing liability to zero",
+          "C. Refundable credits are only for corporations; nonrefundable only for individuals",
+          "D. There is no practical difference"
+        ],
+        correct: 1,
+        explanation: "A refundable credit can exceed tentative tax and generate a net payment to the taxpayer. A nonrefundable credit can only reduce tax liability down to zero; any excess is generally lost or carried forward subject to rules."
+      },
+      {
+        question: "Which statement best captures why § 61 is your default starting point for fringe benefits?",
+        options: [
+          "A. Section 61 excludes all noncash benefits",
+          "B. Section 61 includes all accessions to wealth unless a specific Code provision excludes them, so most fringe benefits are income unless an exclusion like § 119 or § 132 applies",
+          "C. Section 61 applies only to cash compensation",
+          "D. Fringe benefits are governed exclusively by state law"
+        ],
+        correct: 1,
+        explanation: "Section 61 defines gross income broadly. You start from inclusion and then look for specific exclusions for meals, lodging, or fringes. Without an exclusion, a fringe is usually taxable compensation."
+      },
+      {
+        question: "Which of the following best summarizes Duberstein’s contribution to the definition of a \"gift\" under § 102?",
+        options: [
+          "A. Gifts are any transfers between family members",
+          "B. A gift turns entirely on the labels the parties use",
+          "C. A \"gift\" depends on the transferor's dominant motive of detached and disinterested generosity, judged by an objective evaluation of all the facts and circumstances",
+          "D. Any transfer under $25 is automatically a gift"
+        ],
+        correct: 2,
+        explanation: "Duberstein emphasizes that gifts must spring from detached and disinterested generosity, not compensation or business motives, and that courts must look to objective facts rather than the parties’ labels."
+      },
+      {
+        question: "Why is § 1014 particularly valuable for very wealthy taxpayers using \"buy, borrow, die\"?",
+        options: [
+          "A. It allows them to deduct all personal consumption",
+          "B. It steps up basis of appreciated assets to fair market value at death, effectively wiping out income tax on accrued but unrealized gains",
+          "C. It permits unlimited loss carrybacks",
+          "D. It exempts all dividend income from tax"
+        ],
+        correct: 1,
+        explanation: "Section 1014 gives a FMV basis at death, eliminating income tax on lifetime appreciation if assets are held until death. Combined with realization and preferential capital gains, this is central to the buy–borrow–die strategy."
+      },
+      {
+        question: "Which of the following best explains why realization matters for the timing of income tax liability?",
+        options: [
+          "A. Realization creates economic gain that did not exist before",
+          "B. Realization allows the IRS to ignore changes in value",
+          "C. Realization determines when existing economic gain is taken into account; deferring realization defers tax and thus lowers its present value",
+          "D. Realization applies only to wage income"
+        ],
+        correct: 2,
+        explanation: "Realization events (like sales or exchanges) are the trigger for recognizing many gains. Delaying realization pushes tax payments into the future, which is valuable because of the time value of money."
+      },
+      {
+        question: "Which of the following best describes the holding of Cesarini regarding treasure trove?",
+        options: [
+          "A. Treasure trove is never taxable under § 61",
+          "B. Treasure trove is taxable as gross income when reduced to undisputed possession, generally in the year discovered",
+          "C. Treasure trove is taxed only when sold",
+          "D. Treasure trove is always excluded as a gift"
+        ],
+        correct: 1,
+        explanation: "Cesarini holds that found cash is gross income under § 61 when the taxpayer reduces it to undisputed possession, typically in the year of discovery."
+      },
+      {
+        question: "Which of the following best explains the constitutional concern in Eisner v. Macomber?",
+        options: [
+          "A. Whether Congress could tax gifts",
+          "B. Whether a pro rata stock dividend constituted \"income\" under the 16th Amendment or was merely a rearrangement of capital",
+          "C. Whether realization was required for any tax",
+          "D. Whether corporate distributions were deductible"
+        ],
+        correct: 1,
+        explanation: "Macomber asked whether a stock dividend was income or simply a capitalization of earnings. The Court treated it as not income for 16th Amendment purposes, raising questions about realization as a constitutional requirement."
+      },
+      {
+        question: "Which of the following best states the basic rule of § 108(e)(5) (purchase price adjustment)?",
+        options: [
+          "A. It treats all COD as tax-free",
+          "B. It recharacterizes certain reductions of purchase-money debt owed to the seller, when the buyer is solvent and still owns the property, as a reduction in purchase price rather than COD income, thereby reducing basis",
+          "C. It converts capital gains into ordinary income",
+          "D. It applies only in bankruptcy"
+        ],
+        correct: 1,
+        explanation: "Section 108(e)(5) provides that if the original seller reduces qualifying purchase-money debt and the buyer is solvent and still owns the property, the reduction is treated as a purchase price adjustment, reducing basis rather than generating COD income."
+      },
+      {
+        question: "Which of the following best captures the \"Crane parity\" principle?",
+        options: [
+          "A. Nonrecourse and recourse debt are entirely different for all purposes of the Code",
+          "B. Nonrecourse debt is ignored for basis but included in amount realized",
+          "C. Nonrecourse and recourse debt are generally treated the same for basis and amount realized, so nonrecourse debt can both increase basis and generate gain when relieved",
+          "D. Nonrecourse debt never affects amount realized"
+        ],
+        correct: 2,
+        explanation: "Crane treats nonrecourse debt like recourse debt for basis and amount realized: it can increase basis and, when relieved, be included in the amount realized upon disposition, which set the stage for shelter structures."
+      },
+      {
+        question: "Which of the following is a central concern in Welch v. Helvering about what counts as an \"ordinary and necessary\" business expense under § 162?",
+        options: [
+          "A. Whether any advertising costs are deductible",
+          "B. Whether payments to restore reputation and goodwill resemble capital or personal expenditures rather than routine business expenses",
+          "C. Whether wages are deductible",
+          "D. Whether rent is deductible"
+        ],
+        correct: 1,
+        explanation: "Welch held that extraordinary payments to restore reputation and goodwill were not ordinary business expenses; they looked more like capital or personal expenditures, narrowing the scope of § 162."
+      },
+      {
+        question: "Why does the Code tend to favor business owners over employees in deducting work-related expenses?",
+        options: [
+          "A. Business owners cannot deduct any expenses",
+          "B. Business expenses of owners are generally deducted \"above the line,\" while many employee business expenses are miscellaneous itemized deductions, currently disallowed under § 67(g)",
+          "C. Employees can fully deduct all commuting expenses",
+          "D. Owners must capitalize all expenses"
+        ],
+        correct: 1,
+        explanation: "Business owners typically deduct ordinary and necessary expenses above the line. Employee business expenses are much harder to deduct and, during the § 67(g) suspension, many are not deductible at all, creating asymmetry."
+      },      {
+        question: "Why is it generally difficult for a taxpayer to challenge a new tax expenditure (like a clean energy credit) in federal court?",
+        options: [
+          "A. Courts lack jurisdiction over any tax-related cases",
+          "B. Taxpayers almost never have Article III standing to complain that someone else’s tax break increases their taxes",
+          "C. The IRS must consent before any tax suit is filed",
+          "D. The Constitution prohibits review of tax credits"
+        ],
+        correct: 1,
+        explanation: "Standing doctrine generally requires a concrete, particularized injury. Someone who simply dislikes that others receive a tax credit usually lacks standing, so many tax expenditures are effectively insulated from judicial review."
+      },
+      {
+        question: "Which statement best describes the main distributional concern with the Earned Income Tax Credit (EITC) raised by the Goldin–Ho audit paper?",
+        options: [
+          "A. The EITC is only available to White taxpayers",
+          "B. The EITC creates no compliance problems",
+          "C. Algorithms that heavily target refundable credits like the EITC can disproportionately flag Black taxpayers for audits, even when controlling for income",
+          "D. The EITC is administered entirely by state governments"
+        ],
+        correct: 2,
+        explanation: "Goldin and Ho show that audit-selection practices that focus on refundable credits and certain filing characteristics produce racialized audit patterns, with disproportionate scrutiny of Black taxpayers."
+      },
+      {
+        question: "Under § 32(k), why can the IRS deny a correctly calculated EITC in a later year to a taxpayer like Ted who previously claimed the credit improperly?",
+        options: [
+          "A. Because the EITC is a one-time-only credit",
+          "B. Because § 32(k) allows the IRS to disallow the credit for up to 10 years if there was prior reckless or intentional disregard of the rules",
+          "C. Because EITC claimants automatically lose eligibility after any audit",
+          "D. Because the EITC applies only to wage earners under age 25"
+        ],
+        correct: 1,
+        explanation: "Section 32(k) penalizes prior reckless or fraudulent EITC claims by allowing the IRS to bar the taxpayer from claiming the credit in subsequent years, even if the later-year numbers would otherwise qualify."
+      },
+      {
+        question: "Which of the following is the best description of the \"dominant business purpose\" reasoning in Gotcher?",
+        options: [
+          "A. Any employer-paid travel is always taxable income",
+          "B. A trip is non-taxable only if there is absolutely no personal enjoyment",
+          "C. If the dominant purpose of an employer-paid trip is to benefit the employer’s business, the court may treat the whole trip as non-taxable to the employee rather than trying to allocate business vs personal components",
+          "D. Trips are non-taxable only when the employee pays for them upfront"
+        ],
+        correct: 2,
+        explanation: "The Fifth Circuit in Gotcher focused on the dominant business purpose, effectively adopting an all-or-nothing approach rather than granularly allocating between business and personal enjoyment for that fact pattern."
+      },
+      {
+        question: "Why does the Code contain both § 119 (meals and lodging) and § 132 (fringe benefits)?",
+        options: [
+          "A. They cover identical ground and one is redundant",
+          "B. § 119 covers meals and lodging provided for the employer’s convenience, while § 132 provides targeted exclusions for specified fringes like no-additional-cost services and working condition fringes",
+          "C. § 119 applies only to independent contractors",
+          "D. § 132 covers only cash benefits"
+        ],
+        correct: 1,
+        explanation: "Section 119 narrowly covers meals and lodging furnished for the employer’s convenience and as a condition of employment. Section 132 adds categorical fringe exclusions (no-additional-cost services, discounts, working condition fringes, de minimis fringes), addressing different line-drawing problems."
+      },
+      {
+        question: "In Notice 2011-72 and related guidance, why does Treasury generally treat employer-provided cell phones as excludable working condition fringes when used primarily for business?",
+        options: [
+          "A. Because personal cell phone use is always deductible",
+          "B. Because Congress explicitly excluded cell phones from gross income in § 61",
+          "C. Because treating employer-provided phones as business items with incidental personal use simplifies administration and reflects that most value is business-related, whereas self-purchased phones are harder to police and may be largely personal",
+          "D. Because the IRS no longer audits cell phone expenses"
+        ],
+        correct: 2,
+        explanation: "The Notice acknowledges administrative difficulty and the predominately business character of many employer-provided phones. It thus allows excludable treatment as working condition fringes while not granting symmetric deductions for self-purchased phones."
+      },
+      {
+        question: "In the Weisselberg/Trump Organization example, which feature most clearly signals tax fraud rather than legitimate fringe-benefit planning?",
+        options: [
+          "A. Providing any in-kind benefits at all",
+          "B. Failing to report substantial benefits (like apartments or tuition), disguising them as business expenses, and extending them to family members without proper inclusion or reporting",
+          "C. Offering discounted meals to employees at the company cafeteria",
+          "D. Allowing employees to use office printers for personal tasks"
+        ],
+        correct: 1,
+        explanation: "The problem was not merely that fringe benefits were provided, but that large personal benefits were systematically mischaracterized and unreported as income, including benefits to family members, which looks like classic evasion."
+      },
+      {
+        question: "What is the core policy justification for § 132(a)(1) (no-additional-cost services), such as letting airline employees fly on empty seats?",
+        options: [
+          "A. These benefits are impossible to value in all cases",
+          "B. They reflect services that cost the employer essentially nothing at the margin and are relatively easy to police as an exclusion",
+          "C. They are always small in value",
+          "D. They apply only to government employees"
+        ],
+        correct: 1,
+        explanation: "No-additional-cost services are benefits an employer can provide without incurring significant extra cost—e.g., filling empty airline seats. This makes exclusion administratively attractive and arguably equitable given the low marginal cost."
+      },
+      {
+        question: "Which of the following best summarizes the dual-basis rule for gifted property under § 1015 in a loss scenario?",
+        options: [
+          "A. The donee always takes donor’s basis, even for loss",
+          "B. The donee always takes FMV at the time of gift",
+          "C. For gain, the donee uses the donor’s basis; for loss, the donee uses FMV at the time of the gift, creating a no-gain/no-loss band when the sale price falls between those amounts",
+          "D. The donee has zero basis until sale"
+        ],
+        correct: 2,
+        explanation: "Section 1015 uses carryover basis for gain but FMV at gift for loss. If sale price lies between FMV and donor’s basis, no gain or loss is recognized, preventing artificial loss claims."
+      },
+      {
+        question: "Which combination of rules is central to the classic \"buy, borrow, die\" strategy?",
+        options: [
+          "A. Immediate expensing of all consumption, estate-tax inclusion, and payroll tax",
+          "B. Realization requirement, preferential capital gains rates, and § 1014 step-up at death",
+          "C. Mark-to-market taxation, high ordinary rates, and no step-up",
+          "D. VAT-style consumption tax, no borrowing, and mandatory annuitization"
+        ],
+        correct: 1,
+        explanation: "Buy–borrow–die exploits (1) realization (no tax until sale), (2) lower capital gains rates compared to labor, and (3) basis step-up at death, which erases accrued gains if the asset is never sold during life."
+      },
+      {
+        question: "Which type of asset is generally LEAST well-suited to a buy–borrow–die strategy?",
+        options: [
+          "A. High-growth, low-dividend stock",
+          "B. Appreciating real estate financed with moderate leverage",
+          "C. A savings account that pays fully taxable interest each year",
+          "D. Closely held company stock expected to appreciate significantly"
+        ],
+        correct: 2,
+        explanation: "Savings accounts produce fully taxable interest annually, leaving less untaxed appreciation to benefit from deferral and step-up. High-growth, low-payout assets are better suited for buy–borrow–die."
+      },
+      {
+        question: "In Cottage Savings, why did the Supreme Court accept the \"legally distinct entitlements\" test as sufficient to create a realization event?",
+        options: [
+          "A. Because the economic risk changed drastically",
+          "B. Because the Code requires a change in legal entitlements, not necessarily a large economic shift, for realization upon exchange",
+          "C. Because the parties labeled the exchange a sale",
+          "D. Because the loans were worthless"
+        ],
+        correct: 1,
+        explanation: "Cottage Savings held that exchanging participation interests in different mortgage pools created legally distinct entitlements, which is enough to trigger realization even if the economic risk profile is very similar."
+      },
+      {
+        question: "Which of the following best captures the Supreme Court’s characterization of its holding in Moore v. United States regarding realization?",
+        options: [
+          "A. Moore overruled Macomber and held that realization is never required",
+          "B. Moore constitutionalized a strict realization requirement for all taxes",
+          "C. Moore described its holding as narrow, upholding the specific mandatory repatriation tax at issue without broadly resolving whether realization is constitutionally required in all contexts",
+          "D. Moore held that only wage income can be taxed without realization"
+        ],
+        correct: 2,
+        explanation: "The majority in Moore emphasized the narrowness of its holding, approving the MRT on the particular facts while avoiding a sweeping pronouncement on whether realization is always required by the 16th Amendment."
+      },
+      {
+        question: "In the BigCorp bond repurchase example (buying back $1,000 face-value debt for $300), how is the $700 difference treated under § 61(a)(11), absent an exclusion?",
+        options: [
+          "A. It is a nontaxable capital contribution",
+          "B. It is cancellation-of-debt (COD) income to BigCorp",
+          "C. It is a tax-free return of capital",
+          "D. It is deductible interest expense"
+        ],
+        correct: 1,
+        explanation: "When a debtor repurchases its own debt for less than face value, the difference is generally COD income under § 61(a)(11), unless an exclusion like bankruptcy or insolvency applies in § 108."
+      },
+      {
+        question: "How do you compute the amount of insolvency under § 108(d)(3) for purposes of the insolvency exclusion?",
+        options: [
+          "A. Insolvency = total income − total deductions",
+          "B. Insolvency = total debts − total assets, taken as a positive number only to the extent debts exceed assets",
+          "C. Insolvency = adjusted gross income − standard deduction",
+          "D. Insolvency = total assets − total debts"
+        ],
+        correct: 1,
+        explanation: "Insolvency is measured as the excess of liabilities over the fair market value of assets immediately before the discharge. The amount of COD excludable under § 108(a)(3) is capped by this insolvency amount."
+      },
+      {
+        question: "Why does § 108(b) require reduction of tax attributes (such as NOLs or basis) when COD income is excluded under § 108(a)?",
+        options: [
+          "A. To punish insolvent taxpayers",
+          "B. To ensure that excluded COD is never taxed, even indirectly",
+          "C. To preserve the idea that excluded COD will often be effectively taxed later, by reducing attributes that would otherwise shelter future income",
+          "D. To avoid any computational complexity"
+        ],
+        correct: 2,
+        explanation: "Attribute reduction is a tradeoff: taxpayers avoid immediate tax on COD but must give up future tax benefits (like NOLs or basis), approximating the idea that income should eventually be taxed if their financial situation improves."
+      },
+      {
+        question: "What abuse is § 108(e)(4) (related-party acquisition) primarily designed to prevent?",
+        options: [
+          "A. Using family members to deduct the same expense twice",
+          "B. Having a related party buy the taxpayer’s debt at a discount to avoid recognizing COD income at the debtor level",
+          "C. Using gift transfers to avoid estate tax",
+          "D. Double-basis rules for gifts"
+        ],
+        correct: 1,
+        explanation: "Without § 108(e)(4), a debtor could arrange for a related party to acquire its debt for a discount, effectively escaping COD. The statute treats the acquisition as if the debtor had repurchased the debt and realized COD."
+      },
+      {
+        question: "Which of the following is a key move in the Third Circuit’s reasoning in Zarin to avoid COD income?",
+        options: [
+          "A. The court held that COD income is unconstitutional",
+          "B. The court treated the casino chips as having no definite value or the debt as unenforceable/disputed, undermining the premise that a bona fide debt was being discharged",
+          "C. The court found that Zarin was insolvent in every case",
+          "D. The court relied solely on the purchase price adjustment rules"
+        ],
+        correct: 1,
+        explanation: "Zarin leans on ideas of unenforceable or disputed debt and the peculiar status of gambling chips to argue against classic COD treatment. This reasoning is controversial and fact-specific."
+      },
+      {
+        question: "Why would the outcome almost certainly differ if Zarin had borrowed $3.5M from a bank instead of receiving gambling credit from the casino?",
+        options: [
+          "A. Bank loans are never enforceable",
+          "B. Bank debt would almost certainly be a valid, enforceable obligation with a definite principal amount, making any discount settlement classic COD income absent a § 108 exclusion",
+          "C. Casino loans are always COD income but bank loans are not",
+          "D. Zarin would automatically qualify for bankruptcy"
+        ],
+        correct: 1,
+        explanation: "A standard bank loan has a clear face amount and enforceable terms; settling for less would ordinarily create straightforward COD income under § 61(a)(11) unless bankruptcy or insolvency exclusions apply."
+      },
+      {
+        question: "Which of the following was a key pre-Crane principle about borrowing and basis?",
+        options: [
+          "A. Borrowed funds are gross income when received",
+          "B. Repayment of principal is deductible under § 162",
+          "C. Borrowed funds are not income when received, but bona fide debt used to acquire property can be included in the property's cost basis",
+          "D. Nonrecourse debt is ignored for all tax purposes"
+        ],
+        correct: 2,
+        explanation: "Traditional principles: loan proceeds are not income; principal repayment is not deductible; but debt used to acquire property is part of cost basis. Crane applied those ideas to nonrecourse mortgages."
+      },
+      {
+        question: "What was the core \"double-dip\" concern in Crane?",
+        options: [
+          "A. Taxpayers were double-counting itemized deductions",
+          "B. The taxpayer had taken depreciation deductions on property financed by nonrecourse debt and then wanted to avoid including the outstanding debt in amount realized on disposition",
+          "C. The IRS tried to tax the same income twice",
+          "D. The case involved two separate properties"
+        ],
+        correct: 1,
+        explanation: "Crane involved a taxpayer who used the full nonrecourse mortgage to inflate basis for depreciation but then argued that the debt should not be reflected in amount realized upon transfer, effectively allowing a one-way benefit."
+      },
+      {
+        question: "What is the basic economic difference between recourse and nonrecourse debt that matters for tax shelter design?",
+        options: [
+          "A. Recourse debt is always smaller",
+          "B. With recourse debt, the borrower is personally liable beyond the collateral; with nonrecourse debt, the lender’s only remedy is to take the collateral, which can make nonrecourse financing attractive for basis and loss-engineering strategies",
+          "C. Nonrecourse debt is illegal for real estate",
+          "D. Recourse debt cannot be used in business"
+        ],
+        correct: 1,
+        explanation: "Nonrecourse debt limits the lender to the collateral, so if the collateral’s value falls, the borrower can walk away. Treating nonrecourse and recourse debt symmetrically for basis and amount realized created shelter opportunities."
+      },
+      {
+        question: "In Tufts, how did the taxpayers use nonrecourse debt to obtain a favorable timing and character outcome?",
+        options: [
+          "A. They avoided paying any debt",
+          "B. They claimed large depreciation deductions based on a high nonrecourse mortgage, then later recognized gain characterized as capital when the property was transferred and the debt was discharged",
+          "C. They converted capital gains into ordinary income",
+          "D. They avoided all recognition of gain"
+        ],
+        correct: 1,
+        explanation: "Tufts allowed taxpayers to take large ordinary depreciation deductions based on an inflated nonrecourse debt and then later recognized gain (via debt relief) that was capital, creating a desirable ordinary-deduction/capital-gain conversion."
+      },
+      {
+        question: "Which of the following best describes the policy concern behind § 469 (passive activity loss rules) enacted in 1986?",
+        options: [
+          "A. To allow unlimited use of passive losses against wage income",
+          "B. To curtail tax shelters that used passive losses from highly leveraged investments to offset high ordinary income from wages or active businesses",
+          "C. To eliminate all depreciation deductions",
+          "D. To convert all capital gains to ordinary income"
+        ],
+        correct: 1,
+        explanation: "Section 469 was aimed squarely at tax shelters that produced large paper losses (often from nonrecourse-financed real estate) to shelter unrelated active or wage income."
+      },
+      {
+        question: "In Gilliam, why were the legal expenses related to the in-flight assault not deductible as business expenses under § 162?",
+        options: [
+          "A. Because traveling for work is never a business expense",
+          "B. Because the assault was viewed as arising from a personal, nonbusiness act (even if influenced by mental illness), breaking the necessary business nexus",
+          "C. Because legal fees are never deductible",
+          "D. Because Gilliam was not self-employed"
+        ],
+        correct: 1,
+        explanation: "The court saw the assault as a personal act, not sufficiently connected to the profit-seeking aspects of the trip, so the associated legal expenses were treated as personal rather than business-related."
+      },
+      {
+        question: "What problem is the \"independent investor\" test in Exacto Spring trying to address in reasonable-compensation cases?",
+        options: [
+          "A. Whether the shareholder is also an employee",
+          "B. Whether courts have the expertise to micro-manage salary comparisons, and instead should ask whether a hypothetical independent investor would be satisfied with the company’s rate of return after paying the executive",
+          "C. Whether the IRS can tax corporations",
+          "D. Whether dividends are deductible"
+        ],
+        correct: 1,
+        explanation: "The independent-investor test tries to avoid subjective, case-by-case micromanagement of salaries by asking whether residual returns to equity are sufficient; if so, high compensation is more likely to be \"reasonable.\""
+      },
+      {
+        question: "Why did the Fifth Circuit in Pevsner adopt an objective \"suitable for general wear\" test for work clothing?",
+        options: [
+          "A. Because subjective testimony about off-duty use is easy to verify",
+          "B. To allow deductions for any clothing worn on the job",
+          "C. To avoid administratively unmanageable inquiries into each taxpayer’s subjective habits and instead look at whether the clothing is objectively adaptable to ordinary street wear",
+          "D. To ensure that fashion expenses are always deductible"
+        ],
+        correct: 2,
+        explanation: "The court chose an objective test—if clothing is suitable for general wear, it is nondeductible as personal, regardless of the taxpayer’s actual usage pattern—to promote administrability and uniformity, though this has gender and class implications."
+      },
+      {
+        question: "Why does the nondeductibility of many \"costs of working\" (like child care and commuting) raise horizontal equity concerns?",
+        options: [
+          "A. Because business owners pay more tax than employees",
+          "B. Because two taxpayers with the same gross income may face very different net resources depending on unavoidable work-related costs, yet the Code often treats those costs as personal and nondeductible",
+          "C. Because commuting expenses are always reimbursed by employers",
+          "D. Because itemizers always pay less tax"
+        ],
+        correct: 1,
+        explanation: "If one worker must incur large child-care or commuting costs while another with similar income does not, treating those costs as personal can put them in different after-tax positions despite similar pre-tax earnings."
+      },
+      {
+        question: "Conceptually, why does an income tax require capitalization (rather than immediate deduction) of some expenditures?",
+        options: [
+          "A. To punish long-term investment",
+          "B. Because all expenses should be capitalized",
+          "C. Because allowing immediate deduction for costs that create long-lived assets would effectively move the system toward a consumption-tax treatment, understating income in early years",
+          "D. Because depreciation schedules are simpler than current deductions"
+        ],
+        correct: 2,
+        explanation: "Capitalization aligns cost recovery with the period over which an asset produces income. Immediate expensing of long-lived investments would tilt the system toward consumption taxation."
+      },
+      {
+        question: "In the \"Alstott’s fridge\" example (business refrigerator), which timing pattern most closely matches a Haig–Simons-consistent deduction?",
+        options: [
+          "A. Deduct the entire cost in the year of purchase, regardless of useful life",
+          "B. Deduct nothing until the asset is sold",
+          "C. Spread the deduction over the asset’s economic useful life in line with its contribution to income each year",
+          "D. Deduct the cost only if the business is profitable"
+        ],
+        correct: 2,
+        explanation: "A Haig–Simons approach would match deductions to actual economic decline in value or contribution to production over time, which real-world depreciation schedules imperfectly approximate."
+      },
+      {
+        question: "Which concern is most salient when evaluating a proposal for a 10% deduction for \"work clothing\"?",
+        options: [
+          "A. It will be impossible to enforce payroll withholding",
+          "B. Defining \"work clothing\" in a way that is administrable, not regressive (favoring high-income professionals), and not easily gamed by recharacterizing ordinary consumption as deductible",
+          "C. It will only benefit minimum-wage workers",
+          "D. It raises no serious distributional or administrative issues"
+        ],
+        correct: 1,
+        explanation: "A work-clothing deduction raises line-drawing and equity problems: who qualifies (scrubs vs suits), how to prevent abuse, and whether the benefit would skew toward higher-income workers with expensive wardrobes."
+      },   {
+        question: "Which of the following best describes a realization-based income tax (under current U.S. rules)?",
+        options: [
+          "A. Tax is imposed each year on all changes in wealth, realized or not",
+          "B. Tax is imposed only when there is a sale or other disposition that meets a realization event, even if wealth has changed earlier",
+          "C. Tax is imposed only at death",
+          "D. Tax is imposed only on consumption spending"
+        ],
+        correct: 1,
+        explanation: "The U.S. income tax generally follows a realization principle: most asset appreciation is not taxed until there is a sale or other realization event, even though economic income may have accrued earlier."
+      },
+      {
+        question: "Which of the following best describes a pure mark-to-market tax system for publicly traded stock?",
+        options: [
+          "A. Tax is only due at the moment of sale",
+          "B. Tax is due only when dividends are paid",
+          "C. Each year, unrealized gains and losses are treated as if realized and included in income",
+          "D. Only losses are recognized annually; gains are deferred"
+        ],
+        correct: 2,
+        explanation: "Under mark-to-market, all changes in value are treated as if realized each year. Unrealized gains and losses are included in annual income, even without a sale."
+      },
+      {
+        question: "Suppose a taxpayer buys stock for $100. After Year 1, it is worth $130; after Year 2, it is worth $120, and the taxpayer sells at the end of Year 2 for $120. Under a pure realization system, what total gain is taxed (ignoring time value of money)?",
+        options: [
+          "A. $0",
+          "B. $10",
+          "C. $20",
+          "D. $30"
+        ],
+        correct: 1,
+        explanation: "Under realization, only the sale matters. The stock is purchased for $100 and sold for $120, so the total taxable gain is $20, regardless of the Year 1 value swing up to $130."
+      },
+,
+      {
+        question: "Which of the following is a classic efficiency concern with a realization-based system but is mitigated under mark-to-market?",
+        options: [
+          "A. Liquidity constraints",
+          "B. Valuation difficulty for nontraded assets",
+          "C. The lock-in effect, where investors hold appreciated assets to defer tax",
+          "D. Complexity of computing basis"
+        ],
+        correct: 2,
+        explanation: "Realization-based taxation encourages investors to hold onto appreciated assets to avoid triggering tax (‘lock-in’). Mark-to-market taxes gains as they accrue, reducing the incentive to defer sales for tax reasons."
+      },
+      {
+        question: "Which of the following is a central *practical* objection to applying full mark-to-market taxation to all assets?",
+        options: [
+          "A. It is too easy for taxpayers",
+          "B. Many assets are hard to value annually and may not generate cash flow to pay the tax",
+          "C. The Constitution clearly forbids mark-to-market",
+          "D. It can only be applied to wage income"
+        ],
+        correct: 1,
+        explanation: "Mark-to-market raises serious valuation and liquidity problems for nontraded or illiquid assets (closely held businesses, real estate, art), because values are hard to measure yearly and taxpayers may not have cash to pay the tax."
+      },
+      {
+        question: "In a realization-based system, why does deferral of tax on unsold appreciated assets create an advantage relative to mark-to-market?",
+        options: [
+          "A. Because the tax rate is always lower under realization",
+          "B. Because deferral allows the taxpayer to earn a return on money that would otherwise already have been paid in tax, effectively lowering the present value of the tax burden",
+          "C. Because deferral guarantees that gain will never be taxed",
+          "D. Because realization taxes are not legally enforceable"
+        ],
+        correct: 1,
+        explanation: "Deferral lets the taxpayer invest the government’s implicit share of the gain until realization. The present value of tax is lower when payment is postponed, all else equal, given positive interest rates."
+      },
+      {
+        question: "Which of the following is LEAST consistent with a Haig–Simons concept of income?",
+        options: [
+          "A. Including unrealized appreciation in annual income",
+          "B. Taxing all consumption plus change in net wealth over the period",
+          "C. Excluding unrealized capital gains until a realization event like a sale",
+          "D. Including employer-paid taxes as income to the employee"
+        ],
+        correct: 2,
+        explanation: "Haig–Simons would conceptually include unrealized gains. Deferring tax until realization is a departure from that ideal, driven by administrative and political considerations."
+      },
+      {
+        question: "Which best describes the \"lock-in\" effect associated with realization-based capital gains taxation?",
+        options: [
+          "A. Taxpayers are locked out of capital markets",
+          "B. Taxpayers are locked into underreporting wage income",
+          "C. Taxpayers delay selling appreciated assets to postpone tax, even when it might be efficient to rebalance their portfolio",
+          "D. Taxpayers are locked into their current tax bracket"
+        ],
+        correct: 2,
+        explanation: "Because tax is triggered by realization, investors may hold onto appreciated assets longer than is economically optimal to avoid or delay paying tax, distorting portfolio decisions."
+      },
+      {
+        question: "Which is a potential *distributional* concern with introducing mark-to-market taxation only for very wealthy taxpayers’ tradeable assets (e.g., a high-wealth threshold)?",
+        options: [
+          "A. It would only benefit low-income taxpayers",
+          "B. It could create horizontal equity concerns among wealthy taxpayers just above and just below the threshold",
+          "C. It would be unconstitutional under the Sixteenth Amendment",
+          "D. It would force all taxpayers into the same marginal rate"
+        ],
+        correct: 1,
+        explanation: "A sharp threshold may create inequities between similarly situated high-wealth taxpayers just above and below the cutoff, raising horizontal equity concerns and boundary-gaming incentives."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(question, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === question.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = question.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

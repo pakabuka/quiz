@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Federal Income Tax – Deductions Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+    #result-screen {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Federal Income Tax</h4>
+      <h5 style="text-align: center;">Deductions</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+    <footer>
+      © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Which of the following BEST describes an \"ordinary and necessary\" business expense under § 162?",
+        options: [
+          "A. An expense that is useful and common in the taxpayer's trade or business",
+          "B. Any expense that produces a tax benefit",
+          "C. Any expense that the taxpayer subjectively believes is helpful",
+          "D. Only expenses that are capital in nature"
+        ],
+        correct: 0,
+        explanation: "§ 162 allows a deduction for \"ordinary and necessary\" expenses paid or incurred in carrying on a trade or business. Ordinary means common or frequent in the industry; necessary means appropriate and helpful."
+      },
+      {
+        question: "Which of the following is a classic § 162 trade or business expense (above-the-line) rather than a nondeductible personal expense under § 262?",
+        options: [
+          "A. Commuting costs from home to the office",
+          "B. Business travel from the office to visit a client in another city",
+          "C. Cost of ordinary clothing suitable for street wear",
+          "D. Costs of daily lunches eaten near the office for convenience"
+        ],
+        correct: 1,
+        explanation: "Travel away from home in pursuit of business is generally deductible under § 162(a)(2). Commuting, ordinary clothing, and personal meals are typically nondeductible personal living expenses under § 262."
+      },
+      {
+        question: "Which provision is most associated with investment-related expenses that are not part of a trade or business?",
+        options: [
+          "A. § 162",
+          "B. § 212",
+          "C. § 262",
+          "D. § 274"
+        ],
+        correct: 1,
+        explanation: "§ 212 allows deductions for expenses incurred for the production or collection of income, managing property held for income, etc., when the taxpayer is not in a trade or business. § 162 covers trade or business; § 262 disallows personal; § 274 imposes limitations."
+      },
+      {
+        question: "Which statement BEST captures the difference between a deductible repair and a capital improvement?",
+        options: [
+          "A. Repairs increase value; improvements merely maintain value",
+          "B. Repairs maintain property in ordinarily efficient operating condition; improvements add value or extend useful life and must be capitalized",
+          "C. Both are fully deductible under § 162",
+          "D. Both must always be capitalized into basis"
+        ],
+        correct: 1,
+        explanation: "Repairs that simply keep property in ordinarily efficient operating condition are deductible. Improvements that materially add value or prolong useful life are capital expenditures that must be capitalized under § 263."
+      },
+      {
+        question: "T is a lawyer who buys suits to wear in court. The suits are professional and expensive, but suitable for everyday wear. How are the costs treated?",
+        options: [
+          "A. Deductible as trade or business expenses under § 162",
+          "B. Capitalizable and depreciable",
+          "C. Nondeductible personal expenses under § 262",
+          "D. Deductible only to the extent they exceed 2% of AGI"
+        ],
+        correct: 2,
+        explanation: "Work clothing is deductible only if not suitable for general use and required as a condition of employment. Professional suits are typically considered personal and nondeductible under § 262."
+      },
+      {
+        question: "Which of the following is an ABOVE-the-line deduction (for AGI)?",
+        options: [
+          "A. Mortgage interest on a personal residence",
+          "B. Qualified business expenses of a sole proprietor (Schedule C)",
+          "C. Charitable contributions to a qualified charity",
+          "D. State income taxes paid"
+        ],
+        correct: 1,
+        explanation: "Business expenses of a sole proprietor are deducted above the line under § 162. Mortgage interest, charitable contributions, and state taxes are itemized deductions (below the line) if claimed."
+      },
+      {
+        question: "Which of the following medical expenses is potentially deductible under § 213 (subject to AGI floors and other limits)?",
+        options: [
+          "A. Purely cosmetic surgery to improve appearance",
+          "B. Cost of prescription drugs to treat a medical condition",
+          "C. Cost of non-prescription vitamins that the taxpayer takes for general health",
+          "D. Funeral expenses"
+        ],
+        correct: 1,
+        explanation: "§ 213 allows deductions for certain medical expenses (including prescription drugs) paid for diagnosis, cure, mitigation, treatment, or prevention of disease, subject to limits. Purely cosmetic procedures, vitamins for general health, and funeral expenses are generally not deductible."
+      },
+      {
+        question: "Taxpayer drives from home to the train station, then takes the train to her regular office. Which statement is most accurate?",
+        options: [
+          "A. All costs are deductible as business transportation",
+          "B. All costs are nondeductible commuting expenses",
+          "C. Only the train costs are deductible",
+          "D. Only the parking costs at the station are deductible"
+        ],
+        correct: 1,
+        explanation: "Costs of traveling between a taxpayer's residence and their regular place of business are nondeductible commuting expenses under § 262."
+      },
+      {
+        question: "Under § 183 (hobby loss rules), which of the following facts is most helpful to a taxpayer arguing that an activity is a trade or business rather than a hobby?",
+        options: [
+          "A. Taxpayer enjoys the activity very much",
+          "B. Activity has generated losses in 8 of the past 9 years",
+          "C. Taxpayer keeps detailed books and records and changes methods to try to improve profitability",
+          "D. Taxpayer occasionally posts about the activity on social media"
+        ],
+        correct: 2,
+        explanation: "Businesslike manner, record-keeping, and efforts to improve profitability are strong factors indicating a profit motive under § 183 regulations."
+      },
+      {
+        question: "Which of the following gifts or payments is most clearly deductible as a charitable contribution under § 170?",
+        options: [
+          "A. $1,000 given directly to a friend in financial distress",
+          "B. $500 given to a qualified 501(c)(3) charity with no goods or services received in return",
+          "C. $300 spent on raffle tickets from a charity, where taxpayer hopes to win a prize",
+          "D. Volunteer services valued at $2,000"
+        ],
+        correct: 1,
+        explanation: "Only contributions to qualified charitable organizations (like a 501(c)(3)) are deductible under § 170, and only to the extent the payment exceeds the value of any goods or services received. Gifts to individuals and the value of services are not deductible."
+      },
+      {
+        question: "T takes a trip to Hawaii that is partly for business meetings and partly vacation. Under § 162 and § 274, which statement is most accurate?",
+        options: [
+          "A. Entire trip is deductible if any business purpose is present",
+          "B. No part is deductible because of the personal element",
+          "C. Reasonable travel costs allocable to the business portion can be deductible, but pure vacation days are not",
+          "D. Only 50% of the trip is deductible by default"
+        ],
+        correct: 2,
+        explanation: "Mixed-purpose travel is handled by allocation. Only the portion properly attributable to business is deductible as an ordinary and necessary expense; purely personal vacation expenses are nondeductible."
+      },
+      {
+        question: "Home office deduction: Which requirement is central under current doctrine?",
+        options: [
+          "A. The office must be in a separate building from the home",
+          "B. The space must be used regularly and exclusively for business and be the principal place of business or used to meet clients",
+          "C. The taxpayer must have no other place where they could conduct business",
+          "D. The office must be larger than 25% of the home"
+        ],
+        correct: 1,
+        explanation: "The home office must be used regularly and exclusively for business and typically must be the principal place of business or a place where the taxpayer meets clients in the normal course of business."
+      },
+      {
+        question: "Which of the following is most clearly a nondeductible capital expenditure that must be added to basis rather than deducted currently?",
+        options: [
+          "A. Repainting a store's interior in the same color to keep it fresh",
+          "B. Replacing a broken window with a similar window",
+          "C. Adding a new wing that doubles the size of an office building",
+          "D. Paying monthly cleaning fees"
+        ],
+        correct: 2,
+        explanation: "Adding a new wing that materially increases value and useful life is a capital improvement and must be capitalized under § 263 rather than deducted currently."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(question, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === question.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = question.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

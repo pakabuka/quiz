@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Federal Income Tax – Issue Spotter Trainer (Liscow Exams)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.4;
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #e5e7eb;
+      --muted: #6b7280;
+      --danger: #b91c1c;
+      --success: #15803d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #e0f2fe, #f5f5f7 45%);
+      min-height: 100vh;
+      color: #111827;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header h1 span.logo-badge {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      align-items: center;
+      justify-content: center;
+      background: conic-gradient(from 160deg, #2563eb, #a855f7, #f97316, #2563eb);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    header .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    header .controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 0.75rem 1rem 1.25rem;
+      flex: 1;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow:
+        0 14px 38px rgba(15, 23, 42, 0.08),
+        0 4px 10px rgba(15, 23, 42, 0.06);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      max-height: calc(100vh - 100px);
+    }
+
+    .sidebar-header {
+      padding: 0.75rem 0.9rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header h2 {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .sidebar-header .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    .search-row {
+      margin-top: 0.4rem;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .search-row input {
+      flex: 1;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+
+    .search-row select {
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      background: #f9fafb;
+    }
+
+    .scenario-list {
+      padding: 0.3rem 0.25rem 0.5rem;
+      list-style: none;
+      margin: 0;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .scenario-group {
+      padding: 0.3rem 0.35rem;
+    }
+
+    .scenario-group-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .scenario-item {
+      border-radius: 12px;
+      padding: 0.45rem 0.55rem;
+      margin-bottom: 0.15rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-size: 0.8rem;
+    }
+
+    .scenario-item:hover {
+      background: #f9fafb;
+      border-color: #e5e7eb;
+    }
+
+    .scenario-item.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+
+    .scenario-item .scenario-label {
+      font-weight: 500;
+    }
+
+    .scenario-item .scenario-meta {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .detail {
+      padding: 0.9rem 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      min-height: 0;
+      max-height: calc(100vh - 100px);
+      overflow: auto;
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.3rem;
+    }
+
+    .detail-header-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .detail-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .detail-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
+      background: #f9fafb;
+      gap: 0.25rem;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1.1fr);
+      gap: 0.7rem;
+    }
+
+    @media (max-width: 900px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      padding: 0.7rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .panel h3 {
+      margin: 0 0 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .panel small {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .scenario-text {
+      white-space: pre-wrap;
+      font-size: 0.82rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.6rem;
+      font-family: inherit;
+      font-size: 0.82rem;
+      resize: vertical;
+      background: #ffffff;
+    }
+
+    .notes-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+      gap: 0.4rem;
+    }
+
+    .notes-toolbar span {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    button {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    button.danger {
+      color: var(--danger);
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+    }
+
+    .checklist {
+      max-height: 260px;
+      overflow: auto;
+      padding-right: 0.3rem;
+      margin-top: 0.2rem;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.4rem;
+      padding: 0.2rem 0.1rem;
+      border-radius: 8px;
+    }
+
+    .checklist-item:hover {
+      background: #eef2ff;
+    }
+
+    .checklist-item input[type="checkbox"] {
+      margin-top: 0.12rem;
+    }
+
+    .checklist-label {
+      font-size: 0.8rem;
+    }
+
+    .status-line {
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .status-pill {
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+    }
+
+    .status-pill.good {
+      border-color: #bbf7d0;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-pill.bad {
+      border-color: #fecaca;
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status-pill.mid {
+      border-color: #fcd34d;
+      background: #fef9c3;
+      color: #92400e;
+    }
+
+    .study-notes {
+      margin-top: 0.2rem;
+      padding: 0.45rem 0.55rem;
+      border-radius: 10px;
+      background: #eef2ff;
+      border: 1px dashed #c7d2fe;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+    }
+
+    .study-notes-toggle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .lock-message {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.35rem 0.45rem;
+      border-radius: 8px;
+      background: #f3f4f6;
+      margin-top: 0.3rem;
+    }
+
+    footer {
+      padding: 0.4rem 1.3rem 0.7rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>
+        <span class="logo-badge">FT</span>
+        Fed Income Tax – Issue Spotter Lab
+      </h1>
+      <div class="subtitle">
+        Spring 2021 • Spring 2022 • Fall 2024 – Liscow Q1 & Q2 fact patterns
+      </div>
+    </div>
+    <div class="controls">
+      <span class="pill">
+        <span class="pill-dot"></span>
+        Exam mode: <strong>Practice</strong>
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT: Scenario list -->
+    <aside class="card sidebar">
+      <div class="sidebar-header">
+        <h2>Scenarios</h2>
+        <div class="hint">Pick a sub-question, then list every issue you can see before revealing the checklist.</div>
+        <div class="search-row">
+          <input id="searchInput" type="text" placeholder="Filter: hobby, 199A, COD, etc.">
+          <select id="examFilter">
+            <option value="all">All exams</option>
+            <option value="2021">Spring 2021</option>
+            <option value="2022">Spring 2022</option>
+            <option value="2024">Fall 2024</option>
+          </select>
+        </div>
+      </div>
+      <ul id="scenarioList" class="scenario-list"></ul>
+    </aside>
+
+    <!-- RIGHT: Scenario detail -->
+    <section class="card detail">
+      <div class="detail-header">
+        <div class="detail-header-main">
+          <h2 id="detailTitle" class="detail-title">Select a scenario to begin</h2>
+          <div id="detailMeta" class="detail-meta">Spring 2021 / Spring 2022 / Fall 2024 – Q1 & Q2 issue spotters</div>
+        </div>
+        <div>
+          <span class="pill">
+            Hotkey: Press <strong>N</strong> to focus your notes
+          </span>
+        </div>
+      </div>
+
+      <div id="detailGrid" class="detail-grid" style="display:none;">
+        <div class="panel">
+          <h3>Fact Pattern</h3>
+          <small>Read as if you were in the exam. Do <em>not</em> reveal the checklist until you’ve written your own issue list.</small>
+          <div id="scenarioText" class="scenario-text" style="margin-top:0.4rem;"></div>
+        </div>
+
+        <div class="panel">
+          <div class="notes-toolbar">
+            <div>
+              <h3 style="margin:0;">Your Issue List</h3>
+              <span>Short phrases: “§183 hobby vs ToB”, “§67(g) kills hobby deduction”, etc.</span>
+            </div>
+            <div class="button-row" style="margin-top:0;">
+              <button id="focusNotesBtn" class="ghost" type="button">Focus notes</button>
+              <button id="clearNotesBtn" class="ghost" type="button">Clear</button>
+            </div>
+          </div>
+          <textarea id="notesArea" placeholder="- hobby v. trade or business?
+- §183 hobby loss limitation
+- §67(g) suspends misc itemized deductions (2018–2025)
+- gross income from prizes (§61)"></textarea>
+        </div>
+      </div>
+
+      <div id="detailLower" class="detail-grid" style="display:none;">
+        <div class="panel">
+          <div class="notes-toolbar">
+            <h3 style="margin:0;">Issue Checklist</h3>
+            <button id="revealChecklistBtn" type="button" class="ghost">Reveal checklist</button>
+          </div>
+          <small>
+            After you’ve written your own issue list, click “Reveal checklist” to see a canonical list and check what you caught.
+          </small>
+
+          <div id="checklistLockedMessage" class="lock-message">
+            Checklist is hidden for this scenario. Use the fact pattern and your notes box first. When you’re ready, click “Reveal checklist”.
+          </div>
+
+          <div id="checklistButtonsRow" class="button-row">
+            <button id="checkCoverageBtn" class="primary" type="button">Check coverage</button>
+            <button id="resetChecklistBtn" type="button">Reset checkboxes</button>
+          </div>
+
+          <div id="checklist" class="checklist"></div>
+
+          <div id="coverageStatus" class="status-line" style="display:none;">
+            <span id="coverageText"></span>
+            <span id="coveragePill" class="status-pill"></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.4rem;">
+            <h3 style="margin:0;">Study Notes</h3>
+            <span id="toggleNotesBtn" class="study-notes-toggle">Show key moves ▾</span>
+          </div>
+          <small>Use this only <em>after</em> you’ve thought it through yourself.</small>
+          <div id="studyNotes" class="study-notes" style="display:none; margin-top:0.4rem;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Tip: Treat this like timed warm-ups. Spend a few minutes per sub-question just spotting and labeling issues before checking conclusions or policy.
+  </footer>
+</div>
+
+<script>
+  // ---- DATA MODEL: All Q1 & Q2 issue-spotter subquestions ----
+  const scenarios = [
+    // ---------- SPRING 2021 – QUESTION 1 ----------
+    {
+      id: "2021-Q1A",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q1(A)",
+      label: "Armon’s horse racing hobby",
+      tags: ["hobby", "§183", "§67(g)", "itemized"],
+      prompt: `Armon races horses. It is something that he spends a few hours a week doing. He
+doesn’t have much time to horse-race because he is busy as a clothing designer. Armon
+decides to race some of his horses competitively this year and ends up taking $1,500 in
+prizes. His expenses this year for taking care of those horses were $2,000. Armon makes
+$200,000, including his work as a clothing designer and the horse-racing prizes. He
+itemizes his deductions. What are the tax implications for Armon of his horse-racing
+expenses?`,
+      issues: [
+        "Include $1,500 in prizes in gross income under § 61 (Glenshaw Glass).",
+        "Classify horse racing: trade or business under § 162 vs activity not engaged in for profit (hobby) under § 183 (Storey factors).",
+        "If hobby, § 183(b) allows deductions only up to hobby income (here max $1,500).",
+        "Hobby deductions are miscellaneous itemized deductions; § 67(g) disallows them (2018–2025).",
+        "Thus Armon gets no deduction for the $2,000 and must include the $1,500 income; hobby losses cannot shelter other income.",
+        "Consider interaction with his choice to itemize (but § 67(g) blocks the relevant deductions anyway)."
+      ],
+      notes: `Core moves:
+
+1. Decide if horse racing is ToB or hobby using Storey-style profit motive factors.  
+2. If hobby, § 183 caps deductions at income.  
+3. § 67(g) then wipes out those deductions completely for now, so he’s stuck with pure inclusion and no offset.`
+    },
+    {
+      id: "2021-Q1B",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q1(B)",
+      label: "Rui’s machine, at-risk, COD & insolvency",
+      tags: ["basis", "debt", "COD", "§108", "§465"],
+      prompt: `Rui borrows $200,000 from a bank in 2016 to buy a machine for her business to make
+facemasks. But she falls on hard times by 2019. The machine is now worth $80,000 in
+2019. She still owes $100,000 on the loan to buy the machine. But she can no longer
+make loan payments. Rui really wants to stay in business. The bank really wants her to
+stay in business too, so it reduces the amount of her debt to $20,000 and also does not
+require any payments in 2019. Her only other asset is another machine worth $5,000.
+She has no other income or deductions in 2019. What are the tax implications for Rui?`,
+      issues: [
+        "2016: Loan proceeds are not income; basis in machine is $200,000 under § 1012; Crane/Tufts.",
+        "Eligibility for immediate expensing / bonus depreciation under § 168(k); limited by § 465 at-risk rules (depends on recourse vs nonrecourse debt).",
+        "2019 workout: debt reduced from $100,000 to $20,000 → $80,000 potential cancellation-of-indebtedness (COD) income under § 61(a)(11).",
+        "Compute insolvency: compare liabilities ($100,000) to FMV assets ($80,000 + $5,000) to determine extent of exclusion under § 108(a)(1)(B).",
+        "To the extent COD is excluded under § 108, Rui must reduce tax attributes (e.g., basis in machine) under § 108(b).",
+        "Need to distinguish pure workout COD (no transfer of property) from Tufts-type sale for nonrecourse debt; here appears to be COD only."
+      ],
+      notes: `Pipeline:
+
+• Basis & potential depreciation in early years.  
+• Then workout: compute COD; test for insolvency; then attribute reduction under § 108(b).  
+
+Always ask: recourse vs nonrecourse; COD vs deemed sale; and whether at-risk rules limited prior deductions.`
+    },
+    {
+      id: "2021-Q1C",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q1(C)",
+      label: "Finnegan’s rental house – capitalization only",
+      tags: ["basis", "§263A", "Idaho Power", "AGI"],
+      prompt: `Finnegan is unmarried. For half of his time, Finnegan is a lawyer, and for the other half
+of his time, he has a real estate business. He has long had both businesses. As an
+investment in his real estate business, Finnegan buys a plot of land on Staten Island for
+$100,000 and has a new house built on it to rent out to others. He hires Construction Co.
+to build it. Construction Co. charges $30,000 for labor. Finnegan pays $80,000 for
+materials for the home, which he provides to Construction Co. Finnegan earns $1 million
+as a lawyer. All of this happens in one tax year. He takes no depreciation this year and
+has no other expenses or income. What is Finnegan’s adjusted gross income? Please
+explain your answer.`,
+      issues: [
+        "Purchase of land ($100,000) is capitalized into non-depreciable land basis under § 263A.",
+        "Construction costs for rental building (labor $30,000 + materials $80,000) must be capitalized into basis of the building under § 263A; Idaho Power analogy.",
+        "No current § 162 deduction for those costs; they are capital expenditures.",
+        "No depreciation taken this year (building just constructed, and he chooses not to claim), so zero deduction from the real estate side in this year.",
+        "AGI = $1,000,000 (lawyer income) with no offset from the construction expenditures.",
+        "Real estate investment yields future depreciation and rental income; this year it’s purely basis-building."
+      ],
+      notes: `This is “don’t be tempted to deduct build costs”:
+
+Land purchase + construction costs are capital; deduction waits until depreciation once placed in service. No repair-vs-improvement fight here; everything is clearly capital.`
+    },
+    {
+      id: "2021-Q1D",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q1(D)",
+      label: "Andrei & Pierre – health insurance + van fringe",
+      tags: ["fringe", "§132", "commute", "§106"],
+      prompt: `Andrei owns 100% of “Pass-Thru Shipping LLC,” which—not surprisingly—is taxed
+like a partnership. Andrei provided his employee Pierre with, among other things: (i)
+health insurance and (ii) a van to use. Andrei, himself, leased the van from a dealership
+for $12,000 a year. Pierre used the van to make deliveries from the warehouse to
+customers and to travel from his home to the warehouse and back, as well as for personal
+errands. The van is emblazoned with advertising for Andrei’s firm. What are the tax
+implications for Andrei and Pierre?`,
+      issues: [
+        "Andrei/LLC: deduction under § 162 for employee health insurance and van lease as ordinary and necessary business expenses.",
+        "Pierre: exclusion of employer-provided health insurance from gross income under § 106(a).",
+        "Van: analyze as working condition fringe under § 132(d); excludable only to extent Pierre would have § 162 deduction if he paid.",
+        "Business deliveries (warehouse → customers) are business miles; commuting (home → warehouse) and personal errands are nondeductible personal expenses (Flowers).",
+        "Thus only business-use portion of van is excludable; personal & commuting use must be included in Pierre’s income under § 61 and Reg. § 1.61-21.",
+        "Advertising on the van does not turn Pierre’s commuting into business travel; that benefit is incidental.",
+        "For Andrei, the full lease cost is still deductible; part of that deduction corresponds to compensation/fringe income to Pierre."
+      ],
+      notes: `Always split: employer deductibility vs employee inclusion/exclusion.
+
+The working-condition fringe mirror test: if Pierre couldn’t deduct the cost himself (commuting, personal), those miles cannot be excluded—even if the van looks very “businessy.”`
+    },
+    {
+      id: "2021-Q1E",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q1(E)",
+      label: "Kevin’s design academy – education & away-from-home",
+      tags: ["§162", "education", "Wassenaar", "away from home", "§67(g)", "§25A"],
+      prompt: `Kevin had long been a carpenter in New Haven working for Construction Co. In 2020,
+Kevin spent January and February at the Frank Lloyd Wright Academy in Spring Green,
+Wisconsin, learning to design wood furniture. Previously Kevin had mostly used the
+designs of other people when building furniture, though on occasion he made changes to
+those designs and in a few cases created his own designs from scratch. Kevin spent
+$6,000 in tuition, $3,000 renting an apartment in Spring Green, and $1,500 during the
+months he was at the Academy. After he returned to New Haven, he continued working
+most of the time for Construction Co, which did not pay for any of Kevin’s expenses at
+the Academy. What are the tax implications?`,
+      issues: [
+        "Identify Kevin’s existing ‘trade or business’: carpentry/furniture building, and whether furniture design is part of that same ToB.",
+        "Apply Wassenaar’s four-part test for deducting education under § 162 (maintains/improves skills vs qualifies for new trade or minimum requirements).",
+        "If carpentry and design are one ToB, tuition potentially deductible under § 162; if design is new trade, expenses are nondeductible personal.",
+        "Away-from-home travel: apartment rent and meals in Spring Green potentially deductible under § 162(a)(2) if trip is business-motivated and temporary (Hantzis/Andrews).",
+        "Kevin is an employee; unreimbursed employee business expenses are miscellaneous itemized deductions disallowed by § 67(g).",
+        "Meals, even if deductible, are 50% limited under § 274(n) (with 2020-specific rules).",
+        "Regardless of ToB classification, consider Lifetime Learning Credit under § 25A, subject to income limits."
+      ],
+      notes: `Fork 1: Is “furniture design” a new trade? Johnson vs Kopaigora types of line-drawing.  
+
+Fork 2: He’s an employee, so even if you win under § 162 and § 162(a)(2), § 67(g) probably kills the deduction in current law.  
+
+Don’t forget education credits as a separate track.`
+    },
+
+    // ---------- SPRING 2021 – QUESTION 2 ----------
+    {
+      id: "2021-Q2A",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q2(A)",
+      label: "Sujit’s QBID marginal rate",
+      tags: ["§199A", "QBID", "marginal rate"],
+      prompt: `Sujit is an unmarried lawyer who has a law firm that is set up as a pass-through. He
+makes $150,000 of gross income from the firm. Of that, $100,000 is a reasonable salary.
+Suppose that this puts Sujit in a 25% tax bracket, ignoring §199A. What is Sujit’s
+marginal tax rate on the income from the law firm that is not reasonable salary? Please
+explain your reasoning.`,
+      issues: [
+        "Law firm is a specified service trade or business (SSTB) for § 199A purposes.",
+        "Qualified business income (QBI) = non-wage pass-through income: $50,000; ‘reasonable salary’ is not QBI.",
+        "Check income against § 199A threshold for SSTBs: with $150,000, Sujit is under the phase-out threshold, so still eligible.",
+        "QBID = 20% of QBI → 0.20 × $50,000 = $10,000 deduction.",
+        "Marginal rate on last dollar of QBI is bracket rate minus 20% of that rate: 25% − (0.20 × 25%) = 20%.",
+        "Distinguish between marginal rate on QBI slice vs overall average tax rate."
+      ],
+      notes: `The “trick” is that being a lawyer only kills § 199A above the threshold. Below it, he gets the full 20% QBI discount.  
+
+So for each extra $1 of QBI, he effectively pays 0.8 × bracket rate.`
+    },
+    {
+      id: "2021-Q2B",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q2(B)",
+      label: "Sam’s §1231 loss + IBM stock gain",
+      tags: ["§1231", "basis", "depreciation", "capital gain"],
+      prompt: `In 2015, Sam bought a building for his business (he did not buy the land underneath the
+building). He purchased it for $300,000. Between 2015 and 2020, he takes $100,000 of
+depreciation. (Sam’s basis does not change in any other way.) In 2020, he sells the
+building for $193,000. In 2020, Sam also sells some stock in IBM for $9,000 that he had
+purchased in 2018 for $6,000. He uses the proceeds to fund a vacation. In 2020, Sam has
+$300,000 of income in wages. He has no other income or deductions (apart from the
+standard deduction). What does Sam’s 2020 adjusted gross income consist of?`,
+      issues: [
+        "Compute adjusted basis of building: $300,000 − $100,000 depreciation = $200,000 (§ 1011, § 1016).",
+        "Sale price $193,000 → realized loss of $7,000.",
+        "Building is depreciable real property used in a trade or business, held > 1 year → § 1231 asset.",
+        "§ 1231 loss is ordinary loss, not capital.",
+        "IBM stock: basis $6,000, amount realized $9,000 → $3,000 long-term capital gain.",
+        "AGI: wages $300,000 − $7,000 ordinary loss = $293,000 ordinary income; plus $3,000 LTCG.",
+        "No § 1245 recapture because no gain above adjusted basis; no use of § 1211 $3,000 cap since the loss is not capital."
+      ],
+      notes: `Two buckets:
+
+• § 1231 real property loss → ordinary.  
+• Stock → capital gain.  
+
+Keep them separate. Don’t net them as if they were all capital assets.`
+    },
+    {
+      id: "2021-Q2C",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q2(C)",
+      label: "George’s casino debt – disputed debt & COD",
+      tags: ["§165(d)", "COD", "Zarin", "disputed debt"],
+      prompt: `George went to a casino, where he borrowed $50,000 which was converted directly into
+chips. George lost all the chips playing black-jack and failed to pay the $50,000. When
+the casino sued, George claimed that he was the victim of a crooked casino employee and
+only received $30,000 worth of chips at the outset, while the employee stole the other
+$20,000. The CCTV footage of the employee makes George’s claim plausible but does
+not verify it. George and the casino settled for $35,000. What are the tax implications for
+George?`,
+      issues: [
+        "Gambling losses: deductible only to the extent of gambling winnings under § 165(d); no indication of winnings here.",
+        "Focus on cancellation-of-indebtedness income: original casino ‘loan’ = $50,000, settlement = $35,000.",
+        "Compare to Zarin: seller-financed chips + issues of enforceability under state law.",
+        "Disputed debt doctrine: where amount of indebtedness is genuinely disputed, the settlement amount is treated as the true debt; no COD income when TP pays that amount in full.",
+        "Here, George plausibly disputes whether he received $50,000 vs $30,000 of chips; settlement at $35,000 suggests genuine compromise.",
+        "Thus, likely no COD income; he is treated as having fully satisfied the disputed debt.",
+        "Jurisdictional nuance: Zarin’s ‘no COD if debt unenforceable’ theory is 3rd Cir; elsewhere COD analysis may differ, but disputed debt doctrine is broadly accepted."
+      ],
+      notes: `Key is to separate “bad debt” from “disputed principal.”  
+
+Because the amount of the obligation is genuinely in dispute, the settled amount is treated as the real debt; paying it off does not create COD income—even though the nominal original line of credit was higher.`
+    },
+    {
+      id: "2021-Q2D",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q2(D)",
+      label: "Eve & Maria – above-market rent and kids’ ‘gifts’",
+      tags: ["substance over form", "§7701(o)", "§6662", "gift vs income"],
+      prompt: `Eve owned a business set up as a passthrough that she expected to do well. As a result,
+she decided to move the business to a bigger building owned by her best friend Maria, a
+commercial landlord who ran her business as a partnership. Eve hired a broker who
+concluded that similar offices rented for between $10,000 and $20,000 per month. Eve
+and Maria agreed that Eve would pay $20,000 a month on a 5-year lease. Around the
+same time, Maria—who was the godmother of Eve’s kids—began making $5,000
+monthly contributions to Eve’s kids earmarked for their future college expenses. Maria
+continued these payments for five years and stopped shortly thereafter. What are the tax
+implications of these activities?`,
+      issues: [
+        "Substance-over-form / step-transaction risk: IRS may argue $5,000/month of ‘rent’ is effectively being kicked back to Eve via payments to her kids.",
+        "For Maria: gross rental income of $20,000/month may be recharacterized as only $15,000 true rent; the extra $5,000/month might be nondeductible transfers or a separate payment stream.",
+        "For Eve: either (i) she’s paying above-market rent to secure disguised compensation/benefit for her kids (unreported income), or (ii) the kids’ receipts are themselves taxable income, not gifts.",
+        "Gift vs income: Duberstein—are Maria’s payments ‘detached and disinterested’? The tight correlation with the lease suggests they are not pure gifts.",
+        "If price is deemed tax-motivated and lacking economic substance, § 7701(o) and § 6662(b)(6) economic-substance penalties (20%–40%) may apply; no reasonable-cause exception under § 6664(c).",
+        "Alternative IRS approach: treat Maria’s ‘gifts’ as taxable income to the children (not excludable under § 102) with ‘kiddie tax’ consequences, and Maria may be denied deductions.",
+        "Either way, the structure risks recharacterization and penalties if the IRS views it as a sham to shift income or property tax-free."
+      ],
+      notes: `Big-picture story: taking what looks like arm’s-length rent and quietly undoing part of it through ‘gifts’ to related parties. IRS will try to (1) compress the rent down to a market number, and (2) treat the side payments as something other than tax-free gifts.`
+    },
+    {
+      id: "2021-Q2E",
+      examYear: "2021",
+      examLabel: "Spring 2021",
+      questionRef: "Q2(E)",
+      label: "Angie’s painting – quid pro quo & §1014 step-up",
+      tags: ["§170", "quid pro quo", "§1014", "basis"],
+      prompt: `In 2011, Angie bought a painting in an old frame at a charity auction for $10,000. Its
+appraised value was $7,000. In 2021, she died and left the painting and frame to her
+friend Carlotta. The estate’s appraiser valued the painting and frame at $15,000. What are
+the tax implications?`,
+      issues: [
+        "Year of auction: quid pro quo charitable contribution. FMV of painting/frame = $7,000; Angie pays $10,000.",
+        "Charitable deduction under § 170 only for the excess paid over FMV → $3,000 charitable contribution (assuming substantiation and income limits).",
+        "Angie’s basis in the painting/frame = FMV of property received ($7,000), not the full $10,000 paid (Hernandez quid pro quo logic).",
+        "By 2021, painting’s FMV is $15,000; built-in gain of $8,000 would have been realized if sold during life.",
+        "At death, no realization; instead, basis in the hands of Carlotta steps up to FMV under § 1014 (generally $15,000).",
+        "The $8,000 built-in gain permanently escapes income taxation; Carlotta starts with $15,000 basis for future sale.",
+        "Estate tax considerations (if any) are separate and not detailed here."
+      ],
+      notes: `Two main steps:
+
+1. Charity auction → quid pro quo: only the excess over FMV is a § 170 deduction; basis is FMV, not amount paid.  
+2. Death → § 1014 step-up wipes out the built-in gain; beneficiary gets full FMV basis.`
+    },
+
+    // ---------- FALL 2024 – QUESTION 1 ----------
+    {
+      id: "2024-Q1A",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q1(A)",
+      label: "Amelia – health insurance, standby flights, payment to mom",
+      tags: ["fringe", "§106", "§132", "Old Colony"],
+      prompt: `Amelia just started a new job as a pilot with AirCo., an airline. In Year 1, AirCo. provided
+Amelia with health insurance, for which it paid the insurer $10,000. In addition, it paid
+$2,000 to provide health insurance for Amelia’s dog, Nixie. Also in Year 1, Amelia was
+allowed to fly standby for free for personal trips, which she did frequently. If she’d been
+required to pay for these trips, it would have cost $7,000. Finally, Air Co. believed that
+employees stay with the firm longer if their family members like the airline. Late in Year 1,
+Ameila told AirCo. she was struggling to support her mom, Mary. AirCo. quickly then sent
+Mary $5,000.`,
+      issues: [
+        "$10,000 health insurance for Amelia is excludable from her gross income under § 106(a).",
+        "$2,000 pet health insurance: no specific exclusion; treated as taxable compensation to Amelia under § 61.",
+        "Standby flights: potential ‘no-additional-cost service’ fringe under § 132(b); excludable if Amelia works in the line of business and flights are provided on a nondiscriminatory basis and impose no substantial additional cost.",
+        "Need to confirm she’s eligible class of employees (pilots for airline that sells flights).",
+        "$5,000 payment to Mary: under Old Colony Trust and § 102(c), this is effectively compensation to Amelia, then a gift from Amelia to Mary.",
+        "Mary treats the $5,000 as a nontaxable gift under § 102(a); Amelia includes $5,000 in gross income.",
+        "Possible mention of § 129 dependent care exclusion, but facts don’t suggest dependent-care arrangement."
+      ],
+      notes: `Distinguish:
+
+• Classic employer-provided health coverage (excludable) vs pet coverage (no special rule).  
+• Fringe flights fit squarely into § 132(b).  
+• Cash to a family member is not a gift from employer; it’s compensation to the employee, then a gift down the family tree.`
+    },
+    {
+      id: "2024-Q1B",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q1(B)",
+      label: "Amelia’s training plane – §1231 + §1245 recapture",
+      tags: ["§263A", "§167", "§168(k)", "§1231", "§1245"],
+      prompt: `Amelia quit AirCo. and decided to start her own business: a flight school training clients to
+fly. In Year 3, she bought a training plane to use with clients for $200,000. She used the
+plane to train clients until she sold it in Year 5, by which point she had taken $80,000 in
+depreciation deductions. In return for the plane, she received $100,000 of cash and $125,000
+worth of farmland.`,
+      issues: [
+        "Year 3 purchase: plane is depreciable business property; capitalize $200,000 under § 263A.",
+        "Depreciation taken through Year 5 = $80,000; adjusted basis is $200,000 − $80,000 = $120,000 (§ 1016).",
+        "Year 5 sale: amount realized = $100,000 cash + $125,000 FMV farmland = $225,000 (§ 1001(b)).",
+        "Gain realized = $225,000 − $120,000 = $105,000.",
+        "Plane is § 1231 asset (depreciable property used in trade or business, held > 1 year).",
+        "§ 1245 recapture: ordinary income up to prior depreciation ($80,000).",
+        "Remaining $25,000 is § 1231 gain → generally long-term capital gain, but subject to § 1231(c) lookback if prior § 1231 losses exist.",
+        "Farmland received has basis equal to its FMV ($125,000) as of the exchange."
+      ],
+      notes: `Standard sequence:
+
+1. Basis & depreciation.  
+2. Amount realized (cash + FMV property).  
+3. 1245 ordinary recapture = prior depreciation; leftover is § 1231 gain.  
+
+Don’t forget to mention the 5-year § 1231(c) lookback, even if there’s no data to apply it.`
+    },
+    {
+      id: "2024-Q1C",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q1(C)",
+      label: "Amelia’s building – inspector, raccoons, nonrecourse debt",
+      tags: ["basis", "§263A", "Tufts", "§163", "§1250"],
+      prompt: `On January 25 of Year 6, Amelia bought a building at the airport for $100,000 for her flight
+school. She paid for the building using $25,000 of cash and borrowing $75,000 on a non-
+recourse basis from the bank, secured by the building. As part of the building purchase,
+Amelia also paid a building inspector $1,000 to inspect the building. On February 1,
+Amelia discovered that raccoons had made a hole in a corner of the roof. The building
+inspector had not seen the hole during his inspection on January 24, but because of
+obstructions, he hadn’t gotten an entirely clear view of the area. Amelia confronted the
+seller of the building with the information, and the seller paid her $10,000.
+
+Each year, Amelia paid $4,000 of interest on the loan. By Year 10, however, the value of the
+building had declined to $60,000, while Amelia had paid off only $5,000 of the principal on
+the bank loan. She had also taken $50,000 of depreciation on the building. At that point, she
+sold the building to Jason, who didn’t pay any cash, but agreed to take on the non-recourse
+debt as part of the sale.`,
+      issues: [
+        "Initial basis: $100,000 purchase price plus $1,000 inspection cost → $101,000 capitalized basis under § 263A.",
+        "Nonrecourse bank loan counts as part of amount paid and basis (Crane/Tufts).",
+        "Seller’s $10,000 payment after roof defect discovered: analyze as purchase price adjustment vs income; § 108(e)(5) does not literally apply (seller ≠ lender), but economically acts as price adjustment reducing basis.",
+        "Interest payments: $4,000/year potentially deductible as business interest under § 163, subject to § 163(j) limitations.",
+        "Depreciation: $50,000 taken; adjusted basis at sale = (initial basis − basis reduction) − depreciation (with careful numerical tracking).",
+        "Year 10 sale to Jason: amount realized includes relief of nonrecourse debt Jason assumes; if principal outstanding is $70,000, A/R = $70,000 even if FMV = $60,000 (Tufts).",
+        "Compare A/R vs adjusted basis → gain; building is § 1231 property; gain potentially § 1250/unrecaptured § 1250 gain at special rates.",
+        "At-risk limits under § 465 may have restricted Amelia’s use of losses (nonrecourse debt may not make her at risk).",
+        "For Jason, basis equals debt assumed; if he later gets bank to write debt down, he may realize COD income under § 61(a)(11) unless exception applies."
+      ],
+      notes: `Main architecture:
+
+• Basis setup (purchase price, inspection, subsequent price adjustment).  
+• Depreciation & at-risk overlay.  
+• Tufts: nonrecourse debt included in amount realized at sale, even when FMV is lower.  
+
+Then run through § 1231/1250 character analysis.`
+    },
+    {
+      id: "2024-Q1D",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q1(D)",
+      label: "Taylor & Travis – step-up, antenuptial exchange, §1041",
+      tags: ["§1014", "Farid-Es-Sultaneh", "§1041", "capital gain"],
+      prompt: `In Year 1, Taylor’s dad died leaving her 20,000 shares in Knight-Swift Transportation Co.
+(“TransportCo”). The shares were then worth $1 per share ($20,000 total); Taylor’s dad had
+bought them for $5 per share ($100,000 total).
+
+At the end of Year 1, Travis and Taylor got engaged. Travis, however, was wary of
+Taylor’s demanding work schedule and began hesitating. In Year 2, therefore, Taylor
+transferred 10,000 of the TransportCo shares to Travis. At the time of the transfer, the
+shares were worth $50 per share ($500,000 total). Taylor meant this transfer to prove that
+she was serious about the relationship, but she also required Travis to agree to give up any
+rights he’d otherwise have upon marriage in order to receive the shares. In Year 3, they
+married. In Year 5, things started to fall apart. Travis was always carping about the wealth
+disparity between the two of them. Partly just to shut him up, Taylor transferred to Travis
+the other 10,000 shares of TransportCo, then worth $100 per share ($1,000,000 total). In
+Year 7, they divorced. And shortly after that, Travis sold all 20,000 of his shares in
+TransportCo for $75 per share ($1,500,000 total).`,
+      issues: [
+        "Year 1 inheritance: Taylor’s basis in shares = FMV at dad’s death ($1/share, $20,000 total) under § 1014; prior $5/share basis is irrelevant.",
+        "Year 2 transfer of 10,000 shares in exchange for Travis’s waiver of marital rights: resembles Farid-Es-Sultaneh antenuptial exchange; treated as sale/exchange, not a gift.",
+        "Taylor recognizes gain on the Year 2 transfer: A/R = $500,000 FMV; basis = $10,000; long-term capital gain of ~$490,000 (exact holding period analysis).",
+        "Travis’s basis in those 10,000 shares = $500,000 (FMV at transfer) because he ‘paid’ with marital rights.",
+        "Year 5 transfer of remaining 10,000 shares during marriage: § 1041 applies to interspousal transfers; no gain/loss realized; Travis takes carryover basis of $10,000 ($1/share).",
+        "Year 7 sale: Travis sells 20,000 shares for $1.5m; total basis = $500,000 + $10,000 = $510,000; long-term capital gain of $990,000; subject to NIIT as investment income.",
+        "Filing-status issues: Taylor and Travis file single before marriage, then MFJ/MFS while married, then single again after divorce."
+      ],
+      notes: `Nice mix of:
+
+• Step-up on death (§ 1014).  
+• Antenuptial bargain → Farid-Es-Sultaneh sale/exchange and FMV basis for recipient.  
+• Later intra-marriage transfer → § 1041 carryover basis + nonrecognition.  
+
+Keep each transfer’s character and basis consequences straight.`
+    },
+    {
+      id: "2024-Q1E",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q1(E)",
+      label: "Travis’s blackjack losses & COD",
+      tags: ["§165(d)", "COD", "Zarin", "§162"],
+      prompt: `In January of Year 8, Travis lost $1 million gambling at blackjack in Las Vegas. Travis
+brought in a lawyer to contest the debt, paid the lawyer $100,000, and convinced the casino
+to cancel half of his debt.`,
+      issues: [
+        "Gambling losses: deductible only to extent of gambling winnings under § 165(d); nothing here suggests offsetting winnings.",
+        "Underpayment of casino markers: potential COD income when casino cancels $500,000 of debt under § 61(a)(11).",
+        "Compare to Zarin: whether the debt is unenforceable or disputed, and the role of Golsen/T.C. deference to circuit law.",
+        "If the debt is legally enforceable and only reduced as a favor, cancellation of half is COD income; if disputed as to enforceability/principal, disputed debt doctrine may reduce COD.",
+        "Legal fees: deductible under § 162 only if gambling is a trade or business; Gilliam suggests casual gambling is not a ToB, so no § 162 deduction.",
+        "Even if ToB, post-TCJA unreimbursed expenses might be subject to § 67(g) if not on Schedule C; but here he’s not clearly a professional gambler.",
+        "Interest and penalties from the casino are not separately deductible without a business context."
+      ],
+      notes: `Two tracks:
+
+• Substantive: how much of the $500k write-down is COD vs just resolution of disputed obligation?  
+• Deduction: lawyer’s fees help preserve personal gambling position; without ToB status, they’re nondeductible.  
+
+You can nod to Zarin but emphasize the disputed debt doctrine more than the unenforceability angle.`
+    },
+
+    // ---------- FALL 2024 – QUESTION 2 ----------
+    {
+      id: "2024-Q2A",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q2(A)",
+      label: "Maureen’s consulting, travel & QBID",
+      tags: ["§162", "travel", "§199A", "working condition fringe"],
+      prompt: `Maureen is a consultant who owns Passthrough LLC and married to Etienne who is a
+stay-at-home dad to their twin boys aged 3. Maureen is Passthrough LLC’s only employee. In
+Year 1, Passthrough LLC’s only client was PE Corp, which hired her for three projects and paid
+her a total of $330,000. For each project, PE laid out some broad objectives and timeline (usually
+2-3 months). Maureen decided which PE sites to visit and when, and then decided what advice to
+give. In total, while visiting PE sites in Year 1, Maureen spent $25,000 on airfares on Southwest
+Airlines and $10,000 on hotels. PE did not pay for any of these costs because the contracts for
+each project called for only a “lump-sum” payment. PE did, however, provide a space for
+Maureen to work while at PE sites, which (in total) would have cost $8,000 to rent from a third-
+party.`,
+      issues: [
+        "Maureen & Etienne can file jointly; twins likely qualifying children for CTC if income within limits.",
+        "Passthrough LLC: $330,000 gross income; Maureen has significant control over time/methods → ToB, not employee of PE.",
+        "Travel expenses (airfare $25,000 + hotels $10,000) are ordinary and necessary business expenses deductible under § 162(a).",
+        "PE-provided office space worth $8,000 is not income to Maureen; it is akin to working-condition fringe or facility provided by client so she can perform services.",
+        "AGI from LLC ≈ $295,000 (330,000 − 35,000), before standard/itemized deductions.",
+        "§ 199A QBID: if taxable income under $315,000 (MFJ threshold given in exam), she can claim 20% deduction on QBI (excluding any reasonable comp treated as wages).",
+        "Need to consider whether she’s an SSTB; likely not (generic consulting vs enumerated disfavored services)."
+      ],
+      notes: `Everything here is very clean:
+
+• Pure business travel; straightforward § 162 deduction.  
+• Office space from client: think in-kind support to enable services, not compensation.  
+• Then run a quick § 199A check: pass-through, QBI, under threshold → full 20% deduction likely.`
+    },
+    {
+      id: "2024-Q2B",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q2(B)",
+      label: "Gifted bonds to twins & Companion Pass trip",
+      tags: ["§102", "kiddie tax", "Gotcher", "earned income"],
+      prompt: `On January 1, Year 2, Maureen gave the twins some corporate bonds she owned, which
+then paid $10,000 of interest to each of them that year. In December, Maureen flew with Etienne
+from their home in Colorado to New York and stayed there for a month. Maureen paid $600 for
+her airfare on Southwest, but only $6 for Etienne’s seat using her “Companion Pass.” A
+Companion Pass allows companions of hyper-frequent fliers on Southwest to fly with them for
+$6. (Maureen earned her Companion Pass by virtue of her travel for the PE projects in Year 1).
+Etienne took the trip so as to attend his best friend’s 50th birthday party. Maureen went both to
+attend that party and so she could take meetings with the “tech transfer office” of five East
+Coast universities, to potentially break into a new line of consulting.`,
+      issues: [
+        "January 1 transfer of bonds: gift of property; twins take carryover basis under § 1015; no income to Maureen; no deduction under § 102.",
+        "Bond interest: $10,000 each is interest income taxable to the twins under § 61(a)(4); subject to ‘kiddie tax’ under § 1(g) so that income above the small threshold is taxed at parents’ rates.",
+        "Maureen’s airfare: mixed business/personal; under Gotcher, if primary purpose is business (tech transfer meetings) with incidental personal element (party), airfare may be fully deductible under § 162.",
+        "Etienne’s airfare via Companion Pass: his trip is purely personal (birthday party), so value of free/reduced ticket is personal consumption.",
+        "For tax, Maureen should be taxed on value of the benefit, i.e., the $594 discount (600–6), as compensation-like income; in practice IRS often ignores frequent flyer miles, but doctrinally it’s income.",
+        "The $6 cash outlay is nondeductible personal expense; the $594 value is effectively a fringe created by her business travel.",
+        "The tech transfer meetings are exploring expansion into related ToB (consulting); likely same trade, not a new one, so expenses remain § 162-eligible."
+      ],
+      notes: `Split the scene:
+
+• Inter vivos gift of bonds → carryover basis and kiddie tax on bond interest.  
+• Travel: Maureen’s trip has real business purpose; Etienne’s is personal. The Companion Pass benefit is technically income to Maureen, even if not enforced in practice.`
+    },
+    {
+      id: "2024-Q2C",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q2(C)",
+      label: "Etienne starts painting – hobby vs ToB & education",
+      tags: ["hobby", "§183", "§162", "education"],
+      prompt: `Etienne had always loved to paint. In January Year 3, the twin boys started kindergarten,
+giving Etienne more free time. Etienne thus began painting about 15-20 hours a week. He also
+talked to Maureen who—free of charge of course—drew up a business plan for how he could
+begin to profit by selling his paintings. In July, he sold a large painting he’d just completed for
+$20,000. Etienne had spent $3,000 on the materials for that painting. He also spent $8,000 on
+paint and materials for other paintings he produced in Year 3, but did not sell. Etienne spent
+another $3,000 on painting classes given by a famous painter and $2,000 advertising his
+paintings at a local art gallery.`,
+      issues: [
+        "Classify painting activity: hobby vs trade or business under § 162; consider time spent, business plan, advertising, and profit motive.",
+        "If hobby under § 183, the $20,000 is gross income; hobby expenses would be limited to hobby income under § 183(b), and post-TCJA § 67(g) disallows them entirely as misc itemized deductions.",
+        "If trade or business, materials for the sold painting ($3,000) and advertising costs ($2,000) are deductible business expenses under § 162.",
+        "Paint used for unsold works: likely capitalized as inventory/cost of goods until pieces are sold; not immediately deductible.",
+        "Painting classes: apply Wassenaar education test—maintain/improve skills in existing ToB vs qualify for new one; classification depends on whether painting is already a ToB.",
+        "Maureen’s free help is imputed income (ignored) and not deductible to either party.",
+        "Character of the $20,000: income from sale of self-created artwork is ordinary income under § 1221(a)(3) (self-created property)."
+      ],
+      notes: `Fork: hobby vs business.
+
+• If hobby, 183 + 67(g) → painful: income in, deductions out.  
+• If business, treat sold-piece materials & advertising as current § 162; unsold materials as inventory.  
+
+Don’t forget the character rule: sale of self-created art is ordinary, not capital.`
+    },
+    {
+      id: "2024-Q2D",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q2(D)",
+      label: "Maureen becomes ClosedAI CFO; donates stock to Yale",
+      tags: ["compensation", "§170", "capital gain property", "AGI limits"],
+      prompt: `Maureen did in fact begin consulting for universities’ tech transfer offices. Through this,
+she began to work closely with ClosedAI, an artificial intelligence startup. In Year 4, Maureen
+closed her consulting business, and ClosedAI hired her as its new Chief Financial Officer, paying
+her a salary of $500,000 per year. In Year 6, ClosedAI really took off. In December of Year 6,
+Maureen transferred some of her shares in ClosedAI to Yale. The transfer consisted of 200
+shares she had bought in Year 4 for $1 per share and 100 shares she bought in January of Year 6
+for $100 per share. At the time of the transfer, the stock was worth $1,000 per share. Maureen’s
+gift was one of many given to Yale by those at ClosedAI and all the funds were earmarked for a
+study of the effects of alleviating poverty by giving unconditional cash transfers. ClosedAI then
+heavily advertised its employees’ donations as showing that it was part of the solution to poverty.`,
+      issues: [
+        "Year 4: Maureen’s salary of $500,000 taxable as ordinary income under § 61.",
+        "Stock purchases: basis in first 200 shares = $200 total; basis in second 100 shares = $10,000 total.",
+        "Year 6 gift to Yale: donation of appreciated publicly traded stock (capital gain property) to a qualified charity under § 170.",
+        "For 200 ‘Year 4’ shares held > 1 year: charitable deduction at FMV ($200,000) if AGI limits satisfied; built-in gain escapes tax.",
+        "For 100 ‘Year 6’ shares held < 1 year: limited to basis ($10,000) under § 170(e); cannot deduct FMV for short-term gain property.",
+        "Total tentative § 170 deduction = $210,000, subject to 30% of AGI limit for contributions of capital gain property to public charities (§ 170(b)(1)(C)).",
+        "Given AGI of $500,000, current-year limit is $150,000 with five-year carryforward for the balance.",
+        "Question whether Yale-directed donation plus ClosedAI publicity undermines ‘charitable’ nature; but benefit to Maureen/ClosedAI is indirect, so likely still qualifies.",
+        "No recognition of gain on donated appreciated shares; § 1011/§ 1001 not triggered by gift."
+      ],
+      notes: `Stock-to-charity moves:
+
+• Long-term capital gain property → FMV deduction, subject to 30% AGI cap.  
+• Short-term or inventory-like property → deduction limited to basis.  
+
+ClosedAI’s PR benefit doesn’t normally destroy the charitable character, because Maureen herself is not clearly getting quid pro quo.`
+    },
+    {
+      id: "2024-Q2E",
+      examYear: "2024",
+      examLabel: "Fall 2024",
+      questionRef: "Q2(E)",
+      label: "Yale cash transfer study – Jason’s income, HOH, EITC",
+      tags: ["gross income", "EITC", "CTC", "head of household"],
+      prompt: `In January of Year 7, Yale began the study. It randomly assigned some study participants
+to receive $1,000 per month, while others were assigned a much smaller payment of $50 per
+month. At the outset of the study—before being randomly assigned—participants signed a
+contract promising to fill out a time-consuming questionnaire each month about their health, diet,
+income, happiness level etc., so that Yale researchers could determine how a large monthly cash
+payment affects these outcomes. Jason, who is unmarried, was a study participant and was
+randomly assigned to receive the $1,000 each month in Year 7. Jason spent Year 7 as a part-time
+employee of Ford and he earned $20,000 from that job. His daughter Jane, who was 11, lived
+with him in Year 7.`,
+      issues: [
+        "Yale payments: $1,000/month × 12 = $12,000; because Jason signs a contract to perform monthly questionnaires, payments are compensation for services, not gifts; includible in gross income under § 61.",
+        "Character of Yale income: likely ‘other income’ or self-employment-type compensation, but not wages; examine reporting form in practice (e.g., Form 1099).",
+        "Jason’s $20,000 from Ford is wages; total gross income = $32,000.",
+        "Filing status: head of household if Jason pays > half of home costs and Jane lives with him more than half the year; seems satisfied.",
+        "Child tax credit: Jason likely eligible for CTC/ACTC for Jane, subject to income thresholds.",
+        "Earned income tax credit: only earned income counts (Ford wages + possibly part of Yale payments if treated as compensation for services). Payments that are ‘windfall’ or not wages might not count, but here the contract suggests service income.",
+        "Even if only Ford wages count as EITC ‘earned income,’ the Yale money still affects AGI and phaseouts for CTC/EITC.",
+        "Jane may also qualify Jason for other head-of-household benefits and dependent-related provisions."
+      ],
+      notes: `Big question: is the Yale cash “for nothing” (gift-like) or for services? The explicit questionnaire contract makes it look like taxable service income.  
+
+Then do the standard low-income checklist: HOH, CTC, EITC, and whether study income counts as ‘earned’ for EITC computations.`
+    },
+
+    // ---------- SPRING 2022 – QUESTION 1 ----------
+    {
+      id: "2022-Q1A",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q1(a)",
+      label: "John & Denzel – Stradivarius, depreciation & NOL",
+      tags: ["antique", "depreciation", "§1231", "Crane/Tufts", "NOL", "§199A"],
+      prompt: `John is a professional violinist in Los Angeles who performs as a soloist at various
+venues in the area. In Year 1, he borrowed $200,000 from the bank and put down an
+additional $30,000 of his own to purchase a Stradivarius violin, which was made in 1690.
+He used the violin regularly in his performances. He paid off $75,000 of the loan
+principal before he sold the violin to Denzel at the start of Year 4. Denzel agreed to pay
+$100,000 in cash for the violin, and he also assumed the remaining debt.
+
+Denzel, like John, is a professional violinist who performs as a solo act in dozens of
+venues. He’s based in New York. He also carries his solo act over to his social life: he
+has never married and doesn’t have kids. In Year 3, Denzel had a particularly good year.
+His adjusted gross income was $225,000 and he took the standard deduction. In Year 4,
+things were slower. He had gross income of $100,000 and no business expenses except
+those associated with the Stradivarius.`,
+      issues: [
+        "John’s purchase: basis = $230,000 (cash + debt) under § 1012; Crane/Tufts.",
+        "Depreciability of antique violin: circuit split – Browning (9th Cir., where LA lies) says no depreciation for antiques that don’t wear out; Simon/Liddle (2nd/3rd) say certain instruments/bows can be depreciable.",
+        "Because John is in 9th Cir., the Stradivarius is non-depreciable property in his hands; no § 167 deduction.",
+        "John’s sale: amount realized = $100,000 cash + remaining debt assumed; compare to $230,000 basis for gain/loss; character likely capital, since violin not depreciable § 1231 property nor inventory.",
+        "Denzel in New York (2nd Cir.): Stradivarius may be depreciable ‘recovery property’ per Simon/Liddle; can claim depreciation, possibly bonus under § 168(k).",
+        "If Denzel claims large depreciation/expensing in Year 4 (e.g., full write-off), he may generate a net operating loss (NOL) for Year 4.",
+        "NOL can be carried back (under CARES-era rules) to Year 3, reducing AGI from $225,000 to lower level and potentially making Denzel eligible for § 199A QBID he otherwise could not claim as a performing artist (SSTB).",
+        "Later sale by Denzel would trigger § 1245/§ 1231 character issues depending on depreciation claimed and amount realized."
+      ],
+      notes: `The fun part is the jurisdiction split:
+
+• John (9th Cir.) stuck with non-depreciable antique; Denzel (2nd Cir.) can depreciate or bonus-depreciate.  
+
+Then track downstream: Denzel’s big deduction in Year 4 → NOL carryback → new § 199A eligibility in Year 3.`
+    },
+    {
+      id: "2022-Q1B",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q1(b)",
+      label: "Denzel’s old band debts & charity gig",
+      tags: ["Welch", "§170", "out-of-pocket expenses", "quid pro quo"],
+      prompt: `Denzel had always been troubled by the fact that his old band, the Washington Heights
+Trio, had failed to pay off all its creditors, including some venues that had advanced the
+band cash before performances. He felt like it made it harder to book those venues as a
+soloist. So in Year 5, even though the Washington Heights Trio’s debts had been legally
+discharged in bankruptcy many years before, Denzel paid one venue the $10,000 the
+band had owed it (prior to bankruptcy).
+
+In addition, the band had owed the Performances for Hunger in New Haven—a charitable
+organization—$5,000 before bankruptcy. Also in Year 5, Denzel agreed to waive his
+usual $8,000 fee and to perform at Performances for Hunger as a soloist free of charge to
+make up for the (discharged) debt. He spent $1,000 travelling to New Haven, played the
+gig, and left immediately.`,
+      issues: [
+        "Payment of old band’s discharged debt: reminiscent of Welch; paying another’s discharged obligation to improve reputation is at best capital expenditure (self-created goodwill), not currently deductible under § 162.",
+        "Unclear whether that goodwill is even a capital asset with basis; at minimum no immediate deduction.",
+        "Charity gig: generally, unreimbursed out-of-pocket expenses incurred in providing services to charity can be deductible as charitable contributions under § 170 (McCollum).",
+        "Denzel’s waived $8,000 fee is not deductible; cannot deduct ‘value of services’ – that would be double-counting.",
+        "$1,000 travel: deductible as a § 170 contribution if trip has no significant element of personal pleasure, recreation, or vacation; here he travels, performs, and leaves immediately (likely okay under § 170(j)).",
+        "Possible IRS argument that the charity performance is part of quid pro quo to satisfy an old commercial debt of the band, not pure charity; then the travel might be more like the Welch self-reputation expenditure, not § 170.",
+        "If characterized as noncharitable business image repair, the $1,000 might be non-deductible or capital expenditure rather than current deduction."
+      ],
+      notes: `The first payment is straight Welch: paying old, discharged obligations to look respectable → self-created goodwill, not currently deductible.  
+
+The charity gig is closer: out-of-pocket travel for pure charitable performance is usually § 170-deductible, but here you can argue it’s part of cleaning up a commercial debt, blurring charity vs business.`
+    },
+    {
+      id: "2022-Q1C",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q1(c)",
+      label: "Emily’s horses & trailer – hobby + capital gain",
+      tags: ["hobby", "§183", "§67(g)", "capital asset"],
+      prompt: `Emily lives in a rural area and is a clerk at the county courthouse. As a hobby, she keeps
+and rides horses. She occasionally enters them in competitions. In Year 1, she won
+$2,000 in these competitions and spent $1,500 caring for the horses she entered. She also
+sold a horse trailer that she’d owned for a couple years for $7,000 which she bought
+(used) for $4,000.`,
+      issues: [
+        "Horse competitions are a hobby, not a trade or business, per the prompt.",
+        "Competition prizes ($2,000) are gross income under § 61.",
+        "Hobby expenses ($1,500) would be limited to hobby income under § 183(b) but, as misc itemized, are disallowed during § 67(g) period.",
+        "Horse trailer: personal-use property, not used in a trade or business; sale is a realization event under § 1001.",
+        "Gain on trailer = $7,000 − $4,000 = $3,000; likely capital gain since trailer is a capital asset (doesn’t fit § 1221(a) exceptions).",
+        "No depreciation for trailer because it’s not business or income-producing property.",
+        "Net: Emily recognizes $2,000 ordinary income from competitions and $3,000 capital gain; no offsetting deductions for hobby expenses."
+      ],
+      notes: `This is like a cousin of the Armon horse question:
+
+• Income in from hobby; expenses blocked by combo of § 183 + § 67(g).  
+• Separate capital gain on a personal-use capital asset (the trailer), with no depreciation history.`
+    },
+    {
+      id: "2022-Q1D",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q1(d)",
+      label: "Emily & Powerly – dynamic pricing, COD & disputed debt",
+      tags: ["COD", "§108(e)(5)", "Zarin", "disputed debt"],
+      prompt: `Emily was on a tight budget in Year 3 and sought to lower her electricity costs by signing
+up with Powerly Co. Powerly sells its customers electricity at a variable rate: the rate is
+very low in normal times and very high during peak periods and emergencies.
+Unfortunately in March, a blizzard hit, and Powerly’s prices went through the roof—
+tracking the market price for electricity. During the blizzard, Emily used $30,000 of
+electricity just by heating her home at 60° F (she has electric heat). Emily did not pay the
+$30,000 bill when it arrived. In July, under significant ‘heat’ from politicians, Powerly
+informed its customers who had not yet paid—including Emily—that it would reduce
+what they owe for the blizzard period to at most $5,000. Emily then paid the $5,000.`,
+      issues: [
+        "Electricity bill: $30,000 charge for services; Emily incurs a liability to Powerly.",
+        "Subsequent reduction to $5,000 is prima facie cancellation-of-indebtedness (COD) income of $25,000 under § 61(a)(11).",
+        "Purchase price adjustment argument: Emily might argue this is effectively a reduction in the price of electricity (she overpaid relative to other utilities); but § 108(e)(5) purchase-price adjustment applies where seller and lender are same and property is still held—doesn’t fit a consumed service like electricity.",
+        "Zarin: Emily might argue under Zarin that if the original charge was unenforceable or illegal under consumer protection law, there’s no COD because there was no valid debt; but this is controversial outside 3rd Cir.",
+        "More promising is disputed debt doctrine: if there’s a genuine legal dispute over how much she owes, settlement at $5,000 can be treated as true amount owed, eliminating COD.",
+        "No gift: Powerly’s reduction isn’t detached and disinterested generosity (Duberstein); it’s PR/regulatory pressure, so not excludable as a gift.",
+        "Absent disputed-debt or illegality theory, Emily has $25,000 of ordinary COD income when liability is reduced."
+      ],
+      notes: `This is Zarin with a thermostat.
+
+You can run:
+
+• Purchase-price adjustment – doesn’t fit services.  
+• Disputed-debt doctrine – if consumer law makes original bill contestable, settlement might be treated as full satisfaction; no COD.  
+• Otherwise, straightforward $25k COD under § 61(a)(11).`
+    },
+    {
+      id: "2022-Q1E",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q1(e)",
+      label: "Emily’s work clothes & office, basement storage",
+      tags: ["§132", "working condition fringe", "Pevsner", "Old Colony"],
+      prompt: `Because Emily must sometimes appear in court, the county provides her with dress
+clothes appropriate for the occasion, which she is required to wear in court, and required
+to leave in the courthouse after she has finished.
+
+The county also equips her office with a desk, computer, potted plant, and a bland
+painting. Finally, because the courthouse is a cavernous old building with lots of surplus
+space, the county allows Emily to store some of her antiques collection in some of the
+empty space in the basement. It would otherwise cost her $60 a month to store the
+collection.`,
+      issues: [
+        "Employer-provided clothes: apply Pevsner test & § 132(d)/§ 162 – special clothing is excludable if (1) required as a condition of employment and (2) not suitable for general wear.",
+        "Requirement to leave the clothes at the courthouse strongly suggests they are not suitable for general use; likely excludable as working-condition fringe.",
+        "Desk, computer, office plant, painting: employer-owned business assets; their use in office is excludable as working-condition or de minimis fringes; if Emily had purchased them herself, costs would be § 162 business expenses.",
+        "Basement storage for antiques: personal benefit; county is conferring value of free storage (~$60/month) which is essentially income under Old Colony Trust.",
+        "§ 132(b) ‘no-additional-cost services’ doesn’t apply; the county isn’t in the business of storage services to the public.",
+        "So Emily should include value of storage as gross income unless a small-value/de minimis exception applies (likely not at $60/month)."
+      ],
+      notes: `Clothing: ‘required’ + ‘leave at work’ → usually wins under Pevsner-like analysis.  
+
+Storage: nice clean example of an employer paying a personal expense → income under Old Colony; there’s no special fringe rule that saves it.`
+    },
+
+    // ---------- SPRING 2022 – QUESTION 2 ----------
+    {
+      id: "2022-Q2A",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q2(A)",
+      label: "Carlos’s compensation, watch & CEO apartment",
+      tags: ["§162", "§162(m)", "§119", "§61", "§102(c)"],
+      prompt: `Carlos is the CEO of MedCo, a medical supply company, whose stock trades on the New York
+Stock Exchange. MedCo is taxed as a corporation, not a passthrough.
+
+In Year 1, Carlos was paid $940,000 in salary. MedCo also gave him a watch worth $5,000 to
+celebrate his 10th anniversary with the firm. Early in the year, he was late to a couple of board
+meetings due to bad traffic. The company decided—over Carlos’ objection—that he must move
+closer to MedCo’s headquarters, to a luxurious apartment it owned 10 blocks away, so he
+wouldn’t be late anymore and could properly impress clients when he met with them at home.
+(He was then living in a yurt.) Carlos moved to the apartment on March 1st to avoid being fired;
+he did not pay any rent over the rest of the year. The apartment would have rented for $15,000 a
+month.`,
+      issues: [
+        "MedCo’s perspective: salary, watch, and apartment value are all compensation; deductible under § 162(a) as ordinary and necessary business expenses, subject to § 162(m) $1m limit for CEO ‘remuneration’.",
+        "Carlos’s salary ($940,000) and watch ($5,000) are gross income under § 61; § 102(c) denies gift treatment for employer-employee transfers.",
+        "Value of apartment: $15,000/month × months of use is presumptively imputed rental income to Carlos unless excludable under § 119.",
+        "§ 119 test for lodging: (1) on business premises, (2) for convenience of employer, and (3) as a condition of employment.",
+        "Condition-of-employment is arguably satisfied (must move or be fired); ‘convenience of employer’ depends on whether there’s substantial noncompensatory reason (timeliness, client entertaining).",
+        "Business premises requirement is tricky: is a nearby luxury apartment part of MedCo’s business premises? Adams case suggests maybe if specially built and heavily used for business entertaining.",
+        "If § 119 applies, apartment value is excludable to Carlos and doesn’t count toward § 162(m) limit; if not, it is taxable compensation and may push MedCo over the $1m deduction cap (non-deductible portion).",
+        "Watch: not excludable as de minimis fringe given its value; but for MedCo, deduction for watch is not limited by § 274(b) since it’s not a true ‘gift’.",
+        "Interest & other living costs at apartment are borne by MedCo; if § 119 fails, those values all become compensation."
+      ],
+      notes: `This is a § 119 borderline problem:
+
+• Condition-of-employment and employer convenience may be arguable.  
+• Business premises is the tightest prong; Adams shows some courts being generous when the residence is specially tied to business functions.  
+
+Then overlay § 162(m): if the apartment is comp, it counts toward the $1m cap.`
+    },
+    {
+      id: "2022-Q2B",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q2(B)",
+      label: "Carlos’s wedding gift of MedCo stock to Mary",
+      tags: ["gift vs income", "Duberstein", "basis", "marriage penalty"],
+      prompt: `Carlos and Mary have been very good friends since college. Mary is now an executive at St.
+Jerome’s—a large hospital chain in Michigan, where she oversees procurement, including
+buying supplies from MedCo. On January 1, Year 2, Mary married Sunil. Mary and Sunil each
+make about $150,000 a year in salary and they had custody of Sunil’s daughter for just over half
+the year. As a wedding present, Carlos gave Mary 2,000 shares of MedCo stock that he’d bought
+for $50 per share many years ago. At the time of the wedding, MedCo’s stock was trading at
+$35 per share. Mary sold 1,000 of the MedCo shares for $45 per share in Year 4.`,
+      issues: [
+        "Mary & Sunil’s joint filing: similar incomes may create a marriage penalty (especially with SALT cap), but they gain access to CTC for Sunil’s daughter if income is below phaseout.",
+        "Wedding gift of stock: apply Duberstein; is Carlos acting out of ‘detached and disinterested generosity’ or hoping to influence Mary’s procurement decisions at St. Jerome’s?",
+        "Facts are mixed: large gift from supplier to procurement officer is suspicious; but they’re long-time friends and weddings are normal gift occasions.",
+        "If treated as a gift, Mary doesn’t include value in income; basis is carryover from Carlos at $50/share under § 1015 (subject to dual-basis rules if FMV < basis on date of gift).",
+        "Because FMV ($35) < donor basis ($50) on gift date, dual-basis rule applies: for loss, basis is FMV; for gain, basis is donor’s basis.",
+        "Mary sells 1,000 shares in Year 4 for $45: intermediate between $35 and $50; under dual-basis rules, no gain and no loss realized.",
+        "If transfer treated as compensation/bribe (not a gift), Mary would include $70,000 in income in Year 2; basis would be FMV at receipt ($35/share). Sale at $45 would yield $10,000 capital gain later.",
+        "Carlos’s side: if non-gift, he may be treated as paying a business expense (bribe-like) rather than making a personal gift, with deductibility issues; if gift, he realizes $30,000 capital loss at transfer."
+      ],
+      notes: `Gift vs bribe is doing heavy work here.
+
+If it’s a gift → dual-basis rules & no gain/loss on Mary’s $45 sale.  
+If it’s ‘pay-to-play’ comp → immediate income to Mary and more classic sale/basis/capital-gain treatment on later disposition.`
+    },
+    {
+      id: "2022-Q2C",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q2(C)",
+      label: "MedCo’s research facility & patent evaluators",
+      tags: ["§263A", "Idaho Power", "intangibles", "§263"],
+      prompt: `In Year 5, MedCo also built a new research facility in New Haven. It paid $300,000 for the land,
+and paid BuildIt Co. $400,000 to build a new brick building. It also paid one of its employees, a
+construction manager, $100,000 in Year 5 to supervise the build. MedCo installed several
+employees at the new research facility, including two “patent evaluators” who do nothing but
+decide whether MedCo should buy patents belonging to other firms. The patent evaluators earn
+$150,000 a year and each worked on the successful acquisition of several patents in Year 5, each
+of which had many years left on the patent.`,
+      issues: [
+        "Land ($300,000) and building construction costs ($400,000 to BuildIt) are capitalized under § 263A; land is non-depreciable; building is depreciable real property.",
+        "Construction manager’s wages ($100,000) directly related to construction must also be capitalized into basis of the building under § 263A and Idaho Power.",
+        "Patent evaluator salaries ($150,000 each) do not increase basis in patents; ordinary compensation for employees, even though they work on acquiring long-lived intangibles.",
+        "Under Reg. § 1.263(a)-4, certain direct costs of acquiring intangible property may be capitalized, but routine employee compensation is generally expensed.",
+        "Patents acquired have capitalized cost equal to amounts paid to third parties for the patents, not including staff salaries.",
+        "Building is depreciable over appropriate recovery period; patents are amortizable intangibles over statutory lives (if capitalized costs)."
+      ],
+      notes: `Contrast:
+
+• Construction manager’s wages → part of the self-constructed building’s cost (Idaho Power).  
+• Patent evaluators’ wages → expensed, even though they’re acquiring long-lived intangibles.  
+
+Regime treats tangible build labor very differently from internal ‘deal team’ wages.`
+    },
+    {
+      id: "2022-Q2D",
+      examYear: "2022",
+      examLabel: "Spring 2022",
+      questionRef: "Q2(D)",
+      label: "Sunil’s forgotten income & Bob’s tax shelter penalties",
+      tags: ["§6662", "§6664", "§7701(o)", "penalties"],
+      prompt: `In Year 2, Sunil underpays his taxes by $40,000 because of forgetting about part of his income (a
+consulting gig) when he files. His friend Bob aggressively engages in a questionable transaction,
+which the IRS does not respect. Bob does not get a letter from a tax lawyer. What do their
+penalties look like?`,
+      issues: [
+        "Sunil: substantial understatement penalty under § 6662(b)(2) and (d) – understatement exceeds greater of 10% of tax or $5,000.",
+        "Penalty rate 20% of underpayment, absent reasonable-cause/good-faith defense under § 6664(c).",
+        "Sunil ‘forgot’ income; no disclosure or authority; likely no reasonable cause; penalty applies in addition to interest.",
+        "Bob: questionable transaction; possible substantial understatement or negligence penalty under § 6662 as well.",
+        "Bob can sometimes avoid penalty with (i) reasonable authority, (ii) substantial authority or adequate disclosure, and (iii) reasonable cause/good faith under § 6664(c). No tax opinion letter makes this harder.",
+        "If IRS invokes § 7701(o) economic-substance doctrine and deems transaction to lack economic substance, then § 6662(b)(6) & § 6662(i) impose a strict 20%–40% penalty on understatement; no reasonable-cause exception under § 6664(c)(2).",
+        "If the transaction is also a ‘reportable transaction’ under § 6707/§ 6662A, Bob could face additional penalties for failing to disclose.",
+        "Bottom line: Sunil definitely gets 20% penalty; Bob at least 20%, possibly 40% if undisclosed economic-substance violation, plus separate reportable-transaction penalties."
+      ],
+      notes: `Sunil is a classic “oops, forgot income” case: textbook § 6662(d) substantial understatement with no good defense.  
+
+Bob’s fate depends on whether the IRS invokes economic-substance; once § 7701(o) is in play, the penalty becomes strict and harsher, and disclosure failures bring extra pain.`
+    }
+  ];
+
+  // ---- STATE ----
+  let currentScenarioId = null;
+  let checklistRevealed = false;
+
+  // ---- DOM ELEMENTS ----
+  const scenarioListEl = document.getElementById("scenarioList");
+  const searchInputEl = document.getElementById("searchInput");
+  const examFilterEl = document.getElementById("examFilter");
+
+  const detailGridEl = document.getElementById("detailGrid");
+  const detailLowerEl = document.getElementById("detailLower");
+  const detailTitleEl = document.getElementById("detailTitle");
+  const detailMetaEl = document.getElementById("detailMeta");
+  const scenarioTextEl = document.getElementById("scenarioText");
+  const notesAreaEl = document.getElementById("notesArea");
+  const focusNotesBtn = document.getElementById("focusNotesBtn");
+  const clearNotesBtn = document.getElementById("clearNotesBtn");
+
+  const revealChecklistBtn = document.getElementById("revealChecklistBtn");
+  const checklistLockedMessageEl = document.getElementById("checklistLockedMessage");
+  const checklistButtonsRowEl = document.getElementById("checklistButtonsRow");
+  const checklistEl = document.getElementById("checklist");
+  const checkCoverageBtn = document.getElementById("checkCoverageBtn");
+  const resetChecklistBtn = document.getElementById("resetChecklistBtn");
+  const coverageStatusEl = document.getElementById("coverageStatus");
+  const coverageTextEl = document.getElementById("coverageText");
+  const coveragePillEl = document.getElementById("coveragePill");
+
+  const toggleNotesBtn = document.getElementById("toggleNotesBtn");
+  const studyNotesEl = document.getElementById("studyNotes");
+
+  // ---- RENDERING ----
+  function renderScenarioList() {
+    const query = (searchInputEl.value || "").toLowerCase();
+    const examFilter = examFilterEl.value;
+
+    const grouped = {};
+    scenarios.forEach(sc => {
+      if (examFilter !== "all" && sc.examYear !== examFilter) return;
+
+      const haystack = [
+        sc.examLabel,
+        sc.questionRef,
+        sc.label,
+        ...(sc.tags || [])
+      ].join(" ").toLowerCase();
+
+      if (query && !haystack.includes(query)) return;
+
+      if (!grouped[sc.examLabel]) grouped[sc.examLabel] = [];
+      grouped[sc.examLabel].push(sc);
+    });
+
+    scenarioListEl.innerHTML = "";
+
+    const examOrder = ["Spring 2021", "Spring 2022", "Fall 2024"];
+    examOrder.forEach(examLabel => {
+      const group = grouped[examLabel];
+      if (!group || group.length === 0) return;
+
+      const groupDiv = document.createElement("div");
+      groupDiv.className = "scenario-group";
+
+      const title = document.createElement("div");
+      title.className = "scenario-group-title";
+      title.textContent = examLabel;
+      groupDiv.appendChild(title);
+
+      group.sort((a, b) => a.questionRef.localeCompare(b.questionRef));
+
+      group.forEach(sc => {
+        const item = document.createElement("li");
+        item.className = "scenario-item";
+        if (sc.id === currentScenarioId) item.classList.add("active");
+
+        const label = document.createElement("div");
+        label.className = "scenario-label";
+        label.textContent = `${sc.questionRef} – ${sc.label}`;
+        item.appendChild(label);
+
+        const meta = document.createElement("div");
+        meta.className = "scenario-meta";
+        meta.textContent = sc.tags && sc.tags.length ? sc.tags.join(" • ") : "";
+        item.appendChild(meta);
+
+        item.addEventListener("click", () => selectScenario(sc.id));
+        groupDiv.appendChild(item);
+      });
+
+      scenarioListEl.appendChild(groupDiv);
+    });
+  }
+
+  function selectScenario(id) {
+    const sc = scenarios.find(s => s.id === id);
+    if (!sc) return;
+    currentScenarioId = id;
+    renderScenarioList();
+
+    detailTitleEl.textContent = `${sc.examLabel} ${sc.questionRef} – ${sc.label}`;
+    detailMetaEl.textContent = `${sc.examLabel} • Tags: ${sc.tags ? sc.tags.join(", ") : "none"}`;
+    scenarioTextEl.textContent = sc.prompt;
+
+    // Reset notes if they are just the placeholder or empty
+    if (notesAreaEl.value.trim().startsWith("- hobby v. trade") || !notesAreaEl.value.trim()) {
+      notesAreaEl.value = "";
+    }
+
+    renderChecklist(sc);
+    checklistRevealed = false;
+    updateChecklistVisibility();
+    resetCoverage();
+
+    // Study notes
+    studyNotesEl.textContent = sc.notes || "No study notes added yet.";
+    studyNotesEl.style.display = "none";
+    toggleNotesBtn.textContent = "Show key moves ▾";
+
+    detailGridEl.style.display = "grid";
+    detailLowerEl.style.display = "grid";
+  }
+
+  function renderChecklist(sc) {
+    checklistEl.innerHTML = "";
+    const issues = sc.issues || [];
+    issues.forEach((issue, idx) => {
+      const row = document.createElement("div");
+      row.className = "checklist-item";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = `issue-${sc.id}-${idx}`;
+
+      const label = document.createElement("label");
+      label.className = "checklist-label";
+      label.htmlFor = cb.id;
+      label.textContent = issue;
+
+      row.appendChild(cb);
+      row.appendChild(label);
+      checklistEl.appendChild(row);
+    });
+  }
+
+  function resetCoverage() {
+    coverageStatusEl.style.display = "none";
+    coverageTextEl.textContent = "";
+    coveragePillEl.textContent = "";
+    coveragePillEl.className = "status-pill";
+    const boxes = checklistEl.querySelectorAll("input[type='checkbox']");
+    boxes.forEach(b => b.checked = false);
+  }
+
+  function updateChecklistVisibility() {
+    if (!checklistRevealed) {
+      checklistLockedMessageEl.style.display = "block";
+      checklistButtonsRowEl.style.display = "none";
+      checklistEl.style.display = "none";
+      coverageStatusEl.style.display = "none";
+      revealChecklistBtn.disabled = false;
+    } else {
+      checklistLockedMessageEl.style.display = "none";
+      checklistButtonsRowEl.style.display = "flex";
+      checklistEl.style.display = "block";
+      revealChecklistBtn.disabled = true;
+    }
+  }
+
+  // ---- EVENT HANDLERS ----
+  searchInputEl.addEventListener("input", renderScenarioList);
+  examFilterEl.addEventListener("change", renderScenarioList);
+
+  focusNotesBtn.addEventListener("click", () => {
+    notesAreaEl.focus();
+  });
+
+  clearNotesBtn.addEventListener("click", () => {
+    if (notesAreaEl.value.trim() && !confirm("Clear your notes for this scenario?")) return;
+    notesAreaEl.value = "";
+  });
+
+  revealChecklistBtn.addEventListener("click", () => {
+    checklistRevealed = true;
+    updateChecklistVisibility();
+  });
+
+  resetChecklistBtn.addEventListener("click", resetCoverage);
+
+  checkCoverageBtn.addEventListener("click", () => {
+    const boxes = checklistEl.querySelectorAll("input[type='checkbox']");
+    const total = boxes.length;
+    let checked = 0;
+    boxes.forEach(b => {
+      if (b.checked) checked++;
+    });
+
+    if (total === 0) return;
+
+    const pct = Math.round((checked / total) * 100);
+
+    coverageStatusEl.style.display = "flex";
+    coverageTextEl.textContent = `You’ve marked ${checked} of ${total} listed issues (${pct}% coverage).`;
+
+    coveragePillEl.className = "status-pill";
+    if (pct >= 80) {
+      coveragePillEl.classList.add("good");
+      coveragePillEl.textContent = "Nice – near full coverage.";
+    } else if (pct >= 50) {
+      coveragePillEl.classList.add("mid");
+      coveragePillEl.textContent = "Solid start – skim the unchecked items.";
+    } else {
+      coveragePillEl.classList.add("bad");
+      coveragePillEl.textContent = "You’re missing a lot – review & iterate.";
+    }
+  });
+
+  toggleNotesBtn.addEventListener("click", () => {
+    const visible = studyNotesEl.style.display !== "none";
+    studyNotesEl.style.display = visible ? "none" : "block";
+    toggleNotesBtn.textContent = visible ? "Show key moves ▾" : "Hide key moves ▴";
+  });
+
+  // Keyboard shortcut: press "N" to focus notes
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "n" || e.key === "N") {
+      if (document.activeElement !== notesAreaEl) {
+        e.preventDefault();
+        notesAreaEl.focus();
+      }
+    }
+  });
+
+  // Initial render
+  renderScenarioList();
+</script>
+</body>
+</html>

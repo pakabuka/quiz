@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Federal Income Tax – Income Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden {
+      display: none;
+    }
+    .question-count {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected {
+      border-color: #007bff;
+    }
+    .options button:focus {
+      outline: none;
+    }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+    }
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    .review-table .correct {
+      background-color: #d4edda;
+    }
+    .review-table .wrong {
+      background-color: #f8d7da;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .primary-button:active {
+      transform: scale(0.95);
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    #prev-button {
+      align-self: flex-start;
+    }
+    #next-button {
+      align-self: flex-end;
+    }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+    }
+    #result-screen {
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1>Welcome to the Quiz</h1>
+      <h4 style="text-align: center;">Federal Income Tax</h4>
+      <h5 style="text-align: center;">Income</h5>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button 
+        onclick="location.href='index.html'" 
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Main Page
+      </button>
+    </div>
+    <footer>
+      © 2024 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Glenshaw Glass defines gross income as including \"undeniable accessions to wealth, clearly realized, and over which the taxpayers have complete dominion.\" Which of the following best fits this definition and is includible in gross income under § 61?",
+        options: [
+          "A. Appreciation in the value of stock that has not been sold",
+          "B. An employer's payment of an employee's personal income tax liability",
+          "C. A taxpayer's enjoyment of meals they cook for themselves at home",
+          "D. A mere expectation of future inheritance"
+        ],
+        correct: 1,
+        explanation: "Under Old Colony Trust, an employer's payment of an employee's personal income tax liability is additional compensation and an accession to wealth. Unrealized appreciation, imputed income, and mere expectations are generally not included in gross income."
+      },
+      {
+        question: "Employer pays T's $10,000 federal income tax directly to the IRS as part of T's compensation package. How is this treated for T?",
+        options: [
+          "A. Excludible gift under § 102",
+          "B. Not income because T never touches the cash",
+          "C. Gross income to T as compensation",
+          "D. Nontaxable fringe benefit under § 132"
+        ],
+        correct: 2,
+        explanation: "Old Colony Trust holds that an employer's payment of an employee's income tax is additional compensation and is includible in gross income under § 61(a)(1). The form of payment (to T or to the IRS) does not change the result."
+      },
+      {
+        question: "T finds a $100 bill on the sidewalk and keeps it. What is the correct federal income tax treatment?",
+        options: [
+          "A. No income because found money is not taxable",
+          "B. Income only if T reports it voluntarily",
+          "C. Gross income in the year of finding as \"treasure trove\"",
+          "D. Capital gain income because cash is a capital asset"
+        ],
+        correct: 2,
+        explanation: "Found money is treated as \"treasure trove\" and is includible in gross income when \"reduced to undisputed possession\" under § 61."
+      },
+      {
+        question: "Which of the following is MOST clearly a taxable prize or award under § 74 (absent a specific exception)?",
+        options: [
+          "A. A Nobel Prize that the recipient is required to assign directly to a qualified charity under § 74(b)",
+          "B. A random drawing where the winner receives a $5,000 cash prize",
+          "C. A purely honorary plaque with no monetary value",
+          "D. A de minimis employee turkey at Thanksgiving"
+        ],
+        correct: 1,
+        explanation: "§ 74 generally includes prizes and awards in gross income. Cash from a random drawing is classic § 74 income. § 74(b) provides a limited exclusion for certain prizes assigned to charity; a plaque with no value and a de minimis turkey are either not income or excludible as de minimis fringe benefits."
+      },
+      {
+        question: "Student S receives a scholarship that pays her law school tuition directly to the school. She is not required to perform any services. How is this treated?",
+        options: [
+          "A. Fully taxable compensation under § 61",
+          "B. Excludible from gross income as a qualified scholarship under § 117",
+          "C. Taxable unless she reports it on Form 1098-T",
+          "D. Excludible only if she is also a teaching assistant"
+        ],
+        correct: 1,
+        explanation: "Under § 117, amounts received as a qualified scholarship used for tuition and required fees are excludible from gross income if they are not payment for services. Here, the payment is for tuition with no service requirement, so it's excludible."
+      },
+      {
+        question: "S receives a \"scholarship\" that covers tuition, but in exchange she must work 15 hours per week as a research assistant. How is the payment treated?",
+        options: [
+          "A. Excludible under § 117 as a scholarship",
+          "B. Fully excludible as a gift under § 102",
+          "C. Part scholarship, part gift",
+          "D. Taxable compensation under § 61"
+        ],
+        correct: 3,
+        explanation: "Amounts received as payment for services are not excludible scholarships under § 117. Because the payment is conditioned on research services, it is taxable compensation under § 61(a)(1)."
+      },
+      {
+        question: "Which of the following is an example of imputed income that is NOT included in gross income under current doctrine?",
+        options: [
+          "A. Employer-provided gym membership",
+          "B. The rental value of owner-occupied housing",
+          "C. Reimbursement of employee travel expenses",
+          "D. Employer-paid health insurance"
+        ],
+        correct: 1,
+        explanation: "The economic benefit of living in your own home (owner-occupied housing) is classic \"imputed income\" and is not taxed under current law. The other items may be taxable or excludible under specific provisions, but they are not excluded merely as imputed income."
+      },
+      {
+        question: "Which of the following fringe benefits is MOST clearly excludible under § 132 as a \"no-additional-cost\" service?",
+        options: [
+          "A. Free airline standby seats given to airline employees on otherwise empty flights",
+          "B. A cash bonus paid at year-end",
+          "C. A free laptop given to employees to use at home",
+          "D. Employer-provided country club membership for client entertainment"
+        ],
+        correct: 0,
+        explanation: "§ 132(b) excludes \"no-additional-cost services\" where the employer incurs no substantial additional cost. Empty airline seats used by airline employees are the classic example. Cash is always income, and the other examples generally do not fit § 132(b)."
+      },
+      {
+        question: "Under § 102 and Duberstein, which of the following is MOST likely a nontaxable gift?",
+        options: [
+          "A. A car given by an employer to an employee as a \"gift\" for years of service, deductible by the employer",
+          "B. A payment given out of \"detached and disinterested generosity\" by a close friend for no services",
+          "C. A volume-based \"thank you\" payment from a supplier to a purchasing agent",
+          "D. A \"tip\" given to a waiter by a satisfied customer"
+        ],
+        correct: 1,
+        explanation: "§ 102 excludes gifts motivated by \"detached and disinterested generosity.\" Where there is a business context or expectation of services, courts treat the transfer as compensation or income, not a gift."
+      },
+      {
+        question: "Which of the following statements about discharge of indebtedness income under § 61(a)(12) is MOST accurate?",
+        options: [
+          "A. Any reduction in debt principal is always excludible from income",
+          "B. Cancellation of debt generally produces gross income unless an exception (such as bankruptcy or insolvency) applies",
+          "C. Cancellation of debt is never income because there is no cash received",
+          "D. COD income only arises if the debt was originally incurred to buy a capital asset"
+        ],
+        correct: 1,
+        explanation: "§ 61(a)(12) includes income from discharge of indebtedness in gross income. § 108 creates exceptions (e.g., bankruptcy, insolvency), but absent an exception, COD is taxable even without cash changing hands."
+      },
+      {
+        question: "T, a lawyer, agrees to draft a will for C in exchange for C's used car (FMV $8,000). T's basis in the will-drafting services is $0. How much income does T recognize?",
+        options: [
+          "A. $0, because it's a barter",
+          "B. $8,000, the fair market value of the car",
+          "C. The value of the time spent only if T charges C later",
+          "D. $8,000 minus T's time cost"
+        ],
+        correct: 1,
+        explanation: "Barter transactions are treated as if each party sold what they provided for its fair market value. T must include the FMV of the car ($8,000) as gross income from services under § 61(a)(1)."
+      },
+      {
+        question: "Company gives each employee a $25 coffee shop gift card at year-end. Which treatment is MOST consistent with current doctrine?",
+        options: [
+          "A. Excludible as a de minimis fringe because it is a low-value item",
+          "B. Excludible as a working condition fringe under § 132(d)",
+          "C. Taxable compensation because cash-equivalent gift cards are not de minimis",
+          "D. Excludible gift under § 102"
+        ],
+        correct: 2,
+        explanation: "Gift cards that are cash equivalents are generally treated as taxable compensation, even at low dollar amounts, and do not qualify as de minimis fringes under § 132(e)."
+      },
+      {
+        question: "Benaglia-style case: Hotel manager is required to live on the premises for the convenience of the employer and receives meals and lodging there. Assuming modern § 119 applies, which is most accurate?",
+        options: [
+          "A. The value is always taxable because food and shelter are consumption",
+          "B. Excludible if provided on the business premises, for the convenience of the employer, and lodging is a condition of employment",
+          "C. Excludible only if the employee also pays at least fair rental value",
+          "D. Automatically excludible if the employer labels it \"for convenience of employer\" in the contract"
+        ],
+        correct: 1,
+        explanation: "§ 119 excludes the value of meals and lodging furnished on the business premises for the convenience of the employer, with an additional requirement for lodging that acceptance is a condition of employment."
+      },
+      {
+        question: "Gotcher-style case: T and spouse go on an all-expenses-paid trip to Germany paid by Volkswagen to observe the factory and encourage T to become a dealer. Which of the following is MOST consistent with the case?",
+        options: [
+          "A. Entire value taxable to T as compensation",
+          "B. Entire value excludible as a gift",
+          "C. Portion allocable to business purpose may be excludible as not primarily personal consumption, while spouse's purely personal portion is taxable income",
+          "D. Entire value excludible as a working condition fringe"
+        ],
+        correct: 2,
+        explanation: "Gotcher suggests that amounts that primarily benefit the payer's business (e.g., dealer selection) may not be income to the taxpayer, but purely personal benefits (like the spouse's trip) are income."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      questionElement.textContent = currentQuestion.question;
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(question, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === question.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = question.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === question.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

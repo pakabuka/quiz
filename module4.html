@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPRE – Regulation of the Legal Profession (Module 4)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 650px;
+      width: 92%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden { display: none; }
+    .question-count { font-size: 18px; margin-bottom: 10px; }
+    .question { font-size: 20px; margin-bottom: 15px; }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected { border-color: #007bff; }
+    .options button:focus { outline: none; }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover { background-color: #0056b3; transform: scale(1.05); }
+    .primary-button:active { transform: scale(0.95); }
+    .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
+    #prev-button { align-self: flex-start; }
+    #next-button { align-self: flex-end; }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    #result-screen { max-height: 80vh; overflow-y: auto; }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+    .review-table .correct { background-color: #d4edda; }
+    .review-table .wrong { background-color: #f8d7da; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 4 - Conflicts of Interest</h5>
+      <p style="text-align:center; color:#444; margin-top: 14px;">
+        Tricky MPRE-style questions covering sources of regulation, admission, discipline, choice of law,
+        UPL/MJP, supervision duties, independence, restrictions on practice, sale of practice, and ancillary services. Based on Barbri MPRE Outline.
+      </p>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+ 
+// Module 4 — Conflicts of Interest
+const questions = [
+  {
+    question:
+      "Core principle: conflicts rules are primarily about protecting which value in the lawyer-client relationship?",
+    options: [
+      "A. Maximizing the lawyer’s revenue",
+      "B. Loyalty and independent professional judgment for the client",
+      "C. Making litigation faster",
+      "D. Avoiding embarrassing facts"
+    ],
+    correct: 1,
+    explanation:
+      "Conflicts rules protect loyalty and the lawyer’s independent judgment, exercised solely for the client’s benefit."
+  },
+
+  {
+    question:
+      "If a conflict is apparent BEFORE taking a matter, the lawyer must:",
+    options: [
+      "A. Take it and disclose later if it becomes serious",
+      "B. Decline the representation unless informed consent solves it",
+      "C. Take it if the lawyer believes they can stay objective (no consent needed)",
+      "D. Take it if the client is sophisticated"
+    ],
+    correct: 1,
+    explanation:
+      "If a conflict exists at the outset, the lawyer must not take the matter unless the conflict is properly consentable and consent is obtained."
+  },
+
+  {
+    question:
+      "If a conflict becomes apparent AFTER representation begins and informed consent will NOT solve it, the lawyer must:",
+    options: [
+      "A. Continue but wall off the issue internally",
+      "B. Withdraw",
+      "C. Ask the judge for permission to ignore it",
+      "D. Tell the client to waive malpractice claims"
+    ],
+    correct: 1,
+    explanation:
+      "If the conflict is unconsentable (or consent cannot be obtained), withdrawal is required."
+  },
+
+  {
+    question:
+      "A lawyer’s failure to handle conflicts properly can lead to all of the following EXCEPT:",
+    options: [
+      "A. Disqualification in a litigated matter",
+      "B. Professional discipline",
+      "C. Civil liability for malpractice",
+      "D. Automatic criminal liability"
+    ],
+    correct: 3,
+    explanation:
+      "The outline lists disqualification, discipline, and malpractice liability—not automatic criminal liability."
+  },
+
+  {
+    question:
+      "Imputed conflicts (Rule 1.10): generally, lawyers who practice together in a “firm” are treated as:",
+    options: [
+      "A. Independent for conflicts purposes",
+      "B. A single unit for conflicts purposes",
+      "C. A single unit only in criminal cases",
+      "D. A single unit only if they share profits"
+    ],
+    correct: 1,
+    explanation:
+      "Conflicts are generally imputed across the firm: if one can’t take it, the others usually can’t either."
+  },
+
+  {
+    question:
+      "Which group can count as a “firm” for conflicts purposes under Rule 1.0(c)?",
+    options: [
+      "A. Only a traditional private law firm",
+      "B. Only lawyers in the same office suite",
+      "C. A corporate law department, legal aid office, or prosecutor/public defender office (depending on factors)",
+      "D. Any lawyers who know each other socially"
+    ],
+    correct: 2,
+    explanation:
+      "“Firm” can include many practice settings beyond private firms, depending on how closely lawyers practice together."
+  },
+
+  {
+    question:
+      "Whether a group is a “firm” depends on multiple factors. Which is LEAST relevant per the outline?",
+    options: [
+      "A. Formal agreement and how they hold themselves out to the public",
+      "B. Sharing revenues/responsibilities and access to each other’s files",
+      "C. Routine discussion of client matters among themselves",
+      "D. Whether the lawyers went to the same law school"
+    ],
+    correct: 3,
+    explanation:
+      "Law school ties are irrelevant; structure, access, public-facing presentation, and practice integration matter."
+  },
+
+  {
+    question:
+      "Uniquely personal conflicts: which statement is MOST accurate?",
+    options: [
+      "A. Personal conflicts are always imputed to the whole firm",
+      "B. Some conflicts uniquely personal to one lawyer are not imputed because they’re unlikely to affect others’ loyalties",
+      "C. Personal conflicts can never be cured",
+      "D. Personal conflicts are only about money"
+    ],
+    correct: 1,
+    explanation:
+      "Some conflicts are so personal to one lawyer that they are not imputed under Rule 1.10(a) comment 3 logic."
+  },
+
+  {
+    question:
+      "Sexual relationship conflict (Rule 1.8(j)) is generally:",
+    options: [
+      "A. Imputed to all lawyers in the firm",
+      "B. Not imputed to other lawyers in the firm",
+      "C. Always consentable if both consent in writing",
+      "D. Allowed if the client is wealthy"
+    ],
+    correct: 1,
+    explanation:
+      "Sexual-relationship conflicts are personal and not imputed (Rule 1.8(k))."
+  },
+
+  {
+    question:
+      "Screening can cure certain imputed conflicts (e.g., lateral moves / prospective client situations) if the screened lawyer:",
+    options: [
+      "A. Is screened, has no access, and receives no part of the fee from the matter (apart from normal salary/partnership share), and notice is given",
+      "B. Merely promises to be fair",
+      "C. Is screened but can still access the files if needed",
+      "D. Gets the client’s oral consent"
+    ],
+    correct: 0,
+    explanation:
+      "The outline emphasizes timely screening + no fee from the matter + written notice to the affected person."
+  },
+
+  {
+    question:
+      "Office-sharing arrangements: lawyers sharing space may sometimes represent adverse clients even in the same matter, but must be careful because:",
+    options: [
+      "A. Office-sharing automatically creates a firm",
+      "B. Informal consultations can create confidentiality duties and unintended conflicts",
+      "C. Conflicts rules do not apply outside formal firms",
+      "D. Courts never disqualify office-sharers"
+    ],
+    correct: 1,
+    explanation:
+      "Office-sharing doesn’t automatically equal a firm, but careless sharing can create duties/conflicts."
+  },
+
+  {
+    question:
+      "Concurrent conflict (Rule 1.7(a)) exists when:",
+    options: [
+      "A. Any two clients dislike each other socially",
+      "B. Representation is directly adverse to another current client, OR there’s a significant risk of material limitation by lawyer’s interests/duties",
+      "C. A lawyer is busy with many cases",
+      "D. A client’s case is difficult"
+    ],
+    correct: 1,
+    explanation:
+      "Two branches: direct adversity (1.7(a)(1)) and material limitation (1.7(a)(2))."
+  },
+
+  {
+    question:
+      "Material limitation example: Lawyer A’s best friend was the victim in the client’s criminal case. This is a conflict because:",
+    options: [
+      "A. The lawyer must always refuse criminal cases",
+      "B. There is a significant risk the lawyer’s personal interest/grief will materially limit representation",
+      "C. The prosecutor will be annoyed",
+      "D. The lawyer knows facts about the victim"
+    ],
+    correct: 1,
+    explanation:
+      "Personal interests that create a significant risk of limiting the lawyer’s efforts trigger 1.7(a)(2)."
+  },
+
+  {
+    question:
+      "Rule 1.7(b): a lawyer may proceed despite a concurrent conflict ONLY if ALL four conditions are met. Which is NOT one of them?",
+    options: [
+      "A. Lawyer reasonably believes competent & diligent representation is possible",
+      "B. Representation is not prohibited by law",
+      "C. Representation does not involve one client asserting a claim against another current client in the same tribunal proceeding",
+      "D. The clients verbally agree in a hallway (no writing needed)"
+    ],
+    correct: 3,
+    explanation:
+      "Consent must be informed and confirmed in writing; oral-only is insufficient."
+  },
+
+  {
+    question:
+      "Nonconsentable conflicts: the consent rule creates a “reasonable lawyer” standard. Meaning:",
+    options: [
+      "A. If a reasonable lawyer would conclude client interests can’t be adequately protected, consent won’t fix it",
+      "B. Any conflict becomes consentable if the client wants it badly",
+      "C. Conflicts are consentable only if the client is a repeat customer",
+      "D. Consentability depends solely on the client’s sophistication"
+    ],
+    correct: 0,
+    explanation:
+      "If a reasonable lawyer says “no way,” the conflict is unconsentable even if the client says yes."
+  },
+
+  {
+    question:
+      "Informed consent can fail if the lawyer cannot explain the conflict without revealing another client’s confidential information and that other client won’t allow disclosure. Result?",
+    options: [
+      "A. The lawyer may proceed anyway; confidentiality beats conflicts rules",
+      "B. The lawyer cannot represent (consent won’t solve the conflict)",
+      "C. The lawyer can disclose the other client’s information to obtain consent",
+      "D. The lawyer can proceed if they create an internal memo"
+    ],
+    correct: 1,
+    explanation:
+      "If you can’t give informed consent disclosure without violating confidentiality, you can’t obtain valid consent."
+  },
+
+  {
+    question:
+      "“Confirmed in writing” generally can mean:",
+    options: [
+      "A. Only a handwritten signature on paper",
+      "B. Either a signed written/electronic record, OR oral consent promptly memorialized and sent to the client",
+      "C. A lawyer’s private note that the client agreed",
+      "D. A text message from the client’s friend"
+    ],
+    correct: 1,
+    explanation:
+      "Writing confirmation can be a signed record or prompt memorialization sent to the client."
+  },
+
+  {
+    question:
+      "BUT: certain consents must be signed by the client (not just memorialized). Which is one of those categories per the outline?",
+    options: [
+      "A. Any conflict under Rule 1.7",
+      "B. Aggregate settlements and business transactions with the lawyer",
+      "C. Any client instruction about strategy",
+      "D. Any communication with opposing counsel"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.8(a) (business transactions) and 1.8(g) (aggregate settlements) require a writing signed by the client."
+  },
+
+  {
+    question:
+      "Even with client consent, a lawyer generally cannot:",
+    options: [
+      "A. Represent multiple clients in a transaction",
+      "B. Assert a claim by one current client against another current client in the same litigation/tribunal proceeding",
+      "C. Represent co-plaintiffs in civil litigation",
+      "D. Represent clients in unrelated matters"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.7(b)(3) forbids being on both sides of the same proceeding."
+  },
+
+  {
+    question:
+      "Revocation: a client who previously consented to a conflict can generally:",
+    options: [
+      "A. Never revoke consent once given",
+      "B. Revoke consent (often), and whether the lawyer can continue for others depends on facts",
+      "C. Revoke only with court approval",
+      "D. Revoke only if the lawyer agrees"
+    ],
+    correct: 1,
+    explanation:
+      "Clients can usually revoke; consequences depend on context."
+  },
+
+  {
+    question:
+      "Advance waivers (“consent to future conflicts”) are valid only if:",
+    options: [
+      "A. The waiver says “any and all conflicts, present and future” with no explanation",
+      "B. It is reasonable and the client truly understands the types of conflicts and consequences",
+      "C. The client is in a hurry",
+      "D. The lawyer promises discounted fees"
+    ],
+    correct: 1,
+    explanation:
+      "Blanket waivers without meaningful explanation are not effective."
+  },
+
+  {
+    question:
+      "Patent owner O is a current client of Lawyer L. Another client asks L’s partner to sue O to invalidate O’s patent. Most accurate?",
+    options: [
+      "A. Partner can sue O because only L (not partner) represents O",
+      "B. Direct adversity to a current client is imputed; plus suing a current client in the same litigation is nonconsentable under 1.7(b)(3)",
+      "C. It’s fine if O never finds out",
+      "D. It’s fine because it’s an IP case"
+    ],
+    correct: 1,
+    explanation:
+      "Direct adversity + imputation + the “can’t be on both sides of same litigation” bar."
+  },
+
+  {
+    question:
+      "Two firms represent rival companies competing economically in the same market but not in any legal dispute. Under the outline, this is:",
+    options: [
+      "A. Automatically a direct-adversity conflict",
+      "B. Not necessarily a conflict absent legal adversity; disclosure may be optional for goodwill if it can be done without revealing confidences",
+      "C. Always a conflict requiring written consent",
+      "D. A crime-fraud issue"
+    ],
+    correct: 1,
+    explanation:
+      "Economic rivalry alone ≠ legal adversity (though sensitivity/goodwill may justify disclosure)."
+  },
+
+  {
+    question:
+      "Criminal defense lawyer represents D. Witness Z in D’s case is also a current client (drunk driving). Lawyer must cross-examine Z using (or seeming to use) confidential info. Most accurate?",
+    options: [
+      "A. Automatically consentable with a simple waiver",
+      "B. A reasonable lawyer would advise against consent; lawyer should seek permission to withdraw from one case",
+      "C. No conflict because cases are unrelated",
+      "D. Lawyer should disclose Z’s confidential info to impeach Z"
+    ],
+    correct: 1,
+    explanation:
+      "Classic direct adversity/material limitation problem; likely unconsentable; withdrawal from one matter is usually required."
+  },
+
+  {
+    question:
+      "Current client C sues employer in discrimination case. Lawyer’s regular client landlord wants the lawyer to evict C in an unrelated unlawful detainer case. This is best viewed as:",
+    options: [
+      "A. No conflict because matters are unrelated",
+      "B. Direct adversity to a current client in a different matter (conflict that may be consentable with informed written consent)",
+      "C. Automatically permitted because it’s a landlord-tenant matter",
+      "D. A former-client conflict"
+    ],
+    correct: 1,
+    explanation:
+      "Opposing a current client—even in an unrelated matter—can be direct adversity; comment 6 suggests it may be consentable in some situations."
+  },
+
+  {
+    question:
+      "Buyer B is a current client in negotiations with Seller S. While negotiations are ongoing, S asks to hire the same lawyer for an unrelated project. Most accurate?",
+    options: [
+      "A. No conflict because the matters are unrelated",
+      "B. Conflict due to direct adversity/current-client dynamics; lawyer needs informed consent (confirmed in writing) from both B and S",
+      "C. Permitted if the lawyer charges S more",
+      "D. Permitted if lawyer avoids discussing the sale"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.7 comment 7: even unrelated matters can create conflicts in active negotiations."
+  },
+
+  {
+    question:
+      "Class actions: unnamed class members are ordinarily:",
+    options: [
+      "A. Always treated as clients for direct-adversity conflicts",
+      "B. Not treated as clients for direct-adversity conflicts (ordinarily)",
+      "C. Treated as clients only after settlement",
+      "D. Treated as clients only if they opt out"
+    ],
+    correct: 1,
+    explanation:
+      "Unnamed members ordinarily are not clients for Rule 1.7 direct-adversity analysis."
+  },
+
+  {
+    question:
+      "Multiple criminal co-defendants: the outline says one lawyer ordinarily should NOT represent both because:",
+    options: [
+      "A. It is always illegal",
+      "B. Their interests are very likely to diverge (blame-shifting, inconsistent stories, compromised defenses, harmful tactics)",
+      "C. Judges dislike it",
+      "D. It increases court costs"
+    ],
+    correct: 1,
+    explanation:
+      "Divergence risks are pervasive; Sixth Amendment effective-assistance concerns arise when prejudiced."
+  },
+
+  {
+    question:
+      "Multiple civil co-parties: one lawyer may represent multiple plaintiffs/defendants if:",
+    options: [
+      "A. They promise not to disagree",
+      "B. The lawyer follows the conflicts-handling steps (analysis, disclosure, informed written consent, revisit if conflict ripens)",
+      "C. The case is small",
+      "D. Opposing counsel agrees"
+    ],
+    correct: 1,
+    explanation:
+      "Civil multiple representation is sometimes possible with proper conflict management."
+  },
+
+  {
+    question:
+      "Four-step guide for multiple representation conflicts: which is the correct order?",
+    options: [
+      "A. Get signatures → analyze → disclose → withdraw",
+      "B. Analyze ability to represent → disclose risks/alternatives → invite informed consent & confirm in writing → repeat if conflict ripens (withdraw if unconsentable)",
+      "C. Disclose only if asked → proceed → apologize later → settle quickly",
+      "D. Analyze only after litigation begins → then decide"
+    ],
+    correct: 1,
+    explanation:
+      "You must assess first, then disclose, then get informed written consent, and reassess if circumstances change."
+  },
+
+  {
+    question:
+      "Joint representation breakdown: if one client insists on separate counsel, the lawyer may continue with the other client only if:",
+    options: [
+      "A. The lawyer prefers that client",
+      "B. The dropped client gives informed consent (confirmed in writing) to the lawyer’s continued representation of the remaining client",
+      "C. The remaining client pays double",
+      "D. The lawyer promises secrecy"
+    ],
+    correct: 1,
+    explanation:
+      "Continuing against a former joint client triggers former-client conflict rules (e.g., 1.9(a) consent)."
+  },
+
+  {
+    question:
+      "Joint representation and privilege: in later litigation between former joint clients, privilege over their communications with the joint lawyer is:",
+    options: [
+      "A. Fully available to each against the other",
+      "B. Not available as between them (neither can claim privilege against the other for those communications)",
+      "C. Always waived as to the world",
+      "D. Protected forever against everyone including each other"
+    ],
+    correct: 1,
+    explanation:
+      "Restatement joint-client rule: no privilege between former joint clients in disputes with each other."
+  },
+
+  {
+    question:
+      "A joint representation is unlikely to work if:",
+    options: [
+      "A. Clients have identical goals",
+      "B. One client wants to disclose material in confidence and keep it from the other joint clients",
+      "C. The lawyer explains risks clearly",
+      "D. The clients are related"
+    ],
+    correct: 1,
+    explanation:
+      "Joint representation usually requires information-sharing among co-clients, unless a special agreement allows limited non-sharing."
+  },
+
+  {
+    question:
+      "In two unrelated cases, Lawyer argues a statute is unconstitutional for Client One and constitutional for Client Two. Bare facts only. Conflict?",
+    options: [
+      "A. Automatically a conflict",
+      "B. Not necessarily a conflict under comment 24",
+      "C. Always direct adversity",
+      "D. A per se conflict requiring withdrawal"
+    ],
+    correct: 1,
+    explanation:
+      "Inconsistent legal positions in unrelated matters are not automatically conflicts."
+  },
+
+  {
+    question:
+      "But if Client One’s appeal will likely set controlling precedent for Client Two’s later case in the same judicial district, then:",
+    options: [
+      "A. Still no conflict because clients aren’t parties to the same case",
+      "B. There is substantial risk of material limitation; disclose and obtain informed written consent or withdraw",
+      "C. The lawyer should secretly sabotage one case",
+      "D. The lawyer can cure it by telling only one client"
+    ],
+    correct: 1,
+    explanation:
+      "Precedent effect can create a material-limitation conflict (1.7(a)(2))."
+  },
+
+  {
+    question:
+      "Lawyer’s own financial interest: opposing party’s general counsel hints at a lucrative job offer while lawyer represents a client against that party. The lawyer must:",
+    options: [
+      "A. Ignore it; job talks never matter",
+      "B. Disclose and obtain informed written consent if the overture creates substantial risk of material limitation",
+      "C. Accept the job immediately to end the conflict",
+      "D. Tell the client to settle"
+    ],
+    correct: 1,
+    explanation:
+      "Employment negotiations can materially limit loyalty; requires disclosure/consent or withdrawal."
+  },
+
+  {
+    question:
+      "Close relatives as opposing counsel: if Lawyer L sues a defendant represented by L’s mother, L must:",
+    options: [
+      "A. Proceed without disclosure because family relationships are private",
+      "B. Disclose to clients and obtain informed written consent from each affected client",
+      "C. Withdraw automatically (never consentable)",
+      "D. Treat it as a privilege issue only"
+    ],
+    correct: 1,
+    explanation:
+      "Close family ties can materially limit judgment and risk inadvertent compromise; consent needed."
+  },
+
+  {
+    question:
+      "This close-relative conflict is typically:",
+    options: [
+      "A. Imputed to the lawyer’s entire firm automatically",
+      "B. Personal in nature and ordinarily not imputed",
+      "C. Never a conflict",
+      "D. Only a conflict if the relatives live together"
+    ],
+    correct: 1,
+    explanation:
+      "The outline treats this as personal and ordinarily not imputed."
+  },
+
+  {
+    question:
+      "Third-person interests: a third party paying fees can create a conflict. Lawyer may proceed if:",
+    options: [
+      "A. The payer controls strategy",
+      "B. Lawyer reasonably believes payer won’t adversely affect representation AND client gives informed consent confirmed in writing",
+      "C. Client never finds out",
+      "D. Payer signs a contract with the lawyer"
+    ],
+    correct: 1,
+    explanation:
+      "Must preserve independence and get client consent; third party can’t interfere."
+  },
+
+  {
+    question:
+      "Third-party compensation (Rule 1.8(f)): which is NOT required?",
+    options: [
+      "A. Client’s informed consent",
+      "B. No interference with lawyer’s independence",
+      "C. Arrangement must not compromise confidentiality",
+      "D. The third party must also be a lawyer"
+    ],
+    correct: 3,
+    explanation:
+      "Third party need not be a lawyer; the key is consent, independence, and confidentiality."
+  },
+
+  {
+    question:
+      "Insurance defense: policyholder confesses intentional act; policy excludes intentional conduct; insurer reserved rights. Lawyer must:",
+    options: [
+      "A. Tell insurer immediately because insurer pays the bills",
+      "B. Not disclose the confidential admission to insurer; if lawyer can’t defend effectively, withdraw",
+      "C. Use the admission to help insurer deny coverage",
+      "D. Publicly withdraw and explain why"
+    ],
+    correct: 1,
+    explanation:
+      "Confidentiality to policyholder governs; insurer payment doesn’t override ethics. Withdrawal may be necessary."
+  },
+
+  {
+    question:
+      "Settlement within policy limits: policy limit $100k; plaintiff offers $90k; insured wants settle; insurer wants gamble at trial. Consequence under outline?",
+    options: [
+      "A. No conflict because both want low payout",
+      "B. Conflict: insured should be invited to independent counsel (at insurer’s expense) on settlement issue; insurer may face bad-faith excess-judgment liability",
+      "C. Lawyer must follow insurer because insurer controls defense",
+      "D. Lawyer should secretly settle"
+    ],
+    correct: 1,
+    explanation:
+      "Classic insurer-insured conflict; disclosure + independent advice; bad-faith exposure for insurer."
+  },
+
+  {
+    question:
+      "Insurance company controls settlement by contract, but insured objects. Defense lawyer must:",
+    options: [
+      "A. Settle anyway without telling insured",
+      "B. Inform insured early about constraints; if insured objects, give chance to reject insurer defense and assume own defense at own expense",
+      "C. Always follow insured, never insurer",
+      "D. Withdraw immediately in every case"
+    ],
+    correct: 1,
+    explanation:
+      "Counsel must communicate constraints and give insured the option to take over defense if they object."
+  },
+
+  {
+    question:
+      "Outside auditors and billing: defense lawyer may disclose to an outside auditor without consent:",
+    options: [
+      "A. Always",
+      "B. Never—needs policyholder’s informed consent for disclosure to outside auditor",
+      "C. Only if auditor promises secrecy",
+      "D. If insurer asks nicely"
+    ],
+    correct: 1,
+    explanation:
+      "No disclosure of policyholder confidential info to outside auditors without policyholder informed consent."
+  },
+
+  {
+    question:
+      "If insurer litigation guidelines interfere with professional judgment or competent representation, defense lawyer must:",
+    options: [
+      "A. Follow them because insurer pays",
+      "B. Refuse; if insurer won’t relent, withdraw",
+      "C. Ignore them quietly without telling anyone",
+      "D. Ask the plaintiff for permission"
+    ],
+    correct: 1,
+    explanation:
+      "Rules govern the lawyer, not the insurance contract; must maintain independent judgment and competence."
+  },
+
+  // Former clients (Rule 1.9) + screening / imputation
+  {
+    question:
+      "After representation ends, a lawyer’s duty of confidentiality:",
+    options: [
+      "A. Ends immediately when the final bill is paid",
+      "B. Continues; former client info remains protected",
+      "C. Continues only for privileged communications, not other info",
+      "D. Continues only for one year"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.9(c) imposes continuing confidentiality obligations to former clients."
+  },
+
+  {
+    question:
+      "Former client info: lawyer may use former client confidential info to the former client’s disadvantage only if:",
+    options: [
+      "A. The lawyer believes it’s fair",
+      "B. The information is generally known OR the former client gives informed consent confirmed in writing OR an exception to Rule 1.6 applies",
+      "C. The new client pays more",
+      "D. The lawyer learned it a long time ago"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.9(c) bars use to disadvantage unless consent or generally known or confidentiality exception."
+  },
+
+  {
+    question:
+      "Substantially related matters (Rule 1.9(a)) are best defined as:",
+    options: [
+      "A. Any two matters in the same practice area",
+      "B. Same transaction/dispute, OR substantial risk that confidential factual information normally obtained would materially advance the new client’s position",
+      "C. Any matters involving the same courthouse",
+      "D. Only matters involving the same opposing party"
+    ],
+    correct: 1,
+    explanation:
+      "“Substantially related” hinges on factual overlap or risk of useful confidential info."
+  },
+
+  {
+    question:
+      "Lawyer drafted a hospital’s surgery consent form years ago, then is asked to sue the hospital claiming the consent form is void. This is:",
+    options: [
+      "A. Not substantially related because years passed",
+      "B. Substantially related; cannot oppose without former client’s informed written consent",
+      "C. Always allowed because it’s public policy litigation",
+      "D. Allowed if lawyer never talked to hospital employees"
+    ],
+    correct: 1,
+    explanation:
+      "Same specific instrument and dispute—substantially related."
+  },
+
+  {
+    question:
+      "Lawyer represented H for years on business/personal finances, then asked to represent H’s spouse in divorce. This is typically:",
+    options: [
+      "A. Allowed because divorce is different subject matter",
+      "B. Substantially related because prior confidential info would materially advance the spouse’s position",
+      "C. Allowed if lawyer promises not to use what they know",
+      "D. Allowed if H is wealthy"
+    ],
+    correct: 1,
+    explanation:
+      "Deep confidential knowledge makes it substantially related; consent required (often unwise)."
+  },
+
+  {
+    question:
+      "If a lawyer routinely handled lease-ejectment suits for a big oil company at old firm, then later defends a dealer in a factually distinct ejectment suit, the outline suggests:",
+    options: [
+      "A. Always disqualified forever from opposing the company in any ejectment case",
+      "B. May represent dealer if the new matter is factually distinct (not substantially related)",
+      "C. Disqualified unless the company consents in writing in all cases",
+      "D. Must withdraw if the company is angry"
+    ],
+    correct: 1,
+    explanation:
+      "Same general type isn’t enough; needs the same/sufficiently related facts and risk of useful confidential info."
+  },
+
+  {
+    question:
+      "Clients of former firm (Rule 1.9(b)): a lawyer who acquired protected info about a former firm’s client may be barred from:",
+    options: [
+      "A. Ever opposing any former firm client in any matter",
+      "B. Opposing that former firm client in the same or substantially related matter if materially adverse, unless informed written consent",
+      "C. Representing anyone in the same city",
+      "D. Taking a new job"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.9(b) extends duties to certain former-firm clients when lawyer actually acquired protected information."
+  },
+
+  {
+    question:
+      "Lateral move: disqualified lawyer joins new firm. New firm can sometimes avoid imputed disqualification if:",
+    options: [
+      "A. The disqualified lawyer is screened, shares no fee from the matter, and former client gets notice",
+      "B. The firm is large enough",
+      "C. The disqualified lawyer promises not to think about the case",
+      "D. The former client never finds out"
+    ],
+    correct: 0,
+    explanation:
+      "Screen + no fee from the matter + notice are the key cures."
+  },
+
+  {
+    question:
+      "Screening notice to former client should include, among other things:",
+    options: [
+      "A. A guarantee the former client will win future cases",
+      "B. Description of screening procedures and compliance statements; availability of tribunal review; agreement to respond to inquiries",
+      "C. The firm’s entire client list",
+      "D. The disqualified lawyer’s salary"
+    ],
+    correct: 1,
+    explanation:
+      "Notice must be detailed enough to allow monitoring and objections."
+  },
+
+  {
+    question:
+      "Former firm disqualification (Rule 1.10(b)): a lawyer leaves Firm One. Firm One is barred from opposing that lawyer’s former client in same/substantially related matter IF:",
+    options: [
+      "A. The departing lawyer was ever employed there",
+      "B. A remaining lawyer has material protected information about the former client/matter",
+      "C. The firm’s website still lists the departing lawyer",
+      "D. The former client is famous"
+    ],
+    correct: 1,
+    explanation:
+      "The key is whether someone remaining has material protected information."
+  },
+
+  // Prospective clients (Rule 1.18)
+  {
+    question:
+      "Prospective client (Rule 1.18): a person who consults a lawyer about possibly forming a client-lawyer relationship is:",
+    options: [
+      "A. Not protected at all until a retainer is signed",
+      "B. Owed confidentiality duties regarding information learned in the consultation",
+      "C. Automatically a current client",
+      "D. Automatically waiving privilege by seeking a consultation"
+    ],
+    correct: 1,
+    explanation:
+      "Prospective clients receive confidentiality protections under Rule 1.18(b) (and privilege often covers the communications)."
+  },
+
+  {
+    question:
+      "Prospective client conflict (Rule 1.18(c)): after receiving confidential info in a consultation, a lawyer generally must not later represent someone adverse in the same/substantially related matter if:",
+    options: [
+      "A. The prospective client seems annoying",
+      "B. The information could significantly harm the prospective client",
+      "C. The consultation was brief",
+      "D. The lawyer did not take notes"
+    ],
+    correct: 1,
+    explanation:
+      "The trigger is possession of confidential information that could significantly harm the prospective client."
+  },
+
+  {
+    question:
+      "Overcoming a prospective client conflict: one method is:",
+    options: [
+      "A. Get informed consent confirmed in writing from both the affected current client and the prospective client",
+      "B. Ask the prospective client to forget what they said",
+      "C. Change the lawyer’s phone number",
+      "D. Proceed if the new client pays more"
+    ],
+    correct: 0,
+    explanation:
+      "Rule 1.18(d)(1) permits written informed consent from both sides."
+  },
+
+  {
+    question:
+      "Alternative prospective-client cure (Rule 1.18(d)(2)) requires ALL of the following EXCEPT:",
+    options: [
+      "A. Lawyer took care to avoid learning more confidential info than needed to decide on representation",
+      "B. Timely screen and no fee sharing from the matter (aside from ordinary salary/partnership share)",
+      "C. Written notice to the prospective client",
+      "D. The prospective client must sign a waiver even if screened"
+    ],
+    correct: 3,
+    explanation:
+      "Screening path does not require prospective client to sign a waiver; it requires limited exposure, screening/no fee, and notice."
+  },
+
+  // Government lawyers (Rule 1.11)
+  {
+    question:
+      "Former government lawyer (Rule 1.11(a)): after leaving government, lawyer must not represent a private client in a matter the lawyer participated in personally and substantially while in government unless:",
+    options: [
+      "A. The new client consents",
+      "B. The government agency gives informed consent confirmed in writing",
+      "C. The lawyer waits one year",
+      "D. The matter is high-profile"
+    ],
+    correct: 1,
+    explanation:
+      "Need informed written consent from the government agency for the same “matter.”"
+  },
+
+  {
+    question:
+      "“Matter” for Rule 1.11 is best understood as:",
+    options: [
+      "A. A broad subject area like 'consumer protection'",
+      "B. A specific set of facts involving specific parties (e.g., a particular contract, investigation, claim)",
+      "C. Any issue the lawyer ever touched",
+      "D. Any statute the lawyer read"
+    ],
+    correct: 1,
+    explanation:
+      "Matter is narrow: particular proceeding/claim/transaction involving specific parties."
+  },
+
+  {
+    question:
+      "Government lawyer drafted general regulations for door-to-door sales, later represents a company in a dispute about applying those regulations. Under the outline, this is:",
+    options: [
+      "A. Prohibited because drafting regs is the same “matter”",
+      "B. Allowed because drafting general regs is not a “matter” involving specific parties",
+      "C. Prohibited unless every competitor consents",
+      "D. Allowed only if the company is a nonprofit"
+    ],
+    correct: 1,
+    explanation:
+      "General rulemaking usually isn’t a “matter” for 1.11(a)."
+  },
+
+  {
+    question:
+      "City attorney drafted a rezoning ordinance for a particular tract owned by Developer R. Later, lawyer enters private practice. The drafting is:",
+    options: [
+      "A. Not a matter; it’s legislation",
+      "B. A “matter” because it involved a specific situation and parties",
+      "C. Never covered by conflicts rules",
+      "D. Automatically waivable by the developer only"
+    ],
+    correct: 1,
+    explanation:
+      "Ordinance drafted for a particular tract/owner is specific enough to be a “matter.”"
+  },
+
+  {
+    question:
+      "“Personally and substantially” means:",
+    options: [
+      "A. Any supervisory responsibility counts",
+      "B. Rubber-stamp involvement counts",
+      "C. Actual meaningful personal involvement; not trifling and not mere supervision",
+      "D. Any work done while employed"
+    ],
+    correct: 2,
+    explanation:
+      "The rule targets real, hands-on involvement—not mere administrative oversight."
+  },
+
+  {
+    question:
+      "If a former government lawyer is disqualified, their new firm can sometimes avoid imputation if:",
+    options: [
+      "A. The lawyer is screened, shares no fee from the matter, and written notice is given to the government agency",
+      "B. The lawyer is famous",
+      "C. The firm is in a different city",
+      "D. The lawyer signs an affidavit"
+    ],
+    correct: 0,
+    explanation:
+      "Screening + no fee + notice to agency are the standard protections."
+  },
+
+  {
+    question:
+      "Confidential government information (Rule 1.11(c)) restriction applies to:",
+    options: [
+      "A. Any public info a government lawyer could have learned",
+      "B. Information gained under government authority that is not publicly available and the government can’t (or may refuse to) reveal",
+      "C. Anything the lawyer reads in the newspaper",
+      "D. Any info about any company in the industry"
+    ],
+    correct: 1,
+    explanation:
+      "It must be nonpublic, obtained through government authority, and protected from disclosure."
+  },
+
+  {
+    question:
+      "If a government lawyer received confidential info about Person X, then later in private practice wants to represent someone adverse to X where that info could be used to X’s material disadvantage:",
+    options: [
+      "A. Always allowed if the lawyer promises not to use it",
+      "B. Prohibited; may require withdrawal. Firm may proceed only with screening/no fee (per the rule’s structure)",
+      "C. Allowed if X is not a former client",
+      "D. Allowed if the matter is criminal"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.11(c) prevents adverse representation when confidential government info could be used to X’s disadvantage."
+  },
+
+  {
+    question:
+      "Entering government after private practice: which is MOST accurate?",
+    options: [
+      "A. Government lawyers are exempt from Rules 1.7 and 1.9",
+      "B. Ordinary current/former client rules (1.7/1.9) apply, but conflicts generally are not imputed to other government lawyers if the lawyer is screened",
+      "C. The government can never screen",
+      "D. Any prior private work permanently bars government service"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.11(d) applies ordinary conflicts to the individual and relies on screening to protect the agency’s work."
+  },
+
+  {
+    question:
+      "Government lawyer negotiating private employment: if the lawyer is personally and substantially working on a matter, they must not negotiate for private employment with:",
+    options: [
+      "A. Anyone in the legal industry",
+      "B. Any party or lawyer involved in that matter (with a narrow clerk exception elsewhere)",
+      "C. Only opposing counsel, not the party",
+      "D. Only if they are paid less than market"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.11(d)(2)(ii) restricts negotiating with parties/lawyers in matters the official is working on personally and substantially."
+  },
+
+  // Judges / neutrals (Rule 1.12)
+  {
+    question:
+      "Former judge/arbitrator/neutral (Rule 1.12(a)): lawyer must not represent a client in a matter the lawyer participated in personally and substantially as a judge/neutral unless:",
+    options: [
+      "A. The lawyer believes they can be fair",
+      "B. All parties to the proceeding give informed consent confirmed in writing",
+      "C. Only the judge’s former employer consents",
+      "D. The tribunal gives oral approval"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.12(a) requires informed written consent from all parties."
+  },
+
+  {
+    question:
+      "A law clerk who wrote bench briefs and drafted an opinion in P v. D later joins a firm. Can the clerk work on P v. D in private practice?",
+    options: [
+      "A. Yes, clerks are exempt",
+      "B. No, because the clerk participated personally and substantially",
+      "C. Yes, if the clerk never appears in court",
+      "D. Yes, if the clerk deletes old notes"
+    ],
+    correct: 1,
+    explanation:
+      "Law clerks are covered; personal and substantial participation disqualifies them from later working on the matter."
+  },
+
+  {
+    question:
+      "A judge who had only administrative responsibility and never worked on a particular case may later represent a party in that case because:",
+    options: [
+      "A. Judges are never bound by conflict rules after leaving the bench",
+      "B. The judge did not participate personally and substantially in the matter",
+      "C. Administrative work always counts as substantial participation",
+      "D. The parties can’t object"
+    ],
+    correct: 1,
+    explanation:
+      "Disqualification turns on personal and substantial participation, not mere court administration/assignment."
+  },
+
+  {
+    question:
+      "If a lawyer is disqualified under Rule 1.12(a), the lawyer’s firm can avoid imputation only if:",
+    options: [
+      "A. The lawyer is screened, shares no part of the fee from the matter, and written notice is given to parties and the tribunal",
+      "B. The lawyer works from home",
+      "C. The lawyer is junior",
+      "D. The firm is small"
+    ],
+    correct: 0,
+    explanation:
+      "Screening + no fee + notice to parties/tribunal is the required package."
+  },
+
+  {
+    question:
+      "Negotiating employment: a law clerk must do what BEFORE negotiating with a party/lawyer in a matter the clerk is working on personally and substantially?",
+    options: [
+      "A. Nothing; clerks may negotiate freely",
+      "B. Notify the judge/adjudicative officer",
+      "C. Ask opposing counsel’s permission",
+      "D. File a motion to intervene"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.12(b): clerks must notify the judge before negotiating with a party/lawyer in a matter they’re working on."
+  },
+
+  {
+    question:
+      "Unlike law clerks, judges/arbitrators/mediators/other neutrals who are personally and substantially involved in a matter are:",
+    options: [
+      "A. Allowed to negotiate employment so long as they disclose",
+      "B. Forbidden to negotiate employment with a party or party’s lawyer in that matter",
+      "C. Allowed if the job offer is after hours",
+      "D. Allowed if the matter is confidential"
+    ],
+    correct: 1,
+    explanation:
+      "The lenient notice rule is for clerks; adjudicative officers are prohibited from negotiating in the matter."
+  },
+
+  // Rule 1.8 specific current-client conflicts (selected from your pasted Module 4)
+  {
+    question:
+      "Misuse of client confidential information (Rule 1.8(b)): a lawyer must not use information relating to representation to a client’s disadvantage unless:",
+    options: [
+      "A. The lawyer is doing it for another client’s benefit",
+      "B. The client gives informed consent or an exception to confidentiality applies",
+      "C. The lawyer profits personally",
+      "D. The information is interesting"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.8(b) bars using client info to the client’s disadvantage without consent/exception."
+  },
+
+  {
+    question:
+      "Lawyer learns current client is near insolvency and warns a friend to cancel a catering contract with that client. Most accurate?",
+    options: [
+      "A. Fine—lawyer didn’t reveal the client’s name publicly",
+      "B. Discipline risk—lawyer used confidential info to disadvantage the client (even to benefit a third person)",
+      "C. Allowed because it helps the friend",
+      "D. Allowed because it is “business advice”"
+    ],
+    correct: 1,
+    explanation:
+      "Using confidential info to disadvantage a client violates Rule 1.8(b), even if it benefits someone else."
+  },
+
+  {
+    question:
+      "Business transaction with a client / adverse pecuniary interest (Rule 1.8(a)) requires all EXCEPT:",
+    options: [
+      "A. Fair terms",
+      "B. Full written disclosure in understandable terms + explanation of lawyer’s role",
+      "C. Client advised in writing to seek independent counsel and given reasonable chance",
+      "D. Client’s oral informed consent (no signature needed)"
+    ],
+    correct: 3,
+    explanation:
+      "Client must give informed consent in a writing signed by the client."
+  },
+
+  {
+    question:
+      "Proprietary interest in subject of litigation (Rule 1.8(i)) is generally prohibited EXCEPT:",
+    options: [
+      "A. Contingent fees and certain attorney’s liens",
+      "B. Any assignment of the cause of action",
+      "C. Any ownership stake in disputed property",
+      "D. Gifts from the client"
+    ],
+    correct: 0,
+    explanation:
+      "Two big exceptions: contingent fee arrangements and attorney’s liens where allowed."
+  },
+
+  {
+    question:
+      "Financial assistance to clients in litigation (Rule 1.8(e)): lawyer may:",
+    options: [
+      "A. Loan the client money for rent during the lawsuit (any client)",
+      "B. Advance court costs and litigation expenses with repayment contingent on outcome",
+      "C. Guarantee a bank loan for the client",
+      "D. Publicly advertise that the firm will lend money to clients for living expenses"
+    ],
+    correct: 1,
+    explanation:
+      "Advancing litigation expenses is permitted; general loans/guarantees are prohibited."
+  },
+
+  {
+    question:
+      "Aggregate settlement (Rule 1.8(g)) requires, among other things:",
+    options: [
+      "A. Only the lawyer’s approval",
+      "B. Each client’s informed consent in a writing signed by the client after full disclosure (including each client’s share and terms)",
+      "C. Oral consent on the record is enough",
+      "D. Consent only from the majority of clients"
+    ],
+    correct: 1,
+    explanation:
+      "Aggregate settlements require extensive disclosure and signed informed consent from every client."
+  },
+
+  {
+    question:
+      "Compensation from a third person (Rule 1.8(f)) requires all EXCEPT:",
+    options: [
+      "A. Client’s informed consent",
+      "B. No interference with independence/professional judgment",
+      "C. Protection of client confidences",
+      "D. The third person must be the client’s spouse"
+    ],
+    correct: 3,
+    explanation:
+      "Who the third party is doesn’t matter; what matters is consent, independence, and confidentiality."
+  },
+
+  {
+    question:
+      "Sexual relationship with a client (Rule 1.8(j)) is generally prohibited unless:",
+    options: [
+      "A. The client signs a waiver",
+      "B. The relationship predates the lawyer-client relationship (though it may still create a material-limitation conflict)",
+      "C. The lawyer is not paid",
+      "D. The matter is nonlitigation"
+    ],
+    correct: 1,
+    explanation:
+      "Pre-existing consensual relationships are not per se prohibited, but may still trigger 1.7 material-limitation concerns."
+  },
+
+  {
+    question:
+      "A lawyer wants to acquire movie rights to a story substantially based on the client’s case while the case is ongoing. Rule 1.8(d) says:",
+    options: [
+      "A. Allowed with written consent",
+      "B. Prohibited until the matter is entirely completed (appeals and all)",
+      "C. Allowed if the lawyer splits profits with the client",
+      "D. Allowed in criminal cases only"
+    ],
+    correct: 1,
+    explanation:
+      "Media/literary rights based substantially on the representation cannot be acquired until the matter is fully concluded."
+  }
+];
+
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      // Add small topic pill if you want later; for now keep just question.
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(q, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === q.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

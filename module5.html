@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPRE – Regulation of the Legal Profession (Module 5)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 650px;
+      width: 92%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden { display: none; }
+    .question-count { font-size: 18px; margin-bottom: 10px; }
+    .question { font-size: 20px; margin-bottom: 15px; }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected { border-color: #007bff; }
+    .options button:focus { outline: none; }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover { background-color: #0056b3; transform: scale(1.05); }
+    .primary-button:active { transform: scale(0.95); }
+    .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
+    #prev-button { align-self: flex-start; }
+    #next-button { align-self: flex-end; }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    #result-screen { max-height: 80vh; overflow-y: auto; }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+    .review-table .correct { background-color: #d4edda; }
+    .review-table .wrong { background-color: #f8d7da; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 5 - Competence, Malpractice, and Civil Liability</h5>
+      <p style="text-align:center; color:#444; margin-top: 14px;">
+        Tricky MPRE-style questions covering sources of regulation, admission, discipline, choice of law,
+        UPL/MJP, supervision duties, independence, restrictions on practice, sale of practice, and ancillary services. Based on Barbri MPRE Outline.
+      </p>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+ 
+// Module 5 — Competence, Malpractice, and Civil Liability
+const questions = [
+  // A) Competence (Rule 1.1)
+  {
+    question:
+      "Rule 1.1: A lawyer acts competently when the lawyer provides:",
+    options: [
+      "A. Whatever the client asks for, no questions",
+      "B. Legal knowledge, skill, thoroughness, and preparation reasonably necessary for the representation",
+      "C. A guarantee of success",
+      "D. Services only in the lawyer’s favorite practice area"
+    ],
+    correct: 1,
+    explanation:
+      "Competence = knowledge/skill + thoroughness/preparation reasonably necessary for the representation."
+  },
+  {
+    question:
+      "Which factor is NOT listed in Rule 1.1 comment 1 for determining whether a lawyer has the requisite skill?",
+    options: [
+      "A. Complexity and specialized nature of the matter",
+      "B. Lawyer’s general experience",
+      "C. Lawyer’s training/experience in the field",
+      "D. Whether the client is wealthy"
+    ],
+    correct: 3,
+    explanation:
+      "Client wealth isn’t a competence factor; complexity, experience, training, preparation, and feasibility of associating/referring are."
+  },
+  {
+    question:
+      "The outline’s key point: A lack of legal knowledge or skill usually means:",
+    options: [
+      "A. The lawyer must decline every unfamiliar matter",
+      "B. The lawyer failed to seek the knowledge/skill through study or association/referral",
+      "C. The client must teach the lawyer",
+      "D. The court will automatically appoint co-counsel"
+    ],
+    correct: 1,
+    explanation:
+      "Most matters don’t require specialization; competence can be achieved through reasonable study or associating a competent lawyer—so “lack of skill” often means failing to pursue it."
+  },
+  {
+    question:
+      "A lawyer may accept a matter in an unfamiliar field if:",
+    options: [
+      "A. The lawyer promises to do their best",
+      "B. The lawyer can become competent through reasonable preparation",
+      "C. The lawyer charges less",
+      "D. The client signs a waiver of competence"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.1 comment 4: a lawyer can accept if competence can be achieved by reasonable preparation."
+  },
+  {
+    question:
+      "Emergency assistance: In an emergency, a lawyer may assist even without the usual skill IF:",
+    options: [
+      "A. The lawyer gives broad advice on everything related to the client’s life",
+      "B. Referral/consultation is impractical and the help is limited to what’s reasonably necessary for the emergency",
+      "C. The client promises to hire the lawyer permanently",
+      "D. The lawyer is the closest person with a bar card"
+    ],
+    correct: 1,
+    explanation:
+      "Emergency help is permitted, but it must be limited to what’s reasonably necessary to address the emergency."
+  },
+  {
+    question:
+      "Thoroughness/preparation under Rule 1.1 requires the lawyer to:",
+    options: [
+      "A. Rely on the client’s summary and skip fact-checking",
+      "B. Inquire into and analyze the facts and legal elements using methods of competent practitioners",
+      "C. Do only what the client can afford, even if it makes the work incompetent",
+      "D. File quickly and research later"
+    ],
+    correct: 1,
+    explanation:
+      "Competence includes adequate factual inquiry, legal analysis, and preparation consistent with competent practice."
+  },
+  {
+    question:
+      "Outside lawyers (Rule 1.1 comment 6): before retaining non-firm lawyers to assist, the lawyer must:",
+    options: [
+      "A. Always keep it secret from the client",
+      "B. Reasonably believe it contributes to competent/ethical representation and should ordinarily obtain the client’s informed consent",
+      "C. Get the court’s permission in every case",
+      "D. Split fees equally with the outside lawyer"
+    ],
+    correct: 1,
+    explanation:
+      "Need a reasonable belief the assistance helps competent/ethical representation, and ordinarily the client’s informed consent."
+  },
+  {
+    question:
+      "Maintaining competence includes:",
+    options: [
+      "A. Ignoring new technology to avoid risk",
+      "B. Keeping abreast of changes in law and practice, including understanding benefits/risks of relevant technology, and meeting CLE requirements",
+      "C. Delegating all tech questions to staff and never learning",
+      "D. Only reading case summaries on social media"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.1 comment 8: lawyers should stay current, including tech competence, and comply with CLE."
+  },
+
+  // B) Diligence (Rule 1.3)
+  {
+    question:
+      "Rule 1.3 requires a lawyer to act with:",
+    options: [
+      "A. Perfect results",
+      "B. Reasonable diligence and promptness",
+      "C. Maximum aggression",
+      "D. Whatever pace the opposing party prefers"
+    ],
+    correct: 1,
+    explanation:
+      "Diligence is reasonable diligence and promptness—not guaranteed success or maximum aggression."
+  },
+  {
+    question:
+      "Diligence means a lawyer should pursue a matter despite:",
+    options: [
+      "A. Opposition, obstacles, and personal inconvenience",
+      "B. Any request from the client",
+      "C. Court orders",
+      "D. The law"
+    ],
+    correct: 0,
+    explanation:
+      "The lawyer should be dedicated and committed, using lawful and ethical measures."
+  },
+  {
+    question:
+      "Diligence does NOT require:",
+    options: [
+      "A. Pressing every conceivable advantage",
+      "B. Dedicated advocacy",
+      "C. Commitment to client’s interests",
+      "D. Lawful and ethical measures to vindicate the client’s cause"
+    ],
+    correct: 0,
+    explanation:
+      "Rule 1.3 comment 1: you are not bound to press every conceivable advantage."
+  },
+  {
+    question:
+      "Rule 1.3 and civility: a lawyer’s duty of diligence:",
+    options: [
+      "A. Requires being offensive to intimidate the adversary",
+      "B. Requires incivility if it might help the client",
+      "C. Does not require being offensive or uncivil",
+      "D. Applies only in court"
+    ],
+    correct: 2,
+    explanation:
+      "Diligence does not require incivility; the lawyer should use good judgment in means."
+  },
+  {
+    question:
+      "Workload (Rule 1.3 comment 2): a lawyer must:",
+    options: [
+      "A. Accept every case offered",
+      "B. Control workload so each matter can be adequately handled",
+      "C. Delegate everything to paralegals",
+      "D. Rely on extensions as a business model"
+    ],
+    correct: 1,
+    explanation:
+      "Overloading yourself can violate diligence because you can’t adequately handle each matter."
+  },
+  {
+    question:
+      "Promptness: The outline notes procrastination can be devastating because it can:",
+    options: [
+      "A. Increase the lawyer’s stress only",
+      "B. Cause missed deadlines/statutes of limitation and harm client interests",
+      "C. Make judges like you less (but no client impact)",
+      "D. Improve settlement leverage"
+    ],
+    correct: 1,
+    explanation:
+      "Missed deadlines and statutes of limitations are classic diligence failures with severe consequences."
+  },
+  {
+    question:
+      "Completion of the matter: once a lawyer agrees to handle a matter, the lawyer must:",
+    options: [
+      "A. Stop after the first hearing unless the client begs",
+      "B. See it through to completion unless fired or withdrawal is required/permitted",
+      "C. Quit when the lawyer becomes bored",
+      "D. Quit as soon as fees are paid"
+    ],
+    correct: 1,
+    explanation:
+      "The duty includes carrying the representation through unless withdrawal is proper."
+  },
+  {
+    question:
+      "If it’s unclear whether the lawyer-client relationship has ended, the lawyer should:",
+    options: [
+      "A. Assume it ended and do nothing",
+      "B. Clarify, preferably in writing",
+      "C. Wait for the statute of limitations to force clarity",
+      "D. Let the client figure it out"
+    ],
+    correct: 1,
+    explanation:
+      "Ambiguity is dangerous; clarify in writing."
+  },
+  {
+    question:
+      "Existence/termination doubts: if there’s doubt whether a relationship formed or ended, the lawyer must:",
+    options: [
+      "A. Do nothing until the client sues",
+      "B. Either take affirmative steps to terminate or act with required diligence",
+      "C. Assume no relationship exists unless a contract is signed",
+      "D. Only act if the client pays a retainer first"
+    ],
+    correct: 1,
+    explanation:
+      "If doubt exists, you must either formally end it or proceed diligently."
+  },
+  {
+    question:
+      "Solo practitioner planning: Rule 1.3 comment 5 suggests a solo practitioner should:",
+    options: [
+      "A. Keep all files at home so no one else can access them",
+      "B. Designate another competent lawyer to assist if death/disability occurs (review files, notify clients, protective action)",
+      "C. Let the bar sort it out",
+      "D. Tell clients to monitor court deadlines themselves"
+    ],
+    correct: 1,
+    explanation:
+      "Planning protects clients from chaos if the solo lawyer dies or becomes disabled."
+  },
+
+  // C) Single violation enough for discipline
+  {
+    question:
+      "Competence/diligence discipline: Is a pattern required to impose discipline under Rules 1.1 or 1.3?",
+    options: [
+      "A. Yes, discipline requires at least three incidents",
+      "B. No, a single incident can be enough",
+      "C. Yes, unless the client complains",
+      "D. No, but only in criminal cases"
+    ],
+    correct: 1,
+    explanation:
+      "A single violation can trigger discipline; circumstances matter for sanction, not whether there’s a violation."
+  },
+  {
+    question:
+      "Personal crisis: the outline’s bottom line is that even in crisis, the lawyer must:",
+    options: [
+      "A. Ignore all cases until life stabilizes",
+      "B. Take reasonable steps to put cases on temporary hold until full attention is possible",
+      "C. Let deadlines run; it’s excusable",
+      "D. Rely on the client to file pleadings"
+    ],
+    correct: 1,
+    explanation:
+      "Crisis may affect sanction, but does not excuse the violation; the lawyer must protect clients (seek continuances, arrange coverage, etc.)."
+  },
+  {
+    question:
+      "Example: lawyer misses a statute of limitations because of a family emergency. Most accurate discipline analysis:",
+    options: [
+      "A. No discipline because the reason was sympathetic",
+      "B. Discipline may still apply; circumstances matter for sanction, not for finding a violation",
+      "C. No discipline if the lawyer refunds fees",
+      "D. No discipline if the lawyer apologizes"
+    ],
+    correct: 1,
+    explanation:
+      "Sympathetic circumstances don’t negate the violation; they may mitigate sanction."
+  },
+
+  // D) Malpractice & civil liability
+  {
+    question:
+      "Malpractice action vs discipline: which is TRUE?",
+    options: [
+      "A. Both are brought by the state bar and both punish the lawyer",
+      "B. Malpractice is civil court with injured plaintiff; goal is compensation, not punishment/protecting public",
+      "C. Malpractice is decided by a disciplinary tribunal",
+      "D. Malpractice is automatic whenever there’s an ethics complaint"
+    ],
+    correct: 1,
+    explanation:
+      "Malpractice is private civil liability focused on compensating the injured party, not bar discipline."
+  },
+  {
+    question:
+      "Does an ethics violation automatically (or presumptively) establish malpractice?",
+    options: [
+      "A. Yes, automatically",
+      "B. Yes, it creates a presumption",
+      "C. No to both; but it can be relevant evidence of breach of the standard of care",
+      "D. No, and it can never be used in court"
+    ],
+    correct: 2,
+    explanation:
+      "Model Rules scope: not designed as a basis for civil liability. But courts may treat violations as evidence of negligence."
+  },
+  {
+    question:
+      "Which is the MOST common malpractice theory?",
+    options: [
+      "A. Strict liability",
+      "B. Negligence (unintentional tort)",
+      "C. Trespass",
+      "D. Defamation"
+    ],
+    correct: 1,
+    explanation:
+      "Negligence is the most common theory; others include intentional tort, fiduciary breach, and contract."
+  },
+  {
+    question:
+      "Negligence elements in malpractice generally include:",
+    options: [
+      "A. Duty, breach, causation, damages",
+      "B. Offer, acceptance, consideration",
+      "C. Intent, act, concurrence",
+      "D. Publication, falsity, fault"
+    ],
+    correct: 0,
+    explanation:
+      "Standard negligence framework: duty, breach, causation, damages."
+  },
+
+  // Duty of care — to clients, prospective clients, third parties
+  {
+    question:
+      "Duty to clients: when is it easiest for courts to find an attorney-client relationship existed?",
+    options: [
+      "A. Only when a written retainer exists",
+      "B. When the lawyer’s conduct/neglect misled the would-be client into thinking representation existed",
+      "C. Only after the first court appearance",
+      "D. Only when fees are fully paid"
+    ],
+    correct: 1,
+    explanation:
+      "Courts may find the relationship if the lawyer’s neglect misled the alleged client, especially where reliance caused harm."
+  },
+  {
+    question:
+      "Example: lawyer says she’ll check conflicts and “get back to you,” then forgets and SOL runs. Likely duty analysis?",
+    options: [
+      "A. No duty because no contract was signed",
+      "B. Court could find an attorney-client relationship formed (duty owed) based on the lawyer’s conduct and the client’s reliance",
+      "C. No duty because the lawyer never billed",
+      "D. No duty because it was only a consultation"
+    ],
+    correct: 1,
+    explanation:
+      "Neglect + assurances can create a relationship and duty (especially if the client is misled)."
+  },
+  {
+    question:
+      "Duty to prospective clients: if a lawyer provides legal services during a consultation, the lawyer must:",
+    options: [
+      "A. Use reasonable care",
+      "B. Use no care because they aren’t hired yet",
+      "C. Guarantee correct advice",
+      "D. Avoid answering any question"
+    ],
+    correct: 0,
+    explanation:
+      "A lawyer can owe a duty of reasonable care in advice given during a consultation."
+  },
+  {
+    question:
+      "Duty to nonclients: a lawyer may owe a duty of due care to a third party when:",
+    options: [
+      "A. The third party is the opposing party",
+      "B. The third party was intended to benefit from the lawyer’s services OR the lawyer invited the third party to rely on the lawyer’s work",
+      "C. The third party is a friend of the client",
+      "D. The third party reads about the lawyer online"
+    ],
+    correct: 1,
+    explanation:
+      "Restatement-style approach: intended beneficiary or invited reliance can create duty to a nonclient."
+  },
+  {
+    question:
+      "Drafting a trust: lawyer negligently drafts, causing unnecessary tax that reduces beneficiary’s payout. Beneficiary’s claim?",
+    options: [
+      "A. No claim because beneficiary wasn’t the lawyer’s client",
+      "B. Likely claim because beneficiary was intended to benefit and harm was foreseeable",
+      "C. No claim because taxes are unpredictable",
+      "D. Claim only if lawyer promised beneficiary personally"
+    ],
+    correct: 1,
+    explanation:
+      "Intended beneficiary can sue for negligent drafting when harm is foreseeable."
+  },
+  {
+    question:
+      "Opposing party sued on a meritless claim: defendant wants to sue plaintiff’s lawyer for negligence for bringing baseless suit. Under the outline’s example:",
+    options: [
+      "A. Defendant has a negligence claim because the lawyer caused trouble/expense",
+      "B. Defendant generally has no negligence claim because defendant was not an intended beneficiary and wasn’t invited to rely",
+      "C. Defendant always has a claim because litigation is costly",
+      "D. Defendant has a claim only if the lawyer is uninsured"
+    ],
+    correct: 1,
+    explanation:
+      "No duty in negligence to the opposing party on those facts (though other tort theories might exist in extreme cases)."
+  },
+  {
+    question:
+      "Opinion letter to buyer Y: lawyer gives lien-free opinion without checking records; buyer relies and is harmed. Buyer’s claim?",
+    options: [
+      "A. No claim because buyer is a nonclient",
+      "B. Likely claim because lawyer invited buyer to rely on the opinion letter",
+      "C. No claim because the client assured there were no liens",
+      "D. Claim only if the lawyer is a specialist"
+    ],
+    correct: 1,
+    explanation:
+      "Invited reliance on an opinion letter can create a duty to the nonclient recipient."
+  },
+
+  // Standard of care; heightened standard
+  {
+    question:
+      "Standard of care: generally, an attorney is held to:",
+    options: [
+      "A. The most skilled lawyer in the jurisdiction",
+      "B. The competence and diligence normally exercised by attorneys in similar circumstances",
+      "C. Whatever the client expected subjectively",
+      "D. A strict liability standard"
+    ],
+    correct: 1,
+    explanation:
+      "Baseline is what similarly situated competent/diligent lawyers would do."
+  },
+  {
+    question:
+      "Higher standard: if a lawyer holds themselves out as having greater competence (e.g., a specialist), then the lawyer is held to:",
+    options: [
+      "A. The ordinary standard anyway",
+      "B. A higher standard consistent with the representation of greater competence/diligence",
+      "C. No standard because clients assumed risk",
+      "D. A lower standard because it’s harder work"
+    ],
+    correct: 1,
+    explanation:
+      "If you represent you’re a specialist, you can be held to that higher standard."
+  },
+
+  // Breach—errors of judgment vs ignorance
+  {
+    question:
+      "“Mere error in judgment” rule: a lawyer is generally NOT liable for a bad outcome if:",
+    options: [
+      "A. The choice was well-informed and reasonably made",
+      "B. The lawyer never researched and guessed",
+      "C. The lawyer forgot a deadline",
+      "D. The lawyer refused to interview key witnesses"
+    ],
+    correct: 0,
+    explanation:
+      "Well-informed, reasonable judgment calls aren’t negligence even if they turn out wrong."
+  },
+  {
+    question:
+      "Which best captures the quote: “there is nothing tactical about ignorance”?",
+    options: [
+      "A. Failing to investigate obvious witnesses can’t be justified as strategy if it’s really uninformed",
+      "B. Any strategy is immune from malpractice",
+      "C. Lawyers should never make tactical choices",
+      "D. Clients must always decide strategy"
+    ],
+    correct: 0,
+    explanation:
+      "Skipping investigation without an informed basis is negligence, not protected tactical judgment."
+  },
+  {
+    question:
+      "Knowledge of law: an attorney must know ordinary settled rules and must:",
+    options: [
+      "A. Never research because experience is enough",
+      "B. Use standard research techniques to find rules they don’t know; failing to find readily findable law breaches duty",
+      "C. Only research if the client asks",
+      "D. Only research if the issue is constitutional"
+    ],
+    correct: 1,
+    explanation:
+      "If the answer is findable through standard research and you don’t find it, that’s breach."
+  },
+  {
+    question:
+      "Unsettled law: if an attorney does reasonable research but guesses wrong on an unsettled issue, then:",
+    options: [
+      "A. That is automatically malpractice",
+      "B. That can still satisfy duty of due care",
+      "C. The attorney is strictly liable",
+      "D. The attorney must refund all fees"
+    ],
+    correct: 1,
+    explanation:
+      "Reasonable research can satisfy due care even if the issue later resolves differently."
+  },
+  {
+    question:
+      "Calling in a specialist: a general practitioner breaches duty by handling a matter that a reasonably prudent lawyer would refer/associate out when:",
+    options: [
+      "A. The client is annoying",
+      "B. The problem is uniquely within a specialist’s competence",
+      "C. The client requests a discount",
+      "D. The lawyer wants to learn"
+    ],
+    correct: 1,
+    explanation:
+      "If the matter requires specialist competence and a prudent lawyer would refer, failing to do so can be negligence."
+  },
+  {
+    question:
+      "Patent/trade secret example: generalist tries to advise despite total ignorance, client loses patent opportunity. Most accurate?",
+    options: [
+      "A. No breach because the client chose a generalist",
+      "B. Breach: prudent lawyer would send client to a patent attorney/specialist",
+      "C. No breach if the lawyer refunded fees",
+      "D. No breach because patent law is complicated"
+    ],
+    correct: 1,
+    explanation:
+      "This is the outline’s classic “should have referred to a specialist” breach."
+  },
+
+  // Causation and “case within a case”
+  {
+    question:
+      "Causation: if lawyer lets SOL run on client’s claim, in malpractice the client must generally prove:",
+    options: [
+      "A. Only that the lawyer missed the deadline",
+      "B. “Case within a case”: the underlying claim would have succeeded (or had value)",
+      "C. Only that the lawyer violated an ethics rule",
+      "D. Only that the lawyer carried insurance"
+    ],
+    correct: 1,
+    explanation:
+      "Client must show that but for negligence, they would have obtained a better outcome—often by proving the underlying claim."
+  },
+  {
+    question:
+      "Foreseeability/limits: lawyer’s poor trial prep causes loss; client spirals into alcoholism and loses job. The likely causation result is:",
+    options: [
+      "A. Lawyer liable for all life consequences no matter how remote",
+      "B. Court likely finds lost earning power too remote / not legally caused by the negligence",
+      "C. Lawyer never liable for emotional harms",
+      "D. Lawyer liable only if the client warned them"
+    ],
+    correct: 1,
+    explanation:
+      "Courts often limit liability for unexpected or highly attenuated downstream harms."
+  },
+
+  // Damages
+  {
+    question:
+      "Damages: malpractice plaintiff must prove damages such as:",
+    options: [
+      "A. Only emotional distress",
+      "B. Money paid to discharge an adverse judgment or the value of a lost cause of action; can include foreseeable indirect losses",
+      "C. Automatic treble damages",
+      "D. The lawyer’s profit on the case"
+    ],
+    correct: 1,
+    explanation:
+      "Damages include direct losses and foreseeable indirect losses, proven with reasonable certainty."
+  },
+  {
+    question:
+      "Merger agreement bungled; merger falls through; client incurs shareholder-suit defense costs and loses profits from aborted merger. Recoverable damages?",
+    options: [
+      "A. Only court costs, never lost profits",
+      "B. Potentially both defense costs and lost profits, if proved with reasonable certainty and foreseeability",
+      "C. Nothing because transactions are risky",
+      "D. Only the lawyer’s fees"
+    ],
+    correct: 1,
+    explanation:
+      "Foreseeable direct and indirect losses can be recovered if proven with reasonable certainty."
+  },
+
+  // Other civil liability: warranty, contract, intentional tort, fiduciary duty
+  {
+    question:
+      "Other malpractice theories include all EXCEPT:",
+    options: [
+      "A. Intentional tort (fraud, misrepresentation, abuse of process, misuse of funds)",
+      "B. Breach of fiduciary duty (loyalty, confidentiality, honest dealing)",
+      "C. Breach of contract (express or implied promise of ordinary skill and care)",
+      "D. Strict criminal liability for negligence"
+    ],
+    correct: 3,
+    explanation:
+      "The outline lists intentional tort, fiduciary breach, and contract; not strict criminal liability for negligence."
+  },
+  {
+    question:
+      "Breach of warranty: a lawyer may be liable if they promise a specific result knowing it has material importance—BUT not for:",
+    options: [
+      "A. A guarantee of obtaining a particular license by a fixed date",
+      "B. A promise that a settlement will be at least $1 million",
+      "C. General predictions or optimism about success",
+      "D. A promise that a filing will be made by a deadline"
+    ],
+    correct: 2,
+    explanation:
+      "General predictions are not warranties because outcomes depend on factors beyond the lawyer’s control."
+  },
+  {
+    question:
+      "Criminal defendant example: lawyer says, “I’m pretty sure you’re going home tonight,” client is convicted. Liability for warranty?",
+    options: [
+      "A. Yes, guaranteed acquittal",
+      "B. No, it’s a general prediction, not a promise of specific result",
+      "C. Yes, any confidence statement is a warranty",
+      "D. Depends only on whether the client believed it"
+    ],
+    correct: 1,
+    explanation:
+      "Optimistic prediction ≠ enforceable promise of a specific result."
+  },
+
+  // Liability for others (respondeat superior / partnership)
+  {
+    question:
+      "Negligence of staff: a lawyer can be liable for negligence of a secretary/paralegal/associate acting within scope under:",
+    options: [
+      "A. Respondeat superior principles",
+      "B. Double jeopardy",
+      "C. The First Amendment",
+      "D. Attorney-client privilege"
+    ],
+    correct: 0,
+    explanation:
+      "Ordinary vicarious liability principles apply for employees acting within scope."
+  },
+  {
+    question:
+      "General partnership: partners are typically:",
+    options: [
+      "A. Not responsible for each other’s negligence",
+      "B. Jointly and severally liable for another partner’s negligence in the ordinary course of partnership business",
+      "C. Liable only if they personally touched the file",
+      "D. Liable only for intentional torts"
+    ],
+    correct: 1,
+    explanation:
+      "Joint and several liability means any partner can be on the hook for the full judgment."
+  },
+  {
+    question:
+      "Limited liability entities (LLP/LLC): the outline’s general point is:",
+    options: [
+      "A. Partners are always personally liable for others’ negligence",
+      "B. Partners are usually shielded from personal liability for others’ misconduct (varies by state), but remain liable for their own malpractice",
+      "C. Lawyers can eliminate all malpractice liability by forming an LLP",
+      "D. LLCs are prohibited for lawyers"
+    ],
+    correct: 1,
+    explanation:
+      "Entity form may limit vicarious personal liability, but not liability for your own malpractice."
+  },
+
+  // Insurance disclosures
+  {
+    question:
+      "Malpractice insurance: the outline says:",
+    options: [
+      "A. All states require malpractice insurance",
+      "B. A small number require insurance; more require disclosure of insured/uninsured status to bar or clients",
+      "C. Insurance is unethical because it encourages suits",
+      "D. Only large firms may buy insurance"
+    ],
+    correct: 1,
+    explanation:
+      "Some states require insurance; many require disclosure of coverage status."
+  },
+
+  // Settling malpractice claims (Rule 1.8(h)(2))
+  {
+    question:
+      "Settling a malpractice claim with an unrepresented client/former client: lawyer may do so only if lawyer:",
+    options: [
+      "A. Gets the client’s oral agreement immediately",
+      "B. Advises the client in writing to seek independent counsel and gives a reasonable chance to obtain that advice",
+      "C. Inserts a release in a refund check endorsement without explanation",
+      "D. Promises faster service next time"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.8(h)(2): written advice to seek independent counsel + reasonable opportunity."
+  },
+  {
+    question:
+      "Example: lawyer refunds unearned fee with a check endorsement releasing malpractice liability; client unrepresented; no advice to seek counsel. Most accurate?",
+    options: [
+      "A. Proper settlement technique",
+      "B. Discipline risk; violates requirement to advise in writing to seek independent counsel",
+      "C. Proper if the amount refunded is large",
+      "D. Proper because client cashed the check"
+    ],
+    correct: 1,
+    explanation:
+      "You can’t slip a release into an endorsement without the required written advice and opportunity."
+  },
+
+  // Prospective waiver/limitation of malpractice (Rule 1.8(h)(1))
+  {
+    question:
+      "Prospective waiver/limit of malpractice liability is generally:",
+    options: [
+      "A. Always allowed if in bold font",
+      "B. Prohibited unless the client is independently represented in making the agreement",
+      "C. Allowed if the client signs",
+      "D. Allowed if the lawyer offers a discount"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.8(h)(1): only allowed (rarely) if the client is actually independently represented—not merely advised to seek counsel."
+  },
+  {
+    question:
+      "Key distinction: for prospective limitation (1.8(h)(1)) vs settlement of a claim (1.8(h)(2)):",
+    options: [
+      "A. Both only require oral consent",
+      "B. Settlement requires advising in writing to seek counsel; prospective limitation requires client actually be independently represented",
+      "C. Prospective limitation is easier than settlement",
+      "D. Both are always prohibited"
+    ],
+    correct: 1,
+    explanation:
+      "Prospective limitation is stricter: independent representation is required."
+  },
+  {
+    question:
+      "May a lawyer practice through a limited liability entity?",
+    options: [
+      "A. No, always prohibited",
+      "B. Yes, if the lawyer remains personally liable for their own malpractice and the entity satisfies notice/insurance requirements",
+      "C. Only if the lawyer promises not to be negligent",
+      "D. Only in federal court"
+    ],
+    correct: 1,
+    explanation:
+      "Entity form is permitted so long as it doesn’t eliminate personal responsibility for one’s own malpractice and complies with applicable requirements."
+  },
+
+  // Reasonably limiting scope (Rule 1.2 + comment 17 cross-reference)
+  {
+    question:
+      "Limiting scope of representation: a lawyer may reasonably limit the scope if:",
+    options: [
+      "A. The limitation makes the work incompetent",
+      "B. The limitation is reasonable under the circumstances and consistent with Rule 1.2",
+      "C. The client never finds out",
+      "D. The lawyer refuses to explain the limitation"
+    ],
+    correct: 1,
+    explanation:
+      "Scope limits are allowed if reasonable and agreed, but you still must provide competent representation within that scope."
+  },
+  {
+    question:
+      "Example: client can’t afford worldwide research; lawyer agrees to research 100 hours focusing on likely markets. Most accurate?",
+    options: [
+      "A. Improper because lawyer must do everything globally",
+      "B. Proper reasonable limitation of scope if client understands and agrees",
+      "C. Improper because it’s a business client",
+      "D. Proper only if the lawyer guarantees no trade restrictions"
+    ],
+    correct: 1,
+    explanation:
+      "Reasonable scope limitation is permitted when cost/feasibility makes full scope impractical and client agrees."
+  },
+
+  // Arbitration of malpractice claims
+  {
+    question:
+      "Prospective agreement to arbitrate malpractice claims is:",
+    options: [
+      "A. Always prohibited",
+      "B. Allowed if proper under local law and client understands scope/effect",
+      "C. Allowed only if the lawyer is a specialist",
+      "D. Allowed without disclosure because arbitration is standard"
+    ],
+    correct: 1,
+    explanation:
+      "Arbitration clauses can be allowed if valid under local law and the client is informed about what they’re giving up."
+  },
+
+  // Reimbursement does not eliminate discipline
+  {
+    question:
+      "If a lawyer breaches a duty with monetary effect and then reimburses the client, the lawyer:",
+    options: [
+      "A. Automatically avoids discipline",
+      "B. Cannot escape discipline merely by reimbursing the client",
+      "C. Avoids discipline if the client forgives them",
+      "D. Avoids discipline if the lawyer is uninsured"
+    ],
+    correct: 1,
+    explanation:
+      "Paying the client back doesn’t erase the ethical violation; discipline may still apply."
+  }
+];
+
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      // Add small topic pill if you want later; for now keep just question.
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(q, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === q.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

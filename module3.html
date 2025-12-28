@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPRE – Regulation of the Legal Profession (Module 3)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 650px;
+      width: 92%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden { display: none; }
+    .question-count { font-size: 18px; margin-bottom: 10px; }
+    .question { font-size: 20px; margin-bottom: 15px; }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected { border-color: #007bff; }
+    .options button:focus { outline: none; }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover { background-color: #0056b3; transform: scale(1.05); }
+    .primary-button:active { transform: scale(0.95); }
+    .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
+    #prev-button { align-self: flex-start; }
+    #next-button { align-self: flex-end; }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    #result-screen { max-height: 80vh; overflow-y: auto; }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+    .review-table .correct { background-color: #d4edda; }
+    .review-table .wrong { background-color: #f8d7da; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 3 - Client Confidentiality</h5>
+      <p style="text-align:center; color:#444; margin-top: 14px;">
+        Tricky MPRE-style questions covering sources of regulation, admission, discipline, choice of law,
+        UPL/MJP, supervision duties, independence, restrictions on practice, sale of practice, and ancillary services. Based on Barbri MPRE Outline.
+      </p>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+ 
+// Module 3 — Client Confidentiality
+const questions = [
+  {
+    question:
+      "Under ABA Model Rule 1.6(a), the GENERAL rule is that a lawyer must not reveal:",
+    options: [
+      "A. Only privileged communications between lawyer and client",
+      "B. Only information the client specifically requested be kept secret",
+      "C. Any information relating to the representation of a client",
+      "D. Only information that would embarrass or harm the client"
+    ],
+    correct: 2,
+    explanation:
+      "Rule 1.6 covers all information relating to the representation, regardless of source, privilege status, client request, or potential embarrassment."
+  },
+
+  {
+    question:
+      "Which is NOT an automatic “permission” to disclose under Rule 1.6(a) (before considering 1.6(b) exceptions)?",
+    options: [
+      "A. The client gives informed consent",
+      "B. Disclosure is impliedly authorized to carry out the representation",
+      "C. The information came from a third party rather than the client",
+      "D. The lawyer reasonably needs to disclose to accomplish the client’s objective (absent contrary instruction)"
+    ],
+    correct: 2,
+    explanation:
+      "Source does not matter—third-party-sourced facts can still be confidential under Rule 1.6."
+  },
+
+  {
+    question:
+      "Privilege vs. confidentiality: which statement BEST captures the “compulsion vs. gossip” distinction?",
+    options: [
+      "A. Privilege prevents voluntary disclosure; confidentiality prevents compelled disclosure",
+      "B. Privilege prevents compelled disclosure in tribunals; confidentiality prevents voluntary disclosure in all contexts",
+      "C. Privilege applies only at cocktail parties; confidentiality applies only in court",
+      "D. They are identical doctrines with different names"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege is an evidentiary shield against compelled disclosure; confidentiality is an ethical rule against voluntary disclosure in any setting (even where privilege doesn’t apply)."
+  },
+
+  {
+    question:
+      "During trial, opposing counsel subpoenas Lawyer L and asks about confidential lawyer-client communications. Which doctrine MOST directly governs whether L must answer?",
+    options: [
+      "A. Rule 1.6 (ethical confidentiality) only",
+      "B. Attorney-client privilege (evidence law)",
+      "C. Work product immunity only",
+      "D. Rule 8.3 (reporting) only"
+    ],
+    correct: 1,
+    explanation:
+      "When a tribunal compels testimony, privilege is the primary doctrine governing compulsion (though ethics may also require asserting privilege)."
+  },
+
+  {
+    question:
+      "At a cocktail party, someone asks Lawyer L about a client matter. Privilege is irrelevant because there is no compulsion. Which rule controls L’s ability to share?",
+    options: [
+      "A. Attorney-client privilege",
+      "B. Rule 1.6 (ethical duty of confidentiality)",
+      "C. Work product immunity",
+      "D. Rule 3.3 (candor to tribunal)"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege doesn’t apply outside compulsion contexts, but Rule 1.6 still forbids voluntary disclosure of information relating to representation."
+  },
+
+  {
+    question:
+      "Kinds of information covered: which statement is MOST accurate?",
+    options: [
+      "A. Privilege covers all information relating to representation; confidentiality covers only communications",
+      "B. Privilege covers confidential communications; confidentiality covers communications PLUS other information relating to representation from any source",
+      "C. Privilege and confidentiality cover only information the client marks 'confidential'",
+      "D. Privilege covers third-party facts; confidentiality does not"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege is narrower (communications); confidentiality is broader (all information relating to representation, regardless of source)."
+  },
+
+  {
+    question:
+      "Lawyer A learns from a third party (not from the client) an embarrassing fact about Client C that is relevant to the representation. Which is MOST accurate?",
+    options: [
+      "A. It is not covered by either privilege or confidentiality because the client didn’t say it",
+      "B. It is privileged but not confidential",
+      "C. It may not be privileged, but it is still confidential under Rule 1.6",
+      "D. It is neither privileged nor confidential if it would embarrass the client"
+    ],
+    correct: 2,
+    explanation:
+      "Third-party-sourced facts are typically not privileged communications, but they still fall within Rule 1.6 if they relate to the representation."
+  },
+
+  {
+    question:
+      "Disclosure vs. use: which is MOST accurate about confidentiality compared to privilege?",
+    options: [
+      "A. Both doctrines concern only compelled disclosure, not use",
+      "B. Privilege concerns disclosure; confidentiality concerns both disclosure and use (including use to the client’s disadvantage)",
+      "C. Privilege concerns use; confidentiality concerns disclosure only",
+      "D. Confidentiality permits using information to a former client’s disadvantage"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege is about compelled disclosure. Ethics rules also restrict using confidential information to the disadvantage of clients/former/prospective clients without consent (e.g., 1.8(b), 1.9(c), 1.18(b))."
+  },
+
+  {
+    question:
+      "Attorney-client privilege BASIC rule: privilege prevents a tribunal from compelling disclosure of:",
+    options: [
+      "A. Any fact the lawyer knows about the client",
+      "B. Confidential communications between attorney (or agent) and client (or agent) concerning the professional relationship",
+      "C. Any documents the client gives the lawyer",
+      "D. Only communications made after a fee agreement is signed"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege protects confidential communications about legal services between lawyer/client (and their agents)."
+  },
+
+  {
+    question:
+      "Prospective client communications: H consults Lawyer L in confidence about divorce but never hires L. Which is MOST accurate?",
+    options: [
+      "A. No privilege because no attorney-client relationship formed",
+      "B. Privilege still applies to preliminary communications seeking legal services",
+      "C. Privilege applies only if L later appears in court",
+      "D. Only Rule 1.6 applies; privilege never applies pre-engagement"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege can cover preliminary communications made for the purpose of obtaining legal services, even if no representation follows."
+  },
+
+  {
+    question:
+      "Corporate client privilege (Upjohn-type rule): which employee communication is MOST clearly privileged?",
+    options: [
+      "A. An employee voluntarily chats with counsel at a bar about office gossip",
+      "B. An employee communicates with counsel at a superior’s direction, knowing the purpose is to obtain legal advice for the corporation, about matters within the employee’s duties",
+      "C. Any employee communication to counsel, about anything, anytime",
+      "D. Only communications from the CEO and general counsel"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege can cover communications with non-high-ranking employees when they meet the direction/knowledge/scope-of-duties conditions."
+  },
+
+  {
+    question:
+      "Who counts as an 'attorney' for privilege purposes?",
+    options: [
+      "A. Anyone giving business advice who has a JD",
+      "B. A person authorized to practice law (or reasonably believed to be), acting as an attorney rather than as a friend/business advisor",
+      "C. Only lawyers licensed in the client’s state",
+      "D. Only lawyers who have signed a retainer agreement"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege requires a lawyer (or someone reasonably believed to be one) acting in a legal capacity."
+  },
+
+  {
+    question:
+      "Privilege covers communications to/from agents. Which is the BEST example?",
+    options: [
+      "A. Lawyer hires an engineer to help on technical litigation; engineer interviews the client’s employee at lawyer’s direction about case facts",
+      "B. Lawyer’s friend overhears a phone call by accident",
+      "C. Client posts details on social media",
+      "D. Opposing counsel emails the client directly"
+    ],
+    correct: 0,
+    explanation:
+      "Communications through necessary agents assisting the legal representation can be privileged."
+  },
+
+  {
+    question:
+      "Mechanical details: which is MOST accurate?",
+    options: [
+      "A. Client identity and fee arrangements are always privileged",
+      "B. Mechanical details are usually not privileged, but can be privileged if revealing them is tantamount to revealing a privileged communication",
+      "C. Mechanical details are never discoverable once the lawyer has them",
+      "D. Mechanical details are privileged only in criminal cases"
+    ],
+    correct: 1,
+    explanation:
+      "Normally not privileged, but may become privileged when disclosure effectively reveals the confidential legal communication."
+  },
+
+  {
+    question:
+      "Hit-and-run example: Client X tells Lawyer L in confidence, “I’m the hit-and-run driver,” and asks L not to reveal identity. Plaintiffs subpoena L for X’s identity. Most accurate?",
+    options: [
+      "A. L must disclose identity because identity is always non-privileged",
+      "B. L may refuse because identity is privileged here (disclosing it is tantamount to revealing the privileged admission)",
+      "C. L must disclose unless paid by the plaintiffs",
+      "D. L must disclose only if the case is civil (not criminal)"
+    ],
+    correct: 1,
+    explanation:
+      "Even normally non-privileged mechanical details can be privileged where disclosure would effectively reveal the confidential communication."
+  },
+
+  {
+    question:
+      "Preexisting documents: Client hands lawyer a preexisting contract file that would be discoverable if held by the client. What happens to discoverability?",
+    options: [
+      "A. It becomes privileged because it’s now in the lawyer’s file",
+      "B. It remains discoverable; privilege does not shield preexisting documents merely by transfer to counsel",
+      "C. It becomes work product automatically",
+      "D. It becomes confidential under privilege but not under Rule 1.6"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege protects communications, not underlying discoverable facts/documents that preexisted the attorney-client communication."
+  },
+
+  {
+    question:
+      "Physical evidence: Client tells Lawyer, “I threw the gun in the trash behind my apartment.” Which is MOST accurate?",
+    options: [
+      "A. The gun is privileged, so the prosecution can’t get it",
+      "B. The communication about the gun’s location is privileged; the gun itself is not privileged",
+      "C. Neither the communication nor the gun is privileged",
+      "D. The lawyer must immediately retrieve and destroy the gun"
+    ],
+    correct: 1,
+    explanation:
+      "Physical evidence isn’t privileged, but the client’s confidential statement to the lawyer can be."
+  },
+
+  {
+    question:
+      "If the lawyer retrieves the gun from the trash to examine it, what is MOST accurate under the outline’s Meredith/Olwell compromise?",
+    options: [
+      "A. Lawyer may keep it forever if it helps the defense",
+      "B. Lawyer must turn it over to authorities after obtaining useful info; if the jury hears where it was found, they should not be told the lawyer was the source",
+      "C. Lawyer must hide it to protect privilege",
+      "D. Lawyer must disclose the client’s statement to the jury"
+    ],
+    correct: 1,
+    explanation:
+      "Retrieval triggers duties: don’t destroy/hide; may examine briefly; then turn over. Location can come in without identifying lawyer as source (per the compromise described)."
+  },
+
+  {
+    question:
+      "Confidentiality for privilege purposes: a communication is “confidential” if:",
+    options: [
+      "A. The client later regrets saying it",
+      "B. It was made by means not intended to disclose to outsiders and the communicator reasonably believed no outsider would hear it",
+      "C. It happened in the lawyer’s office only",
+      "D. The lawyer labeled it confidential in notes"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege requires a reasonable expectation of privacy in the manner of communication."
+  },
+
+  {
+    question:
+      "Attorney and Client discuss trial strategy in a crowded courthouse corridor where bystanders can obviously overhear. For privilege purposes, this is:",
+    options: [
+      "A. Confidential because it involved legal advice",
+      "B. Not confidential, so privilege likely does not apply",
+      "C. Confidential because the lawyer spoke quietly",
+      "D. Privileged unless an eavesdropper testifies"
+    ],
+    correct: 1,
+    explanation:
+      "No reasonable expectation of privacy → not “confidential” → privilege fails (even though ethics duties may still apply)."
+  },
+
+  {
+    question:
+      "Presence of third parties: which statement is MOST accurate for privilege?",
+    options: [
+      "A. Any third party destroys privilege automatically",
+      "B. Third parties do not destroy confidentiality if present to further the attorney-client relationship (including some psychological-support presence)",
+      "C. Only accountants can be present without waiver",
+      "D. Third parties never matter"
+    ],
+    correct: 1,
+    explanation:
+      "Third parties who facilitate the representation (or sometimes are present for client needs) do not necessarily destroy confidentiality."
+  },
+
+  {
+    question:
+      "Who holds the attorney-client privilege?",
+    options: [
+      "A. The lawyer",
+      "B. The court",
+      "C. The client",
+      "D. Opposing counsel"
+    ],
+    correct: 2,
+    explanation:
+      "Privilege exists for the client’s benefit; the client is the holder who can waive or assert it."
+  },
+
+  {
+    question:
+      "Waiver: Client shows a neighbor the first two pages of a three-page privileged letter. Later, opposing party seeks the whole letter. Most accurate?",
+    options: [
+      "A. No waiver because only two pages were shown",
+      "B. Waiver likely extends to the entire communication (the whole letter)",
+      "C. Waiver applies only if the neighbor signs an affidavit",
+      "D. No waiver unless the client intended to waive"
+    ],
+    correct: 1,
+    explanation:
+      "Revealing a significant portion of a privileged communication can waive the privilege as to the whole communication."
+  },
+
+  {
+    question:
+      "At-issue waiver: Defendant appeals a conviction claiming ineffective assistance of counsel. Most accurate about privilege?",
+    options: [
+      "A. Privilege remains absolute; counsel cannot disclose anything",
+      "B. Defendant puts legal services at issue, waiving privilege as to relevant communications",
+      "C. Only the prosecutor can waive privilege",
+      "D. Privilege is waived only if the defendant testifies"
+    ],
+    correct: 1,
+    explanation:
+      "When a client puts the lawyer’s performance at issue, relevant attorney-client communications are typically no longer privileged."
+  },
+
+  {
+    question:
+      "Lawyer’s duty to invoke privilege: Opposing counsel calls Lawyer L to the stand when Client C is absent and asks about privileged communications. L should:",
+    options: [
+      "A. Answer because the client is absent",
+      "B. Claim the privilege on the client’s behalf (if not waived)",
+      "C. Ask the judge to decide without asserting privilege",
+      "D. Waive privilege to avoid contempt"
+    ],
+    correct: 1,
+    explanation:
+      "If the client hasn’t waived, the lawyer must assert privilege when someone seeks privileged info and the client isn’t present."
+  },
+
+  {
+    question:
+      "Duration: which statement is MOST accurate?",
+    options: [
+      "A. Privilege ends when the lawyer-client relationship ends",
+      "B. Privilege ends when fees are paid",
+      "C. Privilege continues indefinitely and generally survives the client’s death",
+      "D. Privilege lasts only until litigation ends"
+    ],
+    correct: 2,
+    explanation:
+      "Privilege generally continues indefinitely and survives termination and even death (subject to limited estate/property exceptions)."
+  },
+
+  {
+    question:
+      "Privilege exception: which situation is MOST clearly outside privilege protection?",
+    options: [
+      "A. Client seeks lawyer’s help to commit or assist a future crime or fraud",
+      "B. Client seeks legal advice about past conduct",
+      "C. Client consults a lawyer but doesn’t hire them",
+      "D. Lawyer communicates with client through a paralegal"
+    ],
+    correct: 0,
+    explanation:
+      "Crime-fraud exception: privilege does not apply when legal services are sought to further future crime or fraud."
+  },
+
+  {
+    question:
+      "Related doctrine: work product immunity generally protects:",
+    options: [
+      "A. All client documents in the lawyer’s possession",
+      "B. Litigation/anticipated-litigation materials, unless opponent shows substantial need and undue hardship; and mental impressions are especially protected",
+      "C. Only privileged communications",
+      "D. Only materials filed in court"
+    ],
+    correct: 1,
+    explanation:
+      "Work product covers litigation preparation materials; opinion work product (mental impressions) gets heightened protection."
+  },
+
+  {
+    question:
+      "Ethical confidentiality vs third parties: Unlike privilege, the duty of confidentiality is:",
+    options: [
+      "A. Destroyed whenever any third party knows the information",
+      "B. Not necessarily destroyed by a nonprivileged third party’s presence/knowledge unless the information becomes generally known",
+      "C. Limited only to communications made in private offices",
+      "D. Identical to privilege"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.6 confidentiality can persist even if others know, unless the information is generally known in the relevant sense."
+  },
+
+  {
+    question:
+      "“Generally known” (for confidentiality): which is MOST accurate under the outline?",
+    options: [
+      "A. Information is generally known if any one person outside the firm knows it",
+      "B. Information is generally known if it can be obtained only through special knowledge or substantial difficulty/expense",
+      "C. Information is NOT generally known when it can be obtained only by special knowledge or substantial difficulty/expense",
+      "D. Information is generally known whenever it appears in a rumor"
+    ],
+    correct: 2,
+    explanation:
+      "Not generally known if it’s obtainable only through special knowledge or substantial difficulty/expense; the inquiry is contextual."
+  },
+
+  {
+    question:
+      "Informed consent under the Model Rules means the client agrees after the lawyer explains:",
+    options: [
+      "A. Only the lawyer’s preferred approach",
+      "B. Material risks and reasonably available alternatives",
+      "C. The lawyer’s hourly rate only",
+      "D. That “it’s probably fine”"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.0(e): informed consent requires adequate explanation of material risks and reasonable alternatives."
+  },
+
+  {
+    question:
+      "Lawyer wants to use an embarrassing alibi (client was at a brothel) in a criminal defense. Under Rule 1.6(a), the lawyer may disclose/use it if:",
+    options: [
+      "A. The lawyer thinks it will help, regardless of client wishes",
+      "B. The client gives informed consent",
+      "C. The lawyer tells only the prosecutor, not the court",
+      "D. The lawyer labels it 'work product'"
+    ],
+    correct: 1,
+    explanation:
+      "Even helpful but embarrassing info requires client authorization—typically informed consent—unless disclosure is otherwise impliedly authorized and not contrary to client instructions."
+  },
+
+  {
+    question:
+      "Implied authority: which is MOST accurate?",
+    options: [
+      "A. Lawyers never have implied authority to disclose any confidential information",
+      "B. Lawyers have implied authority to disclose/use confidential info as appropriate to carry out representation unless the client instructs otherwise",
+      "C. Implied authority exists only if the client signs a special waiver",
+      "D. Implied authority exists only in litigation, not transactions"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.6 recognizes implied authorization to carry out the representation, subject to client instructions to the contrary."
+  },
+
+  {
+    question:
+      "Hypotheticals to get advice: Lawyer Q seeks informal advice from Lawyer R at another firm using a hypothetical, but Q gives details that let R deduce the client and deal. Most accurate?",
+    options: [
+      "A. Always permitted because it’s “just a hypothetical”",
+      "B. Improper—hypothetical must be discreet enough to prevent reasonable chance of deducing identity/situation",
+      "C. Permitted if R promises not to tell anyone",
+      "D. Permitted if Q omits the client’s name only"
+    ],
+    correct: 1,
+    explanation:
+      "You can consult using hypotheticals for the client’s benefit, but must sanitize enough that the other lawyer can’t reasonably deduce identity/situation."
+  },
+
+  {
+    question:
+      "Disclosure to prevent death/substantial bodily harm (Rule 1.6(b)(1)): which is MOST accurate?",
+    options: [
+      "A. It applies only if the client plans the harm",
+      "B. It applies only to imminent harm occurring within minutes",
+      "C. It permits (but does not require, under Model Rules) disclosure to prevent reasonably certain death or substantial bodily harm, regardless of cause",
+      "D. It permits disclosure only for financial harm"
+    ],
+    correct: 2,
+    explanation:
+      "The exception is broad: reasonably certain death/bodily harm (not necessarily imminent), any cause; Model Rule makes it discretionary (some states require)."
+  },
+
+  {
+    question:
+      "Kidnapper K tells defense lawyer where a murdered victim’s body is buried (completed crime; no ongoing danger). Under Rule 1.6(b)(1), disclosure is:",
+    options: [
+      "A. Permitted because it would help the family",
+      "B. Required because any murder triggers disclosure",
+      "C. Not permitted under the bodily-harm prevention exception because it cannot prevent death/substantial bodily harm",
+      "D. Permitted only if the lawyer also informs the prosecutor of the confession"
+    ],
+    correct: 2,
+    explanation:
+      "If disclosure cannot prevent reasonably certain death or substantial bodily harm, the (b)(1) exception doesn’t apply on these facts."
+  },
+
+  {
+    question:
+      "Kidnapper J tells Lawyer B a victim is bound and gagged in a van and asks about murder penalties. Lawyer B calls police with location. Under Rule 1.6(b)(1), this is:",
+    options: [
+      "A. Improper because the client did not consent",
+      "B. Proper because disclosure may be necessary to prevent reasonably certain death or substantial bodily harm",
+      "C. Proper only if the client first signs a waiver",
+      "D. Required only if the lawyer is court-appointed"
+    ],
+    correct: 1,
+    explanation:
+      "There is a reasonably certain risk of death/substantial bodily harm; Model Rule permits disclosure to the extent necessary."
+  },
+
+  {
+    question:
+      "Financial harm exception (Rule 1.6(b)(2)-(3)): which condition is REQUIRED?",
+    options: [
+      "A. The harm must be physical, not financial",
+      "B. The client must be using or have used the lawyer’s services in the crime/fraud",
+      "C. The fraud must already be public",
+      "D. The victim must be the lawyer"
+    ],
+    correct: 1,
+    explanation:
+      "Model Rule allows disclosure to prevent/mitigate substantial financial harm from client crime/fraud when the client uses or has used the lawyer’s services in the matter."
+  },
+
+  {
+    question:
+      "Self-defense (Rule 1.6(b)(5)): Client refuses to pay and claims the lawyer’s fee is unreasonable. Lawyer may:",
+    options: [
+      "A. Reveal any embarrassing client facts publicly to pressure payment",
+      "B. Reveal only what is reasonably necessary to establish the claim/defense, using protective measures to limit harm",
+      "C. Never reveal anything in a fee dispute",
+      "D. Reveal everything the client ever said because the client sued first"
+    ],
+    correct: 1,
+    explanation:
+      "Self-defense disclosure must be limited to what’s necessary, directed to those who need to know, and protected when possible."
+  },
+
+  {
+    question:
+      "Preemptive self-defense: Third parties accuse Lawyer Y of knowingly participating in a client’s fraud (no formal charge yet). Under the outline, Lawyer Y may:",
+    options: [
+      "A. Disclose enough confidential information to show Y did not know of the fraud (limited as necessary)",
+      "B. Disclose nothing until formally sued or charged",
+      "C. Disclose the client’s entire file to prove innocence",
+      "D. Disclose only if the client consents in writing"
+    ],
+    correct: 0,
+    explanation:
+      "The outline recognizes limited “preemptive self-defense” to protect the lawyer’s interests where accusations arise, even before formal proceedings—still limited to what’s necessary."
+  },
+
+  {
+    question:
+      "Ethics advice (Rule 1.6(b)(4)): Lawyer is unsure about accepting a mysterious package as a fee advance. Lawyer calls an ethics professor and shares only enough facts without identifying the client. Most accurate?",
+    options: [
+      "A. Improper; lawyers can never discuss client matters with anyone",
+      "B. Proper; lawyer may disclose enough confidential information to obtain legal ethics advice",
+      "C. Proper only if the client signs a waiver",
+      "D. Proper only if the professor is in the same firm"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.6(b)(4) permits limited disclosure to obtain ethics advice, ideally using sanitized facts to avoid identifying the client."
+  },
+
+  {
+    question:
+      "Conflicts-check exception (Rule 1.6(b)(7)): which is NOT one of the listed conditions?",
+    options: [
+      "A. Disclosure only after substantive discussions about the new relationship occur",
+      "B. Disclosure limited to minimum necessary to detect conflicts",
+      "C. Disclosed info must not compromise privilege or prejudice clients; and used only to detect/resolve conflicts",
+      "D. Disclosure may include full narrative of client secrets so the new firm can evaluate profitability"
+    ],
+    correct: 3,
+    explanation:
+      "The rule permits only limited information necessary for conflicts; it cannot compromise privilege or prejudice clients and can be used only to detect/resolve conflicts."
+  },
+
+  {
+    question:
+      "Required by law/court order (Rule 1.6(b)(6)): before disclosing under a potentially applicable statute, a lawyer should FIRST:",
+    options: [
+      "A. Disclose immediately—statutes always override privilege",
+      "B. Determine whether the law truly requires disclosure and whether it purports to supersede privilege/confidentiality; and communicate with the client about the situation",
+      "C. Call the media to control the narrative",
+      "D. Destroy the file to avoid disclosure"
+    ],
+    correct: 1,
+    explanation:
+      "The outline’s process: analyze whether the law/order applies and supersedes protections, inform/consult the client, assert nonfrivolous challenges, then disclose only if ultimately required."
+  },
+
+  {
+    question:
+      "When facing a court order seeking privileged/confidential information, the lawyer should:",
+    options: [
+      "A. Comply immediately without objection to avoid contempt",
+      "B. Assert all nonfrivolous grounds against disclosure; consult with the client about appeal; disclose only if the order stands and no further review is taken",
+      "C. Ignore the order because privilege is absolute",
+      "D. Reveal the information to opposing counsel but not the judge"
+    ],
+    correct: 1,
+    explanation:
+      "Under the outline, the lawyer should resist on nonfrivolous grounds, consult about appeal, and only then disclose if the final obligation remains."
+  },
+
+  {
+    question:
+      "Victim-of-client-crime exception (as described): which is MOST accurate?",
+    options: [
+      "A. There is no way to disclose client information when the client commits a crime against the lawyer",
+      "B. An implicit exception may allow disclosure to appropriate authorities to permit investigation/prosecution when the lawyer (or associated person) is the victim and the lawyer witnesses the crime",
+      "C. The lawyer may disclose anything about any client’s crime, even unrelated, to punish the client",
+      "D. The exception applies only if the client is convicted"
+    ],
+    correct: 1,
+    explanation:
+      "The outline describes a narrow implicit exception for when the lawyer (or closely associated person) is the crime victim and disclosure is to enable investigation/prosecution."
+  },
+
+  {
+    question:
+      "Protecting information (Rule 1.6(c)): which is MOST accurate?",
+    options: [
+      "A. Lawyers are strictly liable for any data breach, regardless of precautions",
+      "B. Lawyers must make reasonable efforts to prevent inadvertent/unauthorized disclosure and unauthorized access; reasonableness depends on sensitivity, cost, and difficulty of safeguards",
+      "C. Lawyers need take no steps if they trust their staff",
+      "D. The rule applies only to paper files, not electronic data"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.6(c) imposes a reasonable-efforts standard, assessed by contextual factors like sensitivity, cost, and feasibility."
+  },
+
+  {
+    question:
+      "Office-sharing: Lawyers who share office space must:",
+    options: [
+      "A. Assume confidentiality will take care of itself because everyone is a lawyer",
+      "B. Take special steps (separate waiting areas, secure files, privacy screens, staff training) to protect confidences",
+      "C. Store all client files in a common unlocked cabinet for efficiency",
+      "D. Freely discuss client matters out loud as long as they omit the client’s name"
+    ],
+    correct: 1,
+    explanation:
+      "The outline stresses heightened precautions in shared offices to avoid inadvertent disclosure and avoid creating conflicts/confidentiality duties for others."
+  },
+
+  {
+    question:
+      "Two office-sharing lawyers casually consult each other about cases without careful hypotheticals. Under the outline, the RISK is that:",
+    options: [
+      "A. Nothing—informal consultation is always safe",
+      "B. The second lawyer may assume confidentiality obligations and create conflicts issues if client information is revealed carelessly",
+      "C. Privilege is automatically waived for all clients",
+      "D. Rule 1.6 never applies between lawyers"
+    ],
+    correct: 1,
+    explanation:
+      "Careless sharing can create confidentiality duties/conflicts for the consulted lawyer (and may be an ethics breach if disclosure was not properly authorized)."
+  },
+
+  {
+    question:
+      "Privilege vs confidentiality: A communication loses privilege because it was made in a public corridor. Does that automatically end Rule 1.6 confidentiality?",
+    options: [
+      "A. Yes—once privilege is gone, confidentiality is gone",
+      "B. No—Rule 1.6 can still apply unless the information becomes generally known",
+      "C. Yes—anything overheard becomes “generally known” by definition",
+      "D. No—because Rule 1.6 applies only to privileged communications"
+    ],
+    correct: 1,
+    explanation:
+      "Privilege and confidentiality differ: losing privilege does not automatically make information “generally known.” Rule 1.6 can still restrict voluntary disclosure."
+  }
+];
+
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      // Add small topic pill if you want later; for now keep just question.
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(q, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === q.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

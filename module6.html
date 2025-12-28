@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPRE – Regulation of the Legal Profession (Module 6)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 650px;
+      width: 92%;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .hidden { display: none; }
+    .question-count { font-size: 18px; margin-bottom: 10px; }
+    .question { font-size: 20px; margin-bottom: 15px; }
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .options button.selected { border-color: #007bff; }
+    .options button:focus { outline: none; }
+    .navigation button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .explanation {
+      font-size: 16px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+    }
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+    }
+    .primary-button:hover { background-color: #0056b3; transform: scale(1.05); }
+    .primary-button:active { transform: scale(0.95); }
+    .navigation { display: flex; justify-content: space-between; margin-top: 20px; }
+    #prev-button { align-self: flex-start; }
+    #next-button { align-self: flex-end; }
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    #result-screen { max-height: 80vh; overflow-y: auto; }
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+    .review-table .correct { background-color: #d4edda; }
+    .review-table .wrong { background-color: #f8d7da; }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 6 - Litigation and Other Forms of Advocacy</h5>
+      <p style="text-align:center; color:#444; margin-top: 14px;">
+        Tricky MPRE-style questions covering sources of regulation, admission, discipline, choice of law,
+        UPL/MJP, supervision duties, independence, restrictions on practice, sale of practice, and ancillary services. Based on Barbri MPRE Outline.
+      </p>
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 5px 10px; background-color: grey; color: white; border: none; border-radius: 5px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+ 
+// Module 6 — Litigation and Other Forms of Advocacy
+const questions = [
+  // A) Meritorious Claims and Contentions Only (Rule 3.1)
+  {
+    question: "Rule 3.1: A lawyer is subject to discipline for taking a position that is “frivolous.” A position is frivolous when it:",
+    options: [
+      "A. Is unpopular with the judge",
+      "B. Cannot be supported by a good-faith argument under existing law AND cannot be supported by a good-faith argument for changing the law",
+      "C. Has less than a 50% chance of winning",
+      "D. Has not yet been proven with admissible evidence"
+    ],
+    correct: 1,
+    explanation: "Frivolous = no good-faith support under existing law or for a good-faith change in law."
+  },
+  {
+    question: "Under Rule 3.1, it is NOT frivolous to assert a claim even if the lawyer has not fully substantiated all facts, so long as:",
+    options: [
+      "A. The lawyer promises to withdraw later",
+      "B. The lawyer reasonably expects to develop supporting evidence through discovery",
+      "C. The client insists in writing",
+      "D. The lawyer includes a disclaimer in the pleading"
+    ],
+    correct: 1,
+    explanation: "Rule 3.1 cmt. 2: you may assert a position when key evidence can be uncovered only through discovery."
+  },
+  {
+    question: "A lawyer believes a legal argument is well-reasoned but also believes it likely loses at the Supreme Court. Under Rule 3.1, the lawyer:",
+    options: [
+      "A. Must not raise it because the lawyer doubts ultimate success",
+      "B. May raise it; a claim can be non-frivolous even if the lawyer believes it won’t ultimately prevail",
+      "C. May raise it only if the client signs a waiver",
+      "D. Must raise it to preserve it"
+    ],
+    correct: 1,
+    explanation: "Not frivolous merely because counsel expects to lose."
+  },
+  {
+    question: "Tax advice (ABA Formal Op. 85-352): A lawyer may advise a client to take a debatable tax position if:",
+    options: [
+      "A. The lawyer is certain the IRS will never audit",
+      "B. The lawyer believes there is a realistic possibility of success if litigated, and warns about penalties/adverse consequences",
+      "C. The client agrees to indemnify the lawyer",
+      "D. The lawyer discloses the position publicly"
+    ],
+    correct: 1,
+    explanation: "Realistic possibility of success if litigated + warning about penalties/other adverse consequences."
+  },
+  {
+    question: "Criminal defense carve-out (Rule 3.1): Even if the lawyer privately believes the defendant is guilty, the lawyer may still:",
+    options: [
+      "A. Present evidence the lawyer knows is false",
+      "B. Require the prosecution to prove every element beyond a reasonable doubt",
+      "C. Argue personal belief in the defendant’s innocence as a fact",
+      "D. Conceal directly adverse controlling law"
+    ],
+    correct: 1,
+    explanation: "Defense may “put the prosecution to its proofs” in criminal (or incarceration-risk) matters."
+  },
+  {
+    question: "Which is MOST accurate under Rule 3.1?",
+    options: [
+      "A. A lawyer may never file before having admissible proof for every allegation",
+      "B. A lawyer may file without full substantiation if the lawyer expects discovery will supply crucial evidence",
+      "C. A lawyer may file any claim if the client requests it",
+      "D. A lawyer may file any claim if sanctions are unlikely"
+    ],
+    correct: 1,
+    explanation: "Discovery can justify filing before full substantiation; client demand alone cannot."
+  },
+
+  // B) Duty to Expedite Litigation (Rule 3.2)
+  {
+    question: "Rule 3.2: A lawyer must make reasonable efforts to expedite litigation:",
+    options: [
+      "A. No matter what the client wants",
+      "B. Consistent with the interests of the client",
+      "C. Only when the court threatens sanctions",
+      "D. Only in criminal cases"
+    ],
+    correct: 1,
+    explanation: "Expedite litigation, but not at the expense of the client’s legitimate interests."
+  },
+  {
+    question: "Under Rule 3.2, which is NOT a legitimate interest that can justify delay?",
+    options: [
+      "A. Avoiding prejudice to the client from an unreasonably short schedule",
+      "B. Gaining financial benefit from delay (e.g., earning interest while judgment is stayed)",
+      "C. Time needed to prepare competently",
+      "D. Scheduling conflicts that are handled occasionally and reasonably"
+    ],
+    correct: 1,
+    explanation: "Delay for improper financial benefit is not a legitimate client interest."
+  },
+  {
+    question: "A lawyer repeatedly asks for extensions mainly due to personal convenience. Under Rule 3.2:",
+    options: [
+      "A. Always permissible if the lawyer is busy",
+      "B. Occasionally permissible for personal reasons, but habitual delay risks discipline",
+      "C. Permissible if opposing counsel doesn’t object",
+      "D. Permissible because the client benefits from lawyer rest"
+    ],
+    correct: 1,
+    explanation: "Occasional postponements may be okay; making a habit is not."
+  },
+  {
+    question: "Client instructs lawyer to drag out an appeal to earn returns while judgment is stayed. Lawyer complies with every possible extension. Rule 3.2 result:",
+    options: [
+      "A. Proper because it is the client’s money and choice",
+      "B. Improper; lawyer is subject to discipline for causing improper delay for financial benefit",
+      "C. Proper if all extensions were technically available",
+      "D. Proper unless the court explicitly denies an extension"
+    ],
+    correct: 1,
+    explanation: "Even if extensions exist, using them to cause improper delay for financial gain violates Rule 3.2."
+  },
+
+  // C) Candor to the Tribunal (Rule 3.3)
+  {
+    question: "Rule 3.3(a)(1): A lawyer violates candor by:",
+    options: [
+      "A. Losing an argument",
+      "B. Knowingly making a false statement of law or fact to the tribunal or failing to correct a prior false statement of material law/fact",
+      "C. Arguing aggressively",
+      "D. Failing to volunteer harmful facts"
+    ],
+    correct: 1,
+    explanation: "Candor prohibits knowing false statements and requires correction of prior material falsities."
+  },
+  {
+    question: "A lawyer cites a case as good law, knowing it was reversed by the highest court. This is:",
+    options: [
+      "A. Fine if the reversal is unpublished",
+      "B. A knowing false statement of law; discipline likely",
+      "C. Fine if the lawyer says “for persuasive value only”",
+      "D. Fine if the lawyer expects the court won’t notice"
+    ],
+    correct: 1,
+    explanation: "Knowingly implying reversed authority is still good law is a false statement of law."
+  },
+  {
+    question: "Rule 3.3(a)(2): A lawyer must disclose controlling authority that is directly adverse to the client’s position when:",
+    options: [
+      "A. It’s from any jurisdiction in the country",
+      "B. It’s in the controlling jurisdiction, directly adverse, and opposing counsel has not disclosed it",
+      "C. It’s only adverse by analogy",
+      "D. It’s in a law review article"
+    ],
+    correct: 1,
+    explanation: "Duty attaches only to controlling-jurisdiction authority that’s directly adverse and undisclosed by the opponent."
+  },
+  {
+    question: "Diversity case in federal court applying NY substantive law under Erie. Opponent fails to cite a directly adverse NY Court of Appeals case. Your duty is to:",
+    options: [
+      "A. Stay silent because it’s the opponent’s job",
+      "B. Disclose that NY Court of Appeals case to the court",
+      "C. Disclose any adverse case from any circuit court",
+      "D. Disclose only if the judge asks"
+    ],
+    correct: 1,
+    explanation: "That’s controlling authority (NY Court of Appeals) directly adverse and undisclosed—must disclose."
+  },
+  {
+    question: "Same scenario, but the adverse case is from Utah or the Fifth Circuit, not controlling for the issue. Under Rule 3.3(a)(2):",
+    options: [
+      "A. Disclosure is required because it’s adverse",
+      "B. Disclosure is not required (though it may be tactically wise)",
+      "C. Disclosure is required only in oral argument",
+      "D. Disclosure is required only if opposing counsel is pro se"
+    ],
+    correct: 1,
+    explanation: "Rule 3.3(a)(2) is limited to controlling-jurisdiction authority."
+  },
+  {
+    question: "A lawyer cites an “obscure case” for a proposition while knowing the case holds the opposite. This is:",
+    options: [
+      "A. Zealous advocacy",
+      "B. A knowing false statement of law; discipline likely",
+      "C. Permissible if the case is obscure",
+      "D. Permissible if the lawyer later files a correction"
+    ],
+    correct: 1,
+    explanation: "Knowingly mischaracterizing a case is a false statement of law."
+  },
+
+  // Candor about facts
+  {
+    question: "Candor about facts: If a lawyer makes an assertion of fact to the tribunal (e.g., affidavit or oral argument), the lawyer must:",
+    options: [
+      "A. Have personal knowledge of every fact in the case",
+      "B. Either know it’s true or reasonably believe it’s true based on reasonably diligent inquiry",
+      "C. Rely solely on the client’s hunch",
+      "D. Avoid speaking in all hearings"
+    ],
+    correct: 1,
+    explanation: "You don’t need personal knowledge for all pleadings, but if you assert facts, you need a reasonable basis from diligent inquiry."
+  },
+  {
+    question: "Judge asks if client has a steady job; lawyer answers yes without asking the client and without any basis. Result:",
+    options: [
+      "A. No issue—lawyers can assume employment",
+      "B. Discipline risk for making a factual assertion without a reasonable basis (and worse if the lawyer knew it was false)",
+      "C. Fine if it helps bail",
+      "D. Fine because it’s not “material”"
+    ],
+    correct: 1,
+    explanation: "Making a factual assertion without reasonable inquiry can violate Rule 3.3."
+  },
+  {
+    question: "Court assumes client’s first DUI and imposes a light sentence. Lawyer knows client has two priors; neither lawyer nor client caused the court’s mistake. Under the outline:",
+    options: [
+      "A. Lawyer must correct the judge",
+      "B. Lawyer may remain silent (though other considerations may exist), because the lawyer did not cause the mistake",
+      "C. Lawyer must disclose priors to the press",
+      "D. Lawyer must withdraw immediately"
+    ],
+    correct: 1,
+    explanation: "Outline example: if neither lawyer nor client caused the mistake, lawyer may keep quiet."
+  },
+  {
+    question: "Same DUI scenario, but the lawyer previously implied (incorrectly) that it was the first offense, causing the misunderstanding. Now the judge relies on that. The lawyer must:",
+    options: [
+      "A. Stay silent because correcting harms the client",
+      "B. Correct the misunderstanding (failure to correct can be equivalent to misrepresentation)",
+      "C. Wait until after sentencing to fix it",
+      "D. Blame the clerk"
+    ],
+    correct: 1,
+    explanation: "If lawyer/client caused the mistake, silence can equal misrepresentation; must correct."
+  },
+
+  // No duty to volunteer harmful facts; ex parte exception
+  {
+    question: "General rule (Rule 3.3 cmt. 14): A lawyer ordinarily has no obligation to volunteer a fact harmful to the client because:",
+    options: [
+      "A. The lawyer’s job is to hide evidence",
+      "B. The adversary system assumes the other side can discover facts through discovery/investigation",
+      "C. Courts forbid disclosure of harmful facts",
+      "D. Judges already know the facts"
+    ],
+    correct: 1,
+    explanation: "No general duty to volunteer harmful facts in ordinary adversary proceedings."
+  },
+  {
+    question: "Ex parte proceedings (Rule 3.3(d)): Because only one side is present, the lawyer must:",
+    options: [
+      "A. Present only helpful facts",
+      "B. Inform the tribunal of all material facts known to the lawyer, including harmful ones",
+      "C. Avoid speaking about facts entirely",
+      "D. Rely on hearsay without disclosure"
+    ],
+    correct: 1,
+    explanation: "Ex parte requires disclosure of all material facts to let the tribunal make an informed decision."
+  },
+
+  // False evidence (Rule 3.3(a)(3)) and remedial steps
+  {
+    question: "Rule 3.3(a)(3): A lawyer may not offer evidence the lawyer knows is false. “Knows” means:",
+    options: [
+      "A. A mere suspicion",
+      "B. Actual knowledge, which may be inferred from the circumstances",
+      "C. Anything the opposing counsel alleges",
+      "D. Anything the judge dislikes"
+    ],
+    correct: 1,
+    explanation: "Knowledge is actual but can be inferred; you can’t ignore obvious falsehoods."
+  },
+  {
+    question: "A lawyer has doubts about a client’s story but no clear proof it’s false. Under Rule 3.3, the lawyer should generally:",
+    options: [
+      "A. Treat doubts as certainty and disclose immediately",
+      "B. Resolve doubts about veracity in favor of the client (but cannot ignore obvious falsehoods)",
+      "C. Quit every case with inconsistency",
+      "D. Coach the client to sound consistent"
+    ],
+    correct: 1,
+    explanation: "Resolve doubts in favor of client; obvious falsehood cannot be ignored."
+  },
+  {
+    question: "A lawyer reasonably believes (but does not know) that a witness’s testimony is false. Under Rule 3.3(a)(3), the lawyer:",
+    options: [
+      "A. Must offer it anyway",
+      "B. May refuse to offer it (EXCEPT for a criminal defendant’s own testimony)",
+      "C. Must disclose it to the judge immediately",
+      "D. Must file a motion for sanctions"
+    ],
+    correct: 1,
+    explanation: "You may refuse evidence you reasonably believe is false, except the criminal defendant’s own testimony."
+  },
+  {
+    question: "After offering evidence, the lawyer later learns it was false. Under the ABA approach described, the FIRST step is to:",
+    options: [
+      "A. Immediately tell the judge (always first)",
+      "B. Speak confidentially with the client and urge withdrawal/correction of the false evidence",
+      "C. Publish a press release",
+      "D. Destroy the evidence"
+    ],
+    correct: 1,
+    explanation: "Start by urging client cooperation to withdraw/correct."
+  },
+  {
+    question: "If the client refuses to correct false evidence, the lawyer’s next steps may include withdrawal. But the outline emphasizes:",
+    options: [
+      "A. Withdrawal alone is always sufficient",
+      "B. Withdrawal alone is not sufficient if it leaves false evidence before the tribunal; lawyer should move to strike/cancel effect",
+      "C. Withdrawal is always mandatory",
+      "D. The lawyer must threaten the client"
+    ],
+    correct: 1,
+    explanation: "Withdrawal alone doesn’t fix the false evidence if it remains in the record."
+  },
+  {
+    question: "If withdrawal is not permitted or won’t solve the false-evidence problem, the lawyer must:",
+    options: [
+      "A. Remain silent because confidentiality always controls",
+      "B. Disclose the situation to the judge, even if it requires revealing confidential client information",
+      "C. Ask the clerk to correct the record",
+      "D. Let opposing counsel discover it"
+    ],
+    correct: 1,
+    explanation: "Rule 3.3 candor can override confidentiality as necessary to remedy fraud on the tribunal."
+  },
+  {
+    question: "Duration of the duty to rectify false evidence (Rule 3.3 cmt. 13): It continues until:",
+    options: [
+      "A. The lawyer feels better about it",
+      "B. The end of the proceeding (final judgment affirmed on appeal or time for appeal expires)",
+      "C. The verdict is announced",
+      "D. The client pays the bill"
+    ],
+    correct: 1,
+    explanation: "Duty persists through finality (appeal affirmed or appeal time expires)."
+  },
+
+  // Criminal defendant false testimony — ABA vs minority narrative
+  {
+    question: "MPRE default (ABA/Restatement) when criminal defendant insists on testifying falsely and lawyer knows it is false:",
+    options: [
+      "A. Lawyer must present and argue the false testimony like normal",
+      "B. Lawyer follows the same remedial steps: try to dissuade, consider withdrawal, and if necessary disclose to the judge",
+      "C. Lawyer must remain silent due to confidentiality",
+      "D. Lawyer must file a bar complaint against the client"
+    ],
+    correct: 1,
+    explanation: "ABA approach: same 3-step remedial path; candor can require disclosure."
+  },
+  {
+    question: "Minority “narrative” approach (e.g., NY/CA) generally allows counsel to:",
+    options: [
+      "A. Elicit the false story through normal Q&A and rely on it in closing",
+      "B. Use narrative testimony for the false portion and not rely on the false parts in argument",
+      "C. Hide evidence of falsity from the court forever",
+      "D. Tell the jury the client is lying"
+    ],
+    correct: 1,
+    explanation: "Narrative testimony + no reliance on false parts in argument; Model Rule defers to local law where adopted."
+  },
+  {
+    question: "Nix v. Whiteside (as referenced): The ABA solution (including disclosure if necessary) is considered:",
+    options: [
+      "A. A violation of the Sixth Amendment right to effective assistance",
+      "B. Not a violation of the defendant’s constitutional right to effective assistance of counsel",
+      "C. Automatically reversible error",
+      "D. Permitted only in civil cases"
+    ],
+    correct: 1,
+    explanation: "Nix v. Whiteside supports that preventing/rectifying perjury does not violate effective assistance."
+  },
+
+  // Other corruption of adjudicative proceeding (Rule 3.3(b))
+  {
+    question: "Rule 3.3(b): In an adjudicative proceeding, a lawyer must take appropriate measures to prevent criminal/fraudulent conduct that corrupts the proceeding, such as:",
+    options: [
+      "A. Negotiating hard in mediation",
+      "B. Hiding/destroying evidence, bribing a witness, intimidating a juror, buying a judge, or disobeying disclosure orders",
+      "C. Filing a motion to dismiss",
+      "D. Objecting at trial"
+    ],
+    correct: 1,
+    explanation: "Rule 3.3(b) targets corruption of the proceeding; measures can include disclosure if necessary."
+  },
+  {
+    question: "Witness intimidation discovered after deposition (nurse threatened, then lied). Lawyer learns afterward. Proper response (per outline):",
+    options: [
+      "A. Do nothing; it’s not the lawyer’s threat",
+      "B. Take steps to set the record straight; if all else fails, tell the tribunal",
+      "C. Coach the witness to stick to the lie",
+      "D. Destroy the deposition transcript"
+    ],
+    correct: 1,
+    explanation: "Duty to prevent/rectify corruption can require disclosure."
+  },
+
+  // D) Fairness to Opposing Party and Counsel (Rule 3.4)
+  {
+    question: "Rule 3.4(a): A lawyer must not unlawfully obstruct another party’s access to evidence or unlawfully alter/destroy/conceal evidence. Also, the lawyer must not:",
+    options: [
+      "A. Read opposing counsel’s briefs",
+      "B. Counsel or assist another person to do these acts",
+      "C. Object during deposition",
+      "D. Prepare witnesses"
+    ],
+    correct: 1,
+    explanation: "You cannot do it yourself or help someone else do it."
+  },
+  {
+    question: "Client tells lawyer about incriminating documents. Lawyer advises client to “deep six” them in a river. Result:",
+    options: [
+      "A. Proper if the documents are bad for the client",
+      "B. Discipline likely for counseling destruction/concealment of evidence (and possible criminal liability)",
+      "C. Proper if no subpoena has issued yet",
+      "D. Proper if the lawyer doesn’t touch the documents"
+    ],
+    correct: 1,
+    explanation: "Evidence suppression/tampering violates Rule 3.4 and can be criminal."
+  },
+  {
+    question: "Rule 3.4(b): Witness prep is allowed, but a lawyer must not:",
+    options: [
+      "A. Probe the witness’s memory",
+      "B. Refresh recollection by proper means",
+      "C. Put words in the witness’s mouth or counsel false testimony",
+      "D. Explore the basis of the witness’s knowledge"
+    ],
+    correct: 2,
+    explanation: "Prep is fine; coaching into false testimony is not."
+  },
+  {
+    question: "Discovery abuse (Rule 3.4(d)): A lawyer must not:",
+    options: [
+      "A. Make any discovery requests",
+      "B. Make frivolous discovery requests OR fail to make reasonable efforts to comply with proper discovery requests",
+      "C. Produce documents late with consent",
+      "D. Seek a protective order"
+    ],
+    correct: 1,
+    explanation: "Both frivolous requests and noncompliance violate Rule 3.4(d)."
+  },
+  {
+    question: "Lawyer intentionally withholds handwritten notes clearly covered by a court order, forcing opponent to spend hundreds of hours developing alternatives. This triggers:",
+    options: [
+      "A. No consequence if the notes weren’t dispositive",
+      "B. Discipline and possible court sanctions (e.g., Rule 37 / inherent authority)",
+      "C. A permissible tactic",
+      "D. Automatic mistrial in every case"
+    ],
+    correct: 1,
+    explanation: "Intentional nonproduction can lead to discipline and sanctions."
+  },
+
+  // Paying witnesses (Rule 3.4(b) + Restatement §117)
+  {
+    question: "Witness payments: which is generally permitted (unless local law forbids)?",
+    options: [
+      "A. Paying a fact witness cash contingent on winning",
+      "B. Paying reasonable travel/meals/lodging for attendance/testimony",
+      "C. Paying a witness to “remember better”",
+      "D. Paying a witness extra if testimony is favorable"
+    ],
+    correct: 1,
+    explanation: "Reasonable expenses are allowed; contingent/favorable-content payments are not."
+  },
+  {
+    question: "A lawyer may pay a fact witness reasonable compensation for:",
+    options: [
+      "A. The content of the testimony",
+      "B. Loss of time (e.g., lost wages) attending and testifying",
+      "C. Agreeing not to cooperate with the other side",
+      "D. Changing testimony mid-deposition"
+    ],
+    correct: 1,
+    explanation: "Loss-of-time compensation (like lost wages) is permitted if reasonable."
+  },
+  {
+    question: "Expert witness fees: which is proper?",
+    options: [
+      "A. $1,000 flat fee plus 2% of client’s recovery",
+      "B. A reasonable fee for preparation and testimony, not contingent on content or outcome",
+      "C. Any fee if the expert is prestigious",
+      "D. A fee contingent on the expert testifying “credibly”"
+    ],
+    correct: 1,
+    explanation: "No contingency on outcome or testimony content."
+  },
+
+  // Securing absence / advising not to cooperate (Rule 3.4(f))
+  {
+    question: "A lawyer may advise a person not to voluntarily give information to opposing counsel ONLY if:",
+    options: [
+      "A. The person is any random bystander",
+      "B. The person is a client or a relative/employee/agent of a client, and the lawyer reasonably believes the person’s interests won’t be harmed",
+      "C. The person is the opposing party",
+      "D. The person demands payment"
+    ],
+    correct: 1,
+    explanation: "Rule 3.4(f) is limited to client and certain close affiliates, plus no harm to that person."
+  },
+  {
+    question: "If a deposition subpoena is being served on your client’s sister (not a party), you may:",
+    options: [
+      "A. Tell her to leave town to dodge service",
+      "B. Advise her she need not speak voluntarily (if Rule 3.4(f) conditions met), but you must NOT advise her to hide/evade lawful process",
+      "C. Destroy her phone",
+      "D. Contact the process server and threaten them"
+    ],
+    correct: 1,
+    explanation: "No hiding/fleeing to make a witness unavailable; voluntary interviews are different."
+  },
+
+  // Violating court rules/orders (Rule 3.4(c))
+  {
+    question: "Rule 3.4(c): A lawyer must not knowingly violate court rules/orders, BUT may openly refuse to obey:",
+    options: [
+      "A. Any order the lawyer dislikes",
+      "B. A rule/order when making a good-faith challenge to its validity",
+      "C. Only discovery orders",
+      "D. Only if the client instructs"
+    ],
+    correct: 1,
+    explanation: "Open refusal is permitted only to test validity in good faith (e.g., mandamus), not stealth evasion."
+  },
+  {
+    question: "Prosecutor ordered not to mention defendant’s prior convictions; prosecutor asks a question designed to insinuate jail time anyway. This is:",
+    options: [
+      "A. Permissible impeachment",
+      "B. Knowingly violating/evading a court order; discipline likely",
+      "C. Fine if phrased as a question",
+      "D. Fine if the witness answers “no”"
+    ],
+    correct: 1,
+    explanation: "Intentional end-run around an evidentiary order violates Rule 3.4(c)."
+  },
+
+  // Chicanery at trial (Rule 3.4(e))
+  {
+    question: "Rule 3.4(e): A lawyer must not refer to material the lawyer does not reasonably believe is relevant or will not be supported by admissible evidence. Example: defense mentions settlement offer in opening knowing it’s inadmissible. Result:",
+    options: [
+      "A. Proper if it’s true",
+      "B. Discipline likely for referencing inadmissible material to influence the jury",
+      "C. Proper if the lawyer says “allegedly”",
+      "D. Proper if opposing counsel objects"
+    ],
+    correct: 1,
+    explanation: "You can’t intentionally inject inadmissible matter into trial proceedings."
+  },
+  {
+    question: "Closing argument: “I live near defendant and I personally see him walking the dog every night.” This violates Rule 3.4(e) because it:",
+    options: [
+      "A. Is too emotional",
+      "B. Asserts personal knowledge of contested facts (except when testifying as a witness)",
+      "C. Mentions a dog",
+      "D. Is hearsay"
+    ],
+    correct: 1,
+    explanation: "Lawyer cannot assert personal knowledge of contested facts as advocate."
+  },
+  {
+    question: "Rule 3.4(e) personal opinions: A lawyer must not state a personal opinion about:",
+    options: [
+      "A. The weather",
+      "B. The justness of a cause, credibility of a witness, culpability of a civil litigant, or guilt/innocence of an accused",
+      "C. The strength of an argument based on evidence",
+      "D. Scheduling preferences"
+    ],
+    correct: 1,
+    explanation: "No personal vouching/opining; argue from evidence instead."
+  },
+  {
+    question: "Which is PROPER under Rule 3.4(e) in closing?",
+    options: [
+      "A. “I don’t believe the witness for a minute.”",
+      "B. “I was appalled by the witness’s lie.”",
+      "C. “Two neutral witnesses testified the light was red; defendant has money at stake; you decide who to believe.”",
+      "D. “Trust me—I know what happened.”"
+    ],
+    correct: 2,
+    explanation: "Argue from evidence and reasonable inferences; don’t express personal opinions or personal knowledge."
+  },
+
+  // Threats in civil cases (criminal charges vs bar complaints)
+  {
+    question: "Threatening criminal charges to gain advantage in civil settlement (ABA approach) is allowed ONLY if:",
+    options: [
+      "A. The lawyer is angry",
+      "B. The criminal and civil matters are closely related AND both the civil case and criminal charges are warranted by law and facts",
+      "C. The lawyer never intends to actually report",
+      "D. The opposing party is wealthy"
+    ],
+    correct: 1,
+    explanation: "Permitted if related + warranted; otherwise it’s improper coercion."
+  },
+  {
+    question: "Threatening to report opposing counsel for an ethics violation as a bargaining chip is:",
+    options: [
+      "A. Permitted if the violation is serious",
+      "B. Improper; if reporting is required, report—don’t use it as leverage",
+      "C. Required in all settlement talks",
+      "D. Permitted if done in writing"
+    ],
+    correct: 1,
+    explanation: "You can’t trade away your reporting duty to gain civil advantage."
+  },
+
+  // E) Preserve impartiality & decorum (Rule 3.5)
+  {
+    question: "Improper influence (Rule 3.5(a)): A lawyer must not seek to influence a judge/court official/juror by improper means. Example: offering a gift to a clerk that the clerk may not accept is:",
+    options: [
+      "A. Fine because it’s social",
+      "B. Improper—lawyer must not offer such a gift",
+      "C. Fine if the clerk declines",
+      "D. Fine if disclosed"
+    ],
+    correct: 1,
+    explanation: "If the official couldn’t accept under judicial conduct rules, you can’t offer it."
+  },
+  {
+    question: "Ex parte communications (Rule 3.5(b)): While a matter is pending, a lawyer must not communicate ex parte with judge/court official/juror about the matter unless:",
+    options: [
+      "A. The lawyer is polite",
+      "B. Authorized by law or court order",
+      "C. The lawyer does it after business hours",
+      "D. The lawyer keeps it short"
+    ],
+    correct: 1,
+    explanation: "Only authorized ex parte contact is allowed."
+  },
+  {
+    question: "Written communication to a judge is generally not “ex parte” if:",
+    options: [
+      "A. It is sent from a personal email",
+      "B. A copy is timely sent to opposing parties",
+      "C. It is marked “confidential”",
+      "D. It is delivered by courier"
+    ],
+    correct: 1,
+    explanation: "Copying the other side avoids ex parte contact (subject to local rules)."
+  },
+  {
+    question: "Jurors/prospective jurors: a lawyer connected with the case may communicate with them outside official proceedings:",
+    options: [
+      "A. About anything except the merits",
+      "B. Only about the weather",
+      "C. Not at all—on any subject—even if the juror initiates",
+      "D. Only if the lawyer’s client consents"
+    ],
+    correct: 2,
+    explanation: "No contact on any subject; if juror initiates, lawyer must refuse."
+  },
+  {
+    question: "A lawyer NOT connected with a case may talk to a juror who is their friend:",
+    options: [
+      "A. About the case details",
+      "B. About the weather, but not about the case",
+      "C. About how to vote",
+      "D. Only if opposing counsel consents"
+    ],
+    correct: 1,
+    explanation: "Unconnected lawyers may talk generally, but not about the case."
+  },
+  {
+    question: "Investigating prospective jurors: a lawyer may:",
+    options: [
+      "A. Secretly contact jurors’ family members to ask about bias",
+      "B. Discreetly investigate backgrounds for challenge grounds, without contacting the juror (and usually not their family)",
+      "C. Send a DM to clarify the juror’s views",
+      "D. Offer lunch to discuss neutrality"
+    ],
+    correct: 1,
+    explanation: "Investigation is allowed if discreet and avoids contact."
+  },
+  {
+    question: "Juror social media: unless limited by law/court order, a lawyer may review a juror’s public online presence, but must not:",
+    options: [
+      "A. Read public posts",
+      "B. Send a “friend” request or access request (personally or through an agent)",
+      "C. Take notes",
+      "D. Use search engines"
+    ],
+    correct: 1,
+    explanation: "A friend request is a prohibited ex parte communication."
+  },
+  {
+    question: "Post-trial communications with jurors (Rule 3.5(c)): A lawyer must not communicate with a discharged juror if:",
+    options: [
+      "A. The lawyer is curious",
+      "B. Local law/court order forbids, OR the juror says no, OR the contact involves misrepresentation/coercion/harassment",
+      "C. The verdict was unfavorable",
+      "D. The lawyer waits 48 hours"
+    ],
+    correct: 1,
+    explanation: "Three key bars: prohibition by law/order, juror declines, or improper tactics."
+  },
+  {
+    question: "Disruptive conduct (Rule 3.5(d)): This rule applies:",
+    options: [
+      "A. Only in a courtroom",
+      "B. In depositions as well as in court",
+      "C. Only to parties, not lawyers",
+      "D. Only if the judge holds the lawyer in contempt"
+    ],
+    correct: 1,
+    explanation: "Rule 3.5(d) covers tribunal-related proceedings, including depositions."
+  },
+
+  // F) Trial Publicity (Rule 3.6; prosecutors 3.8(f))
+  {
+    question: "Rule 3.6(a): A lawyer connected with a case must not make an out-of-court public statement the lawyer reasonably should know has a:",
+    options: [
+      "A. Substantial likelihood of materially prejudicing the proceeding",
+      "B. Slight chance of annoying the judge",
+      "C. Chance of improving settlement leverage",
+      "D. Chance of being quoted"
+    ],
+    correct: 0,
+    explanation: "Standard is substantial likelihood of material prejudice."
+  },
+  {
+    question: "Which statement is MOST likely prohibited under Rule 3.6(a)?",
+    options: [
+      "A. “The defendant has prior convictions and confessed—he’s obviously guilty.”",
+      "B. “The next hearing is scheduled for Tuesday at 10 a.m.”",
+      "C. “The complaint alleges fraud; the defendant is presumed innocent.”",
+      "D. “The indictment is a public record.”"
+    ],
+    correct: 0,
+    explanation: "Comments about confession, guilt, and credibility are classic prejudice triggers."
+  },
+  {
+    question: "Right of reply (Rule 3.6(c)): A lawyer may make a public statement if a reasonable lawyer believes it is required to:",
+    options: [
+      "A. Humiliate the other side",
+      "B. Protect the client from substantial undue prejudicial effect of recent publicity not initiated by the lawyer or client",
+      "C. Increase followers",
+      "D. Pressure jurors"
+    ],
+    correct: 1,
+    explanation: "Limited “reply” doctrine to counter undue prejudice from others’ publicity."
+  },
+  {
+    question: "Prosecutor extra constraint (Rule 3.8(f)): A criminal prosecutor must not make extrajudicial comments that have a substantial likelihood of:",
+    options: [
+      "A. Increasing press interest",
+      "B. Heightening public condemnation of the accused",
+      "C. Encouraging plea bargaining",
+      "D. Improving community morale"
+    ],
+    correct: 1,
+    explanation: "Prosecutors face an added limitation: don’t inflame public condemnation."
+  },
+  {
+    question: "“Dry facts” generally permitted (Rule 3.6) include:",
+    options: [
+      "A. “The witness is a liar, and we have proof.”",
+      "B. “The defendant failed a polygraph.”",
+      "C. Basic info in public record, scheduling/results, and routine booking info (with appropriate presumption-of-innocence framing)",
+      "D. “The confession is devastating.”"
+    ],
+    correct: 2,
+    explanation: "Dry facts are allowed; character/credibility/confession-type commentary usually is not."
+  },
+  {
+    question: "Rule 3.6(d): Trial-publicity limits apply to:",
+    options: [
+      "A. Only the lead trial lawyer",
+      "B. Other lawyers associated in the firm/agency with the participating lawyers",
+      "C. Only nonlawyer staff",
+      "D. Only prosecutors"
+    ],
+    correct: 1,
+    explanation: "Associated lawyers are covered too."
+  },
+
+  // G) Trial Counsel as Witness (Rule 3.7)
+  {
+    question: "Rule 3.7(a): General rule about being advocate and witness:",
+    options: [
+      "A. Always allowed",
+      "B. Lawyer must not act as advocate at trial in which the lawyer is likely to be a necessary witness, unless an exception applies",
+      "C. Only disallowed in jury trials",
+      "D. Only disallowed in criminal cases"
+    ],
+    correct: 1,
+    explanation: "No dual role if the lawyer is likely a necessary witness, subject to exceptions."
+  },
+  {
+    question: "Exception—uncontested matter/mere formality (Rule 3.7(a)(1)): A lawyer may be trial counsel if testimony is limited to:",
+    options: [
+      "A. A disputed liability issue",
+      "B. Authenticating a letter where authenticity is not disputed (mere formality)",
+      "C. Proving the opponent lied",
+      "D. Explaining the lawyer’s personal belief"
+    ],
+    correct: 1,
+    explanation: "If it’s uncontested or a formality, dual role can be allowed."
+  },
+  {
+    question: "Exception—legal services rendered (Rule 3.7(a)(2)): A lawyer may serve as counsel and testify about:",
+    options: [
+      "A. The defendant’s guilt",
+      "B. The nature/value of the legal services rendered in the case (e.g., fee hearing)",
+      "C. The credibility of witnesses",
+      "D. The “real story” behind the case"
+    ],
+    correct: 1,
+    explanation: "Permitted when testimony is about fees/services."
+  },
+  {
+    question: "Exception—substantial hardship (Rule 3.7(a)(3)): This allows dual role when withdrawal would cause substantial hardship. Courts tend to apply it:",
+    options: [
+      "A. Very broadly whenever fees would increase",
+      "B. Narrowly; mere duplication of fees or loss of a long relationship may be insufficient",
+      "C. Automatically if the lawyer worked on the case",
+      "D. Only in civil cases"
+    ],
+    correct: 1,
+    explanation: "The exception is narrow; not every inconvenience is “substantial hardship.”"
+  },
+  {
+    question: "Another lawyer in the same firm is likely to be a witness. Under Rule 3.7(b), you may act as trial counsel:",
+    options: [
+      "A. Never",
+      "B. Unless barred by the conflict-of-interest rules",
+      "C. Only if the witness-lawyer resigns",
+      "D. Only if opposing counsel agrees"
+    ],
+    correct: 1,
+    explanation: "Firm-lawyer-witness is permitted unless conflicts rules (1.7/1.9) preclude."
+  },
+  {
+    question: "Advocate-witness situations also trigger conflicts analysis under Rules 1.7 and 1.9. Practically, if your testimony may be attacked as biased and could hurt the client’s case, you should:",
+    options: [
+      "A. Ignore it; fees come first",
+      "B. Explain the conflict and obtain informed consent confirmed in writing (or decline/withdraw if not consentable)",
+      "C. Hide that you were present",
+      "D. Tell the client you guarantee victory"
+    ],
+    correct: 1,
+    explanation: "Rule 3.7 doesn’t replace conflicts rules; you still must handle the conflict properly."
+
+  }
+];
+
+
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    document.getElementById("start-button").addEventListener("click", startQuiz);
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    function startQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      // Add small topic pill if you want later; for now keep just question.
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+        optionsElement.appendChild(button);
+      });
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+      nextButton.classList.add("hidden");
+    }
+
+    function handleAnswer(selectedIndex) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.disabled = true;
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+        }
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+    }
+
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent = "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(q, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === q.correct) {
+          row.classList.add("correct");
+        } else {
+          row.classList.add("wrong");
+        }
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.style.marginTop = "20px";
+        backToResultsButton.style.backgroundColor = "#6c757d";
+        backToResultsButton.style.color = "white";
+        backToResultsButton.style.padding = "10px 20px";
+        backToResultsButton.style.border = "none";
+        backToResultsButton.style.borderRadius = "5px";
+        backToResultsButton.style.cursor = "pointer";
+        backToResultsButton.style.display = "block";
+        backToResultsButton.style.marginLeft = "auto";
+        backToResultsButton.style.marginRight = "auto";
+        backToResultsButton.addEventListener("click", showResults);
+
+        quizScreen.appendChild(backToResultsButton);
+      }
+    }
+
+    function restartQuiz() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>

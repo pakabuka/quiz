@@ -4,110 +4,540 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MPRE – Menu</title>
+
   <style>
-    * { box-sizing: border-box; }
+    :root{
+      --bg0: #f7f8fb;
+      --bg1: #eef2ff;
+      --card: rgba(255,255,255,.78);
+      --cardSolid: #ffffff;
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f5f5f5;
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, .65);
+      --hairline: rgba(15, 23, 42, .10);
 
-      /* Key fix: allow vertical scrolling on small screens */
-      min-height: 100vh;
-      padding: 24px 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      --shadow: 0 18px 50px rgba(2, 6, 23, .12);
+      --shadow2: 0 8px 18px rgba(2, 6, 23, .08);
+
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+
+      --radius: 18px;
+      --maxW: 920px;
     }
 
-    .container {
-      width: min(720px, 100%);
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    /* Dark mode */
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg0: #0b1220;
+        --bg1: #111a2e;
+        --card: rgba(17, 24, 39, .62);
+        --cardSolid: rgba(17, 24, 39, .90);
 
-      /* Key fix: keep content inside the viewport */
-      padding: 20px;
-      max-height: calc(100vh - 48px);
-      overflow: auto;
-    }
+        --text: #e5e7eb;
+        --muted: rgba(229, 231, 235, .65);
+        --hairline: rgba(229, 231, 235, .12);
 
-    h1 {
-      margin: 0 0 12px;
-      text-align: center;
-    }
+        --shadow: 0 20px 60px rgba(0,0,0,.55);
+        --shadow2: 0 10px 24px rgba(0,0,0,.35);
 
-    .module-buttons {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-
-      /* One column by default for mobile */
-      grid-template-columns: 1fr;
-    }
-
-    /* Two columns on wider screens */
-    @media (min-width: 700px) {
-      .module-buttons {
-        grid-template-columns: 1fr 1fr;
+        --accent: #60a5fa;
+        --accent2: #3b82f6;
       }
     }
 
-    .primary-button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 14px 16px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.15s;
-      width: 100%;
-      text-align: left;
-      line-height: 1.2;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
+
+    body{
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(900px 420px at 20% 10%, rgba(37,99,235,.16), transparent 60%),
+        radial-gradient(900px 420px at 80% 15%, rgba(99,102,241,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
     }
 
-    .primary-button:hover {
-      background-color: #0056b3;
+    .wrap{
+      width: min(var(--maxW), 100%);
+      display: grid;
+      gap: 14px;
+    }
+
+    .card{
+      position: relative;
+      border-radius: var(--radius);
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    /* Decorative glow */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(280px 280px at 12% 18%, rgba(37,99,235,.18), transparent 60%),
+        radial-gradient(280px 280px at 90% 30%, rgba(99,102,241,.14), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .topbar{
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .heading{
+      display: grid;
+      gap: 6px;
+      padding-right: 6px;
+    }
+
+    h1{
+      margin: 0;
+      font-size: clamp(26px, 3.2vw, 40px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle{
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.35;
+      max-width: 70ch;
+    }
+
+    .back{
+      position: relative;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 650;
+      font-size: 13.5px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--hairline);
+      background: rgba(2,6,23,.03);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    @media (prefers-color-scheme: dark){
+      .back{ background: rgba(255,255,255,.06); }
+    }
+
+    .back:hover{
       transform: translateY(-1px);
+      border-color: rgba(37,99,235,.25);
+      box-shadow: var(--shadow2);
     }
 
-    .primary-button:active {
-      transform: translateY(0px) scale(0.99);
+    .back:active{
+      transform: translateY(0px);
     }
 
-    footer {
+    .back:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25), var(--shadow2);
+      border-color: rgba(37,99,235,.45);
+    }
+
+    .grid{
+      position: relative;
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    /* two columns on medium screens */
+    @media (min-width: 720px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    /* three columns on large screens */
+    @media (min-width: 1050px){
+      .grid{ grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .tile{
+      appearance: none;
+      border: 1px solid var(--hairline);
+      background: var(--cardSolid);
+      border-radius: 16px;
+      box-shadow: var(--shadow2);
+      padding: 14px 14px;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      text-align: left;
+
+      color: var(--text);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      min-height: 74px;
+    }
+
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(37,99,235,.25);
+      box-shadow: 0 18px 42px rgba(2,6,23,.14);
+    }
+
+    .tile:active{
+      transform: translateY(0px) scale(.99);
+    }
+
+    .tile:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25), var(--shadow2);
+      border-color: rgba(37,99,235,.45);
+    }
+
+    .left{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .badge{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(99,102,241,.10));
+      border: 1px solid rgba(37,99,235,.18);
+      flex: 0 0 auto;
+    }
+
+    .badge span{
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: 14px;
+      opacity: .95;
+    }
+
+    .txt{
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .titleRow{
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      min-width: 0;
+    }
+
+    .module{
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      font-size: 15.5px;
+      white-space: nowrap;
+    }
+
+    .name{
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrow{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--hairline);
+      background: rgba(2,6,23,.03);
+      flex: 0 0 auto;
+    }
+
+    @media (prefers-color-scheme: dark){
+      .arrow{ background: rgba(255,255,255,.05); }
+    }
+
+    .arrow svg{
+      width: 18px;
+      height: 18px;
+    }
+
+    .footer{
+      position: relative;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
       text-align: center;
-      color: gray;
-      font-size: 12px;
-      padding-top: 16px;
-      margin-top: 16px;
-      border-top: 1px solid #eee;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .tile, .back{ transition: none; }
+      .tile:hover, .back:hover{ transform: none; }
+      .tile:active, .back:active{ transform: none; }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>MPRE</h1>
+  <main class="wrap">
+    <section class="card" aria-label="MPRE Menu">
+      <div class="topbar">
+        <div class="heading">
+          <h1>MPRE</h1>
+          <p class="subtitle">
+            Modules, drills, and issue-spotting — fast access, clean layout, and mobile-friendly.
+          </p>
+        </div>
 
-    <div class="module-buttons">
-      <button class="primary-button" onclick="location.href='module1.html'">Module 1 – Regulation of the Legal Profession</button>
-      <button class="primary-button" onclick="location.href='module2.html'">Module 2 – Client-Lawyer Relationship</button>
-      <button class="primary-button" onclick="location.href='module3.html'">Module 3 – Client Confidentiality</button>
-      <button class="primary-button" onclick="location.href='module4.html'">Module 4 – Conflicts of Interest</button>
-      <button class="primary-button" onclick="location.href='module5.html'">Module 5 – Competence, Malpractice, and Civil Liability</button>
-      <button class="primary-button" onclick="location.href='module6.html'">Module 6 – Litigation and Other Forms of Advocacy</button>
-        <button class="primary-button" onclick="location.href='module8.html'">Module 7 – Transactions And Communications With Persons Other Than Clients</button>
-      <button class="primary-button" onclick="location.href='module8.html'">Module 8 – Different Roles of the Lawyer</button>
-      <button class="primary-button" onclick="location.href='module9.html'">Module 9 – Safekeeping Funds and Other Property</button>
-      <button class="primary-button" onclick="location.href='module10.html'">Module 10 – Communications About Legal Services</button>
-      <button class="primary-button" onclick="location.href='module11.html'">Module 11 – Lawyer’s Duties to the Public and the Legal System</button>
-      <button class="primary-button" onclick="location.href='module12.html'">Module 12 – Judicial Ethics</button>
-    </div>
+        <!-- Change href to your homepage file name if different -->
+        <a class="back" href="index.html" aria-label="Back to main menu">
+          <span aria-hidden="true">←</span>
+          Menu
+        </a>
+      </div>
 
-    <footer>© 2026 Frederick Liu. All rights reserved.</footer>
-  </div>
+      <div class="grid">
+        <button class="tile" onclick="location.href='module1.html'">
+          <div class="left">
+            <div class="badge"><span>1</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 1</div>
+                <div class="name">Regulation of the Legal Profession</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module2.html'">
+          <div class="left">
+            <div class="badge"><span>2</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 2</div>
+                <div class="name">Client-Lawyer Relationship</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module3.html'">
+          <div class="left">
+            <div class="badge"><span>3</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 3</div>
+                <div class="name">Client Confidentiality</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module4.html'">
+          <div class="left">
+            <div class="badge"><span>4</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 4</div>
+                <div class="name">Conflicts of Interest</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module5.html'">
+          <div class="left">
+            <div class="badge"><span>5</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 5</div>
+                <div class="name">Competence, Malpractice, Civil Liability</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module6.html'">
+          <div class="left">
+            <div class="badge"><span>6</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 6</div>
+                <div class="name">Litigation & Other Advocacy</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module7.html'">
+          <div class="left">
+            <div class="badge"><span>7</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 7</div>
+                <div class="name">Transactions & Communications (Non-Clients)</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module8.html'">
+          <div class="left">
+            <div class="badge"><span>8</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 8</div>
+                <div class="name">Different Roles of the Lawyer</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module9.html'">
+          <div class="left">
+            <div class="badge"><span>9</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 9</div>
+                <div class="name">Safekeeping Funds & Property</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module10.html'">
+          <div class="left">
+            <div class="badge"><span>10</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 10</div>
+                <div class="name">Communications About Legal Services</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module11.html'">
+          <div class="left">
+            <div class="badge"><span>11</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 11</div>
+                <div class="name">Duties to the Public & the Legal System</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='module12.html'">
+          <div class="left">
+            <div class="badge"><span>12</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Module 12</div>
+                <div class="name">Judicial Ethics</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+
+      <div class="footer">
+        © <span id="year"></span> Frederick Liu. All rights reserved.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

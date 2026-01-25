@@ -1,72 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Menu</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    :root{
+      --bg0: #f7f8fb;
+      --bg1: #eef2ff;
+      --card: rgba(255,255,255,.75);
+      --cardSolid: #ffffff;
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, .65);
+      --hairline: rgba(15, 23, 42, .10);
+      --shadow: 0 18px 50px rgba(2, 6, 23, .12);
+      --shadow2: 0 8px 18px rgba(2, 6, 23, .08);
+
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+      --radius: 18px;
+
+      --maxW: 780px;
+    }
+
+    /* Dark mode */
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg0: #0b1220;
+        --bg1: #111a2e;
+        --card: rgba(17, 24, 39, .62);
+        --cardSolid: rgba(17, 24, 39, .9);
+        --text: #e5e7eb;
+        --muted: rgba(229, 231, 235, .65);
+        --hairline: rgba(229, 231, 235, .12);
+        --shadow: 0 20px 60px rgba(0,0,0,.55);
+        --shadow2: 0 10px 24px rgba(0,0,0,.35);
+
+        --accent: #60a5fa;
+        --accent2: #3b82f6;
+      }
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
+
+    body{
       margin: 0;
-      padding: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(900px 420px at 20% 10%, rgba(37,99,235,.16), transparent 60%),
+        radial-gradient(900px 420px at 80% 15%, rgba(99,102,241,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    }
+
+    .wrap{
+      width: min(var(--maxW), 100%);
+      display: grid;
+      gap: 16px;
+    }
+
+    .card{
+      position: relative;
+      border-radius: var(--radius);
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    /* Subtle decorative glow */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(260px 260px at 10% 15%, rgba(37,99,235,.18), transparent 60%),
+        radial-gradient(260px 260px at 90% 30%, rgba(99,102,241,.14), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .header{
+      position: relative;
+      display: grid;
+      gap: 8px;
+      padding: 4px 2px 14px;
+    }
+
+    .title{
+      margin: 0;
+      font-size: clamp(26px, 3.4vw, 40px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle{
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.35;
+      max-width: 62ch;
+    }
+
+    .grid{
+      position: relative;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+      margin-top: 10px;
+    }
+
+    /* 2 columns on medium screens, 3 on large */
+    @media (min-width: 620px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 920px){
+      .grid{ grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .tile{
+      appearance: none;
+      text-decoration: none;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f5f5f5;
+      justify-content: space-between;
+      gap: 14px;
+
+      padding: 14px 14px;
+      border-radius: 16px;
+      background: var(--cardSolid);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow2);
+      color: var(--text);
+
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      min-height: 64px;
+      outline: none;
     }
-    .container {
+
+    .left{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .badge{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(37,99,235,.18), rgba(99,102,241,.10));
+      border: 1px solid rgba(37,99,235,.18);
+      flex: 0 0 auto;
+    }
+
+    .badge svg{
+      width: 18px;
+      height: 18px;
+      opacity: .95;
+    }
+
+    .tileText{
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .tileTitle{
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: 15.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tileMeta{
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrow{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--hairline);
+      background: rgba(2,6,23,.03);
+      flex: 0 0 auto;
+    }
+
+    @media (prefers-color-scheme: dark){
+      .arrow{ background: rgba(255,255,255,.05); }
+    }
+
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(37,99,235,.25);
+      box-shadow: 0 18px 42px rgba(2,6,23,.14);
+    }
+
+    .tile:active{
+      transform: translateY(0px) scale(.99);
+    }
+
+    /* Keyboard accessibility */
+    .tile:focus-visible{
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25), var(--shadow2);
+      border-color: rgba(37,99,235,.45);
+    }
+
+    .footer{
       text-align: center;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      color: var(--muted);
+      font-size: 12.5px;
+      padding: 6px 2px 0;
     }
-    .primary-button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s, transform 0.2s;
-      display: block;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      margin: 20px auto;
-      width: 200px;
-    }
-    .primary-button:hover {
-      background-color: #0056b3;
-      transform: scale(1.05);
-    }
-    .primary-button:active {
-      transform: scale(0.95);
-    }
-    footer {
-      text-align: center;
-      color: gray;
-      font-size: 12px;
-      padding: 10px 0;
-      background-color: #f9f9f9;
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .tile{ transition: none; }
+      .tile:hover{ transform: none; }
+      .tile:active{ transform: none; }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>Time to grind.</h1>
-    <!-- <h4 style="text-align: center;">Yale Law Procedure I (Funk)</h4> -->
-    <button class="primary-button" onclick="location.href='contracts.html'">Contracts I (Brooks)</button>
-    <button class="primary-button" onclick="location.href='procedure.html'">Procedure I (Funk)</button>
-    <button class="primary-button" onclick="location.href='conlaw.html'">Constitutional Law I (Rodriguez)</button>
-     <button class="primary-button" onclick="location.href='fedtax.html'">Federal Income Tax (Sarin)</button>
-        <button class="primary-button" onclick="location.href='mpre.html'">MPRE</button>
-    <footer>
-      © 2024 Frederick Liu. All rights reserved.
-  </footer>
-  </div>
- 
+  <main class="wrap">
+    <section class="card">
+      <div class="header">
+        <h1 class="title">Time to grind.</h1>
+        <p class="subtitle">
+          Quick launchpad for your outlines, drills, and review pages — optimized for mobile, tablet, and desktop.
+        </p>
+      </div>
+
+      <div class="grid">
+        <a class="tile" href="contracts.html">
+          <div class="left">
+            <div class="badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 7h10M7 11h7M7 15h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M6 3h9l3 3v15a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="tileText">
+              <div class="tileTitle">Contracts I</div>
+              <div class="tileMeta">Brooks</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </a>
+
+        <a class="tile" href="procedure.html">
+          <div class="left">
+            <div class="badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 7h16M7 4v16M17 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M7 7h10v14H7V7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="tileText">
+              <div class="tileTitle">Procedure I</div>
+              <div class="tileMeta">Funk</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </a>
+
+        <a class="tile" href="conlaw.html">
+          <div class="left">
+            <div class="badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l9 6-9 6-9-6 9-6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M3 15l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="tileText">
+              <div class="tileTitle">Constitutional Law I</div>
+              <div class="tileMeta">Rodriguez</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </a>
+
+        <a class="tile" href="fedtax.html">
+          <div class="left">
+            <div class="badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 10V7a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M6 10h12v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M12 14v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="tileText">
+              <div class="tileTitle">Federal Income Tax</div>
+              <div class="tileMeta">Sarin</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </a>
+
+        <a class="tile" href="mpre.html">
+          <div class="left">
+            <div class="badge" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 4h10l4 4v12a4 4 0 0 1-4 4H5a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M15 4v4h4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M8 13h8M8 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="tileText">
+              <div class="tileTitle">MPRE</div>
+              <div class="tileMeta">Drills + Rules</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </a>
+      </div>
+
+      <div class="footer">
+        © <span id="year"></span> Frederick Liu. All rights reserved.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

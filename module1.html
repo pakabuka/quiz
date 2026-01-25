@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MPRE – Regulation of the Legal Profession (Module 1)</title>
+  <style>
+    :root{
+      --bottomBarHeight: 92px;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      /* leave room for bottom bar + iPhone safe area */
+      padding-bottom: calc(var(--bottomBarHeight) + env(safe-area-inset-bottom));
+      background-color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      max-width: 650px;
+      width: min(92%, 650px);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.10);
+      margin: 18px auto;
+    }
+
+    .hidden { display: none; }
+
+    .question-count {
+      font-size: clamp(15px, 2.5vw, 18px);
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .question {
+      font-size: clamp(18px, 3.4vw, 20px);
+      margin-bottom: 15px;
+      line-height: 1.35;
+    }
+
+    .options button {
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .options button.correct {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .options button.wrong {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .options button.selected { border-color: #007bff; }
+    .options button:focus { outline: none; }
+
+    .navigation button {
+      margin: 5px;
+      padding: 10px 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .explanation {
+      font-size: clamp(14px, 3vw, 16px);
+      margin-top: 18px;
+      padding: 12px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+      border-radius: 8px;
+      line-height: 1.35;
+    }
+
+    .primary-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      font-size: clamp(16px, 3.2vw, 18px);
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.10);
+      margin: 0 auto;
+      touch-action: manipulation;
+    }
+
+    .primary-button:hover { background-color: #0056b3; transform: scale(1.02); }
+    .primary-button:active { transform: scale(0.98); }
+
+    .secondary-button {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    .danger-button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #prev-button { align-self: flex-start; }
+    #next-button { align-self: flex-end; }
+
+    footer {
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    #result-screen { max-height: 80vh; overflow-y: auto; }
+
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .review-table th, .review-table td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .review-table .correct { background-color: #d4edda; }
+    .review-table .wrong { background-color: #f8d7da; }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+      border: 1px solid rgba(30,64,175,0.18);
+    }
+
+    /* ===== Bottom Question Jump Bar ===== */
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.96);
+      border-top: 1px solid rgba(0,0,0,0.12);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.08);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+
+    .bottom-bar-inner {
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #bottom-bar-list::-webkit-scrollbar { height: 6px; }
+    #bottom-bar-list::-webkit-scrollbar-thumb {
+      background: rgba(0,0,0,0.18);
+      border-radius: 999px;
+    }
+
+    .qnav-btn {
+      flex: 0 0 auto;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .qnav-btn:hover { transform: translateY(-1px); }
+
+    .qnav-btn.current {
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.18);
+    }
+
+    .qnav-btn.answered-correct {
+      background: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .qnav-btn.answered-wrong {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    /* Small screens */
+    @media (max-width: 480px){
+      .container{
+        width: 94%;
+        padding: 14px;
+        margin: 12px auto;
+        border-radius: 14px;
+      }
+      .options button{
+        padding: 12px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center; margin-top: 4px;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 1 – Regulation of the Legal Profession</h5>
+      <p style="text-align:center; color:#444; margin-top: 14px; line-height: 1.35;">
+        Tricky MPRE-style questions covering sources of regulation, admission, discipline, choice of law,
+        UPL/MJP, supervision duties, independence, restrictions on practice, sale of practice, and ancillary services. Based on Barbri MPRE Outline.
+      </p>
+
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button id="resume-button" class="secondary-button hidden">Resume Quiz</button>
+      <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <!-- Bottom Question Jump Bar -->
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     *  SAVE / RESUME SETUP
+     ***********************/
+    const STORAGE_KEY = "mpre_module1_progress_v1";
+
+    function saveProgress() {
+      try {
+        const state = {
+          currentQuestionIndex,
+          userAnswers,
+          phase: getPhase(), // "start" | "quiz" | "results"
+          savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        // silently ignore (private browsing may block)
+      }
+    }
+
+    function loadSavedProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function clearSavedProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    /***********************
+     *  QUESTIONS
+     ***********************/
+    const questions = [
+      {
+        question: "Which statement BEST describes the primary source of authority for regulating lawyers within a state?",
+        options: [
+          "A. The state legislature has ultimate authority because ethics rules are statutes",
+          "B. The state’s highest court has ultimate authority because regulation of lawyers is an inherent judicial power",
+          "C. The state bar association has ultimate authority because it administers discipline",
+          "D. The ABA has ultimate authority because most states adopt the Model Rules"
+        ],
+        correct: 1,
+        explanation:
+          "The ultimate regulatory power generally rests with the state’s highest court, which has inherent power to regulate the legal profession and typically promulgates ethics rules and oversees discipline. Legislatures and bar associations play roles, but they are not the ultimate source of authority."
+      },
+
+      {
+        question: "In a state with an “integrated” bar, which of the following is TRUE?",
+        options: [
+          "A. Lawyers must join the ABA to practice in the state",
+          "B. Lawyers must be members of the state bar association to be admitted/maintain membership, and the bar often helps administer regulation and discipline",
+          "C. The bar association, not the courts, promulgates binding ethics rules",
+          "D. Integrated bars exist only in federal courts"
+        ],
+        correct: 1,
+        explanation:
+          "An integrated bar means membership in the state bar is mandatory for lawyers admitted in that state. Bars commonly administer exams/CLE and assist courts with regulation/discipline, but the state’s highest court generally remains the ultimate authority."
+      },
+
+      {
+        question: "Federal government attorney G practices in State X. Under 28 U.S.C. § 530B(a) (and related regulations), which is MOST accurate?",
+        options: [
+          "A. G is exempt from State X’s ethics rules because federal employment preempts state regulation",
+          "B. G is subject to State X’s ethics rules that prescribe ethical conduct and could lead to professional discipline",
+          "C. G is subject only to State X’s evidence rules and civil procedure rules",
+          "D. G is subject only to the ABA Model Rules, not State X’s rules"
+        ],
+        correct: 1,
+        explanation:
+          "Federal government attorneys must comply with state laws and rules governing attorneys in each state where they engage in their duties. Federal regulations interpret this as applying to ethics rules that prescribe conduct and may subject an attorney to discipline—not general state evidence/procedure/substantive law."
+      },
+
+      {
+        question: "Lawyer L is admitted in State A and State B. L commits misconduct while physically present in State C, where L is not admitted. Which is MOST accurate regarding disciplinary authority?",
+        options: [
+          "A. Only State C may discipline L because the conduct occurred there",
+          "B. Only State A may discipline L because that was L’s first admission",
+          "C. Both State A and State B may discipline L regardless of where the conduct occurred",
+          "D. No state may discipline L unless L is admitted in the state where the conduct occurred"
+        ],
+        correct: 2,
+        explanation:
+          "A lawyer is subject to regulation by each state in which the lawyer is admitted, regardless of where the lawyer actually practices or where the conduct occurred (Model Rule 8.5(a))."
+      },
+
+      {
+        question: "Bar applicant A intentionally omits that A was suspended from college for cheating. The omission is discovered after A is admitted. The BEST answer is:",
+        options: [
+          "A. No issue—admission ends the committee’s power",
+          "B. A is subject to discipline because knowingly making a false statement of material fact in connection with admission violates Rule 8.1(a)",
+          "C. A cannot be disciplined unless the underlying cheating is a felony",
+          "D. A is protected because character and fitness is purely subjective"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.1(a) prohibits knowingly making a false statement of material fact in connection with a bar admission application. Concealment of a serious honesty issue can support denial and also discipline if discovered after admission."
+      },
+
+      {
+        question: "Attorney T is helping friend F apply to the bar. T learns (outside any attorney-client relationship) that F used a forged law school graduation certificate and the bar has not discovered it. What must T do?",
+        options: [
+          "A. Nothing—reporting is never required in the admissions context",
+          "B. Report only if the forgery would be a felony in the state",
+          "C. Tell the admissions authority because Rule 8.1(b) prohibits failing to disclose a fact necessary to correct a known misapprehension",
+          "D. Keep silent because confidentiality always applies to discussions with friends"
+        ],
+        correct: 2,
+        explanation:
+          "Rule 8.1(b) requires disclosure to correct a known misapprehension or respond to a lawful demand for information—unless the information is protected by confidentiality rules. Here, T’s knowledge is not from a protected attorney-client/prospective-client consultation, so T must disclose."
+      },
+
+      {
+        question: "Same facts as the prior question, except F consulted T as a lawyer for legal advice about the forged certificate, and T learned the facts in that consultation. What is MOST accurate?",
+        options: [
+          "A. T must still report because bar admissions is more important than confidentiality",
+          "B. T must not report because Rule 8.1 does not require disclosure of information protected by confidentiality rules",
+          "C. T must report only if the forgery is ongoing",
+          "D. T may report only if F is a close friend"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.1’s duties do not require disclosure of information protected by confidentiality. If T learned it in a lawyer-client/prospective-client context, confidentiality generally bars disclosure absent a specific Rule 1.6 exception."
+      },
+
+      {
+        question: "Which requirement is constitutionally INVALID as a condition of admission to a state bar?",
+        options: [
+          "A. Requiring an applicant to take an oath to support the U.S. and state constitutions",
+          "B. Requiring U.S. citizenship as a condition of bar admission",
+          "C. Requiring graduation from an accredited law school",
+          "D. Requiring passage of a bar examination"
+        ],
+        correct: 1,
+        explanation:
+          "A state cannot require U.S. citizenship for bar admission (Equal Protection). By contrast, requiring an oath, education, and passing the bar are generally permissible."
+      },
+
+      {
+        question: "Applicant P is denied admission for lack of “good moral character.” Which procedural protection is P MOST clearly entitled to in the admissions process?",
+        options: [
+          "A. No process rights because admission is a privilege, not a right",
+          "B. Due process protections such as notice of charges and an opportunity to respond, including confronting critics",
+          "C. A jury trial because character determinations are criminal in nature",
+          "D. Absolute confidentiality preventing P from learning the evidence against them"
+        ],
+        correct: 1,
+        explanation:
+          "Bar applicants are entitled to due process in committee proceedings (notice of charges, opportunity to explain/contest derogatory info, and judicial review). It is not a criminal trial, but basic due process applies."
+      },
+
+      {
+        question: "Which is the BEST statement about crimes and professional discipline under Rule 8.4(b)?",
+        options: [
+          "A. Any crime automatically triggers discipline",
+          "B. Only crimes committed in the course of representing a client can trigger discipline",
+          "C. A criminal act subjects a lawyer to discipline if it reflects adversely on honesty, trustworthiness, or fitness as a lawyer in other respects",
+          "D. Only felonies involving violence trigger discipline"
+        ],
+        correct: 2,
+        explanation:
+          "Rule 8.4(b) focuses on whether the criminal act reflects adversely on honesty, trustworthiness, or fitness. Some crimes (dishonesty, breach of trust, violence, interference with justice) are classic triggers; others (e.g., isolated DUI in many jurisdictions) may not."
+      },
+
+      {
+        question: "Lawyer L is caught plagiarizing substantial portions of a brief filed in court. Under the Model Rules, the MOST direct basis for professional misconduct is:",
+        options: [
+          "A. Rule 8.4(c) (dishonesty, fraud, deceit, or misrepresentation)",
+          "B. Rule 8.4(d) only (conduct prejudicial to administration of justice), and nothing else",
+          "C. Rule 8.4(e) (improper influence) because plagiarism “influences” the judge",
+          "D. No misconduct unless L is convicted of a crime"
+        ],
+        correct: 0,
+        explanation:
+          "Plagiarism commonly falls under dishonesty/misrepresentation (Rule 8.4(c)) and can also implicate other rules. It need not be criminal to be professional misconduct."
+      },
+
+      {
+        question: "Attorney A tells a client: “Don’t worry, I have special pull with the agency—my connections will make them approve this even if the law doesn’t.” Which rule is MOST directly implicated?",
+        options: [
+          "A. Rule 8.4(e) (stating or implying ability to improperly influence an official or achieve results by improper means)",
+          "B. Rule 5.6(a) (restriction on right to practice)",
+          "C. Rule 5.7 (law-related services)",
+          "D. Rule 8.3 (duty to report)"
+        ],
+        correct: 0,
+        explanation:
+          "Rule 8.4(e) prohibits stating or implying an ability to improperly influence officials or achieve results by violating law/ethics."
+      },
+
+      {
+        question: "Lawyer L learns that opposing counsel O has been padding billing records and forging client signatures on settlement checks. L has credible proof. L is not O’s lawyer and learned this outside any confidential relationship. What is L’s duty?",
+        options: [
+          "A. Must report because this raises a substantial question as to honesty/fitness",
+          "B. May report but has no duty because billing is “private” conduct",
+          "C. Must confront O but may not report to authorities",
+          "D. Must report only if a judge orders it"
+        ],
+        correct: 0,
+        explanation:
+          "Rule 8.3(a) requires reporting known misconduct that raises a substantial question as to a lawyer’s honesty, trustworthiness, or fitness. Forgery and theft-like dishonesty are classic triggers."
+      },
+
+      {
+        question: "Which is the BEST description of the knowledge requirement in the duty-to-report rule (Rule 8.3)?",
+        options: [
+          "A. Suspicion triggers a mandatory report",
+          "B. “Knowledge” means actual knowledge, though it may be inferred from circumstances; it is more than mere suspicion",
+          "C. Knowledge means “should have known” (negligence standard) for all lawyers",
+          "D. Anonymous rumors always equal knowledge"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.3 uses an actual-knowledge standard (though knowledge can be inferred). Mere suspicion doesn’t trigger a mandatory report (though voluntary reporting may be allowed)."
+      },
+
+      {
+        question: "Lawyer M serves as a volunteer in an approved lawyers’ assistance program (LAP). During a LAP meeting, Lawyer N admits to serious ongoing trust-account theft. Under Rule 8.3(c), which is MOST accurate?",
+        options: [
+          "A. M must report because trust-account theft always triggers reporting",
+          "B. M has no duty to report information learned in the course of an approved LAP program",
+          "C. M must report unless N signs a waiver",
+          "D. M must report only to the LAP director, not to authorities"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.3(c) creates an exception: no duty to disclose information learned while serving as a member of an approved lawyers’ assistance program."
+      },
+
+      {
+        question: "In a lawyer disciplinary hearing, which statement is MOST accurate about constitutional protections?",
+        options: [
+          "A. The exclusionary rule applies, so illegally seized evidence is always inadmissible",
+          "B. The lawyer may invoke the Fifth Amendment, and discipline cannot be based solely on invoking it",
+          "C. The lawyer has no due process rights because the proceeding is “administrative”",
+          "D. The burden of proof is always “beyond a reasonable doubt”"
+        ],
+        correct: 1,
+        explanation:
+          "The exclusionary rule generally does not apply in lawyer discipline. The lawyer may assert the Fifth Amendment, and discipline cannot be imposed solely because of that assertion. Due process applies, but the burden of proof is typically above preponderance and below beyond a reasonable doubt (varies by jurisdiction)."
+      },
+
+      {
+        question: "During a disciplinary hearing, the committee adds a new charge mid-hearing that was not in the original complaint, and sanctions L based on that new theory. Which principle is MOST implicated?",
+        options: [
+          "A. The disciplinary authority may always amend charges without notice",
+          "B. Procedural due process requires that the hearing be limited to the charges made in the complaint (Ruffalo principle)",
+          "C. The committee must refer all new charges to the ABA",
+          "D. Lawyers have no right to counsel in disciplinary hearings"
+        ],
+        correct: 1,
+        explanation:
+          "Procedural due process requires notice and a fair opportunity to defend; disciplinary proceedings should be limited to charges in the complaint. Adding new charges midstream without notice is a classic due process problem."
+      },
+
+      {
+        question: "Choice of law: Lawyer L is litigating a case pending in State Y’s courts. L’s conduct (e.g., communications with the tribunal) occurs while L is physically in State X. Which rules generally apply?",
+        options: [
+          "A. State X’s rules because that’s where the conduct occurred",
+          "B. State Y’s rules because the conduct is in connection with a matter pending before a tribunal in State Y (unless the tribunal’s rules provide otherwise)",
+          "C. The ABA Model Rules always control in tribunal matters",
+          "D. Whichever rules are more favorable to L"
+        ],
+        correct: 1,
+        explanation:
+          "Under Rule 8.5(b), if conduct is in connection with a matter pending before a tribunal, the rules of the jurisdiction where the tribunal sits generally apply (unless the tribunal’s rules provide otherwise)."
+      },
+
+      {
+        question: "Choice of law (non-tribunal conduct): Lawyer L in State A emails advice to a client whose deal is centered in State B; the advice’s primary impact is in State B. The states’ rules conflict. Which is MOST accurate?",
+        options: [
+          "A. State A’s rules always apply because L was physically in State A",
+          "B. State B’s rules apply if the predominant effect is in State B",
+          "C. No state’s rules apply because it was “just an email”",
+          "D. The client may pick which state’s rules apply after a dispute arises"
+        ],
+        correct: 1,
+        explanation:
+          "For other conduct, Rule 8.5(b) applies the rules where the conduct occurred, but if the predominant effect is in another jurisdiction, that jurisdiction’s rules apply."
+      },
+
+      {
+        question: "Safe harbor: Two states’ rules conflict. Lawyer L reasonably believes the predominant effect of L’s conduct will occur in State B and L complies with State B’s rule. Which is MOST accurate?",
+        options: [
+          "A. L is still disciplined if State A later claims its rules should have applied",
+          "B. L will not be subject to discipline if the conduct is proper in the jurisdiction where L reasonably believes the predominant effect will occur",
+          "C. Safe harbor applies only if L obtains a written opinion from State B’s bar counsel",
+          "D. Safe harbor applies only to advertising rules"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.5(b) provides a safe harbor: no discipline if the lawyer’s conduct is proper in the jurisdiction where the lawyer reasonably believes the predominant effect will occur."
+      },
+
+      {
+        question: "Out-of-state practice: Lawyer A is admitted only in State One. A takes a two-week trip to State Two to interview witnesses for a case A reasonably expects to handle pro hac vice in State Two court (but has not yet filed). Which is MOST accurate under Rule 5.5(c)?",
+        options: [
+          "A. Unauthorized practice because A has not yet been admitted pro hac vice",
+          "B. Permitted temporary practice because A reasonably expects to be admitted pro hac vice and is engaging in preliminary activities",
+          "C. Permitted only if A opens a permanent office in State Two",
+          "D. Permitted only if A is supervised by a judge"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.5(c)(2) allows temporary practice when the lawyer is authorized or reasonably expects to be authorized to appear before a tribunal (pro hac vice), including preliminary activities like interviewing witnesses."
+      },
+
+      {
+        question: "Unauthorized practice: Lawyer L is admitted only in State A. L moves to State B, rents an office, and advertises “State B attorney” while handling State B divorces. L has not been admitted in State B. Which is MOST accurate?",
+        options: [
+          "A. Proper if L discloses being admitted only in State A",
+          "B. Proper if L intends to apply for admission within a year",
+          "C. Improper because L established a systematic/continuous presence and held out as admitted in State B",
+          "D. Proper because family law is “local” and states encourage access to counsel"
+        ],
+        correct: 2,
+        explanation:
+          "Rule 5.5(b) prohibits an unadmitted lawyer from establishing an office or other systematic/continuous presence in the jurisdiction for practice, and from holding out as admitted there."
+      },
+
+      {
+        question: "Fee-splitting and independence: Which arrangement is MOST clearly PERMITTED under Rule 5.4(a)?",
+        options: [
+          "A. A law firm pays a nonlawyer marketing company 20% of every contingency fee earned from leads the company provides",
+          "B. A law firm includes nonlawyer staff in a year-end bonus plan funded from firm profits",
+          "C. A lawyer forms a partnership with a nonlawyer accountant to provide “one-stop” legal services to clients",
+          "D. A nonlawyer owns 10% of a for-profit law firm to “help it grow”"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.4(a) permits compensation/retirement plans for nonlawyer employees (including profit-sharing style bonuses). Paying a percentage of legal fees to a nonlawyer for referrals is generally impermissible fee-splitting; partnerships with nonlawyers to practice law and nonlawyer ownership interests are prohibited under Rule 5.4(b)/(d)."
+      },
+
+      {
+        question: "Restriction on the right to practice: Which agreement is MOST likely to violate Rule 5.6?",
+        options: [
+          "A. A settlement term requiring a plaintiff’s lawyer to never again sue the defendant in similar cases",
+          "B. A retirement-benefit agreement paying a true retiree monthly benefits conditioned on not returning to practice",
+          "C. A clause requiring disputes between departing partner and firm to be arbitrated",
+          "D. A confidentiality clause preventing disclosure of settlement amount"
+        ],
+        correct: 0,
+        explanation:
+          "Rule 5.6(b) prohibits settlement agreements that restrict a lawyer’s right to practice as part of settling a client controversy. Retirement-benefit agreements are an exception under Rule 5.6(a)."
+      },
+
+      {
+        question: "Sale of a law practice: Which is REQUIRED under Rule 1.17 for a proper sale?",
+        options: [
+          "A. Seller may keep the best cases and sell only the profitable matters, as long as clients are notified",
+          "B. Seller must cease private practice (or the sold field) in the geographic area where the practice was conducted, and the sale must be of the entire practice or entire field of practice",
+          "C. Clients’ fees may be increased to reflect the purchase price if disclosed",
+          "D. Client consent is irrelevant because files are firm property"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 1.17 requires: seller stops practicing in the area/field; sale of entire practice or entire field; written notice giving clients a choice (with 90-day presumed consent); court order if notice can’t be given; no fee increases due to sale; purchaser must honor existing fee arrangements and undertake all matters (subject to conflicts/consent)."
+      },
+
+      {
+        question: "Ancillary (law-related) services: Lawyer L owns a separate, lawyer-controlled job-placement company and refers divorce clients there. L tells clients L has a financial stake, but does NOT explain the services are nonlegal or that ethics rules/privilege may not apply. Which is MOST accurate under Rule 5.7?",
+        options: [
+          "A. Rules never apply to nonlegal services, so no ethics issue",
+          "B. Rules apply to the nonlegal services unless L takes reasonable steps to assure recipients understand the services are not legal services and the Rules do not apply",
+          "C. Rules apply only if the client signs a retainer agreement for the job service",
+          "D. Rules apply only if the job-placement company drafts legal documents"
+        ],
+        correct: 1,
+        explanation:
+          "Under Rule 5.7(a)(2), when law-related services are provided through a lawyer-controlled entity, the lawyer must take reasonable steps to clarify the nonlegal nature and that ethics rules/privilege may not apply. Failure to do so can subject the lawyer to the Rules for the nonlegal services."
+      },
+
+      {
+        question: "Supervision and responsibility: Associate J tells a witness to lie at a deposition. Senior associate S (J’s direct supervisor) learns about it in time to reopen the deposition but does nothing. Under Rule 5.1(c), which is MOST accurate?",
+        options: [
+          "A. S is not responsible because only partners can be disciplined for another lawyer’s misconduct",
+          "B. S may be disciplined because S had direct supervisory authority, knew of the misconduct in time to mitigate, and failed to take reasonable remedial action",
+          "C. S is disciplined only if S personally told J to coach false testimony",
+          "D. S is never disciplined unless a court issues contempt"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.1(c) can impose responsibility if the supervisor knows of misconduct in time to prevent/mitigate harm and fails to take reasonable remedial action—even if the supervisor did not order it."
+      },
+
+      {
+        question: "Subordinate lawyer: Partner P instructs Associate A to take a position on a debatable ethics question. A reasonably believes it is arguable and follows P’s reasonable resolution. Under Rule 5.2, A is:",
+        options: [
+          "A. Automatically disciplined because “following orders” is never a defense",
+          "B. Not in violation if A acted in accordance with a supervisor’s reasonable resolution of an arguable question of professional duty",
+          "C. Disciplined unless A reports P to the disciplinary authority",
+          "D. Required to withdraw from the firm immediately"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.2: subordinates remain bound by ethics rules, but they do not violate the Rules by following a supervisor’s reasonable resolution of an arguable question of professional duty. Clear violations are not excused by orders."
+      },
+
+      // --- MORE QUESTIONS (continue appending inside the same const questions = [ ... ] array) ---
+
+      {
+        question: "Attorney A asks nonlawyer tow-truck driver T to hand out A’s business cards at accident scenes (where lawyers are prohibited from soliciting). Under Rule 8.4(a), which is MOST accurate?",
+        options: [
+          "A. No violation because T, not A, did the conduct",
+          "B. A violates the rules by using the acts of another to commit a violation, even if A never appears at the scene",
+          "C. A is fine as long as T is paid a flat fee rather than a percentage",
+          "D. A is fine because solicitation rules apply only to in-person solicitation by the lawyer"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.4(a) makes it misconduct to violate/attempt to violate the Rules, knowingly assist or induce another to violate them, or use another’s acts to commit a violation. Using a nonlawyer as a “front” doesn’t avoid discipline."
+      },
+
+      {
+        question: "Lawyer L commits a single misdemeanor DUI unrelated to practice, with no injuries or aggravating factors. Which is MOST accurate under Rule 8.4(b) as presented in this module?",
+        options: [
+          "A. Discipline is automatic because any crime triggers Rule 8.4(b)",
+          "B. Discipline is never possible unless the crime was committed against a client",
+          "C. Discipline depends on whether the crime reflects adversely on honesty, trustworthiness, or fitness; many isolated DUI offenses may not trigger discipline",
+          "D. Discipline is mandatory only if the DUI is a felony"
+        ],
+        correct: 2,
+        explanation:
+          "Rule 8.4(b) targets crimes reflecting adversely on honesty, trustworthiness, or fitness. The module notes many crimes (including a single DUI) do not necessarily trigger discipline, while dishonesty/violence/breach-of-trust often do."
+      },
+
+      {
+        question: "Lawyer L is arrested for soliciting sex from an undercover officer whom L believes is a prostitute. Under the module’s framing of Rule 8.4(b), which is MOST accurate?",
+        options: [
+          "A. This necessarily reflects dishonesty, so discipline is required",
+          "B. This may not trigger professional discipline because it does not necessarily show dishonesty, untrustworthiness, or unfitness to practice law",
+          "C. Discipline applies only if the arrest leads to a felony conviction",
+          "D. This is automatically “conduct prejudicial to the administration of justice” under Rule 8.4(d)"
+        ],
+        correct: 1,
+        explanation:
+          "The module gives this as an example where discipline is not necessarily triggered because the conduct does not inherently show dishonesty, breach of trust, or similar fitness-related traits."
+      },
+
+      {
+        question: "A lawyer files repeated frivolous motions solely to delay a trial. Which rule is MOST directly implicated (even if it overlaps with litigation-specific rules)?",
+        options: [
+          "A. Rule 8.4(d) (conduct prejudicial to the administration of justice)",
+          "B. Rule 5.4(c) (professional independence)",
+          "C. Rule 5.6(a) (restrictions on right to practice)",
+          "D. Rule 8.3 (duty to report)"
+        ],
+        correct: 0,
+        explanation:
+          "Rule 8.4(d) covers conduct prejudicial to the administration of justice; the module notes it’s often not invoked because more specific litigation rules may apply, but it’s the general fit here."
+      },
+
+      {
+        question: "Judge J privately tells Lawyer L: “If you donate to my campaign, I’ll ‘look favorably’ on your motions.” L donates and later reminds J of the donation while arguing a motion. Under Rule 8.4(f), L is:",
+        options: [
+          "A. Not subject to discipline because only judges are regulated by the Judicial Code",
+          "B. Subject to discipline for knowingly assisting a judge in conduct that violates the Judicial Code or other law",
+          "C. Subject to discipline only if L loses the motion",
+          "D. Automatically disbarred in every state"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.4(f) prohibits knowingly assisting a judge or judicial officer in conduct violating the Judicial Code or other law."
+      },
+
+      {
+        question: "Lawyer L repeatedly makes racist remarks to opposing counsel during depositions and in emails about the case. Under Rule 8.4(g) as described, which is MOST accurate?",
+        options: [
+          "A. It is never professional misconduct because speech is protected",
+          "B. It may be professional misconduct because it is conduct related to the practice of law and is harassment/discrimination the lawyer knows or should know is discriminatory",
+          "C. It is misconduct only if a judge finds a Batson violation in jury selection",
+          "D. It is misconduct only if the remarks are made in open court"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.4(g) covers harassment/discrimination in conduct related to law practice (representing clients, interacting with witnesses, managing practice). A Batson/peremptory finding alone isn’t dispositive, and misconduct can occur outside open court."
+      },
+
+      {
+        question: "Which is an explicit limitation/clarification of Rule 8.4(g) in the module?",
+        options: [
+          "A. It prohibits any advice that could be offensive to someone",
+          "B. It does not limit accepting/declining/withdrawing from representation under Rule 1.16, or legitimate advice/advocacy consistent with the Rules, or promoting diversity/inclusion",
+          "C. It applies only to courtroom statements in front of a jury",
+          "D. It requires a criminal conviction to be enforced"
+        ],
+        correct: 1,
+        explanation:
+          "The module lists permitted actions: representation decisions consistent with Rule 1.16, legitimate advice/advocacy otherwise consistent with the Rules, and diversity/inclusion efforts."
+      },
+
+      {
+        question: "Duty to report: Lawyer A hears a rumor at a bar that Lawyer B is skimming from a trust account. A has no proof and the source is unreliable. What is A’s obligation under Rule 8.3(a)?",
+        options: [
+          "A. Mandatory report because any allegation of theft must be reported",
+          "B. No mandatory report because A lacks knowledge; suspicion alone doesn’t trigger Rule 8.3(a)",
+          "C. Mandatory report only if A dislikes B",
+          "D. Mandatory report only if the rumor was posted online"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.3(a) requires reporting known misconduct that raises a substantial question. “Knowledge” means actual knowledge (may be inferred), and is more than mere suspicion."
+      },
+
+      {
+        question: "Lawyer X knows Partner Y has formed a partnership with a nonlawyer in violation of Rule 5.4(b). X believes it’s a technical “guild” rule and sees no dishonesty or client harm. Under the module’s examples, which is MOST accurate?",
+        options: [
+          "A. X must report because any ethics violation triggers reporting",
+          "B. X may report, but is not required to if it does not raise a substantial question as to honesty, trustworthiness, or fitness",
+          "C. X must report only if Y is a repeat offender",
+          "D. X must report only to the firm’s managing partner, not authorities"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.3 focuses on violations raising a substantial question about honesty/trustworthiness/fitness. The module gives an example where an “arcane guild rule” violation may not require reporting."
+      },
+
+      {
+        question: "Lawyer M learns during a confidential consultation with Lawyer L (seeking legal advice) that L plans to offer evidence that L knows is false. Months later, M learns L did it anyway. What is M’s duty under Rule 8.3(c) as described?",
+        options: [
+          "A. M must report because offering false evidence is serious",
+          "B. M must not report because the knowledge is protected by confidentiality; reporting would likely be an unauthorized disclosure",
+          "C. M must report unless L is a current client",
+          "D. M must report but only after withdrawing from representation"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 8.3(c) excludes information protected by confidentiality rules. If M learned it in an attorney-client/prospective-client consultation, M generally must not report absent a specific confidentiality exception."
+      },
+
+      {
+        question: "Disciplinary process: Which statement is MOST accurate about complaints against lawyers?",
+        options: [
+          "A. Only clients may file complaints",
+          "B. Filing a complaint is privileged and generally cannot be the basis for a defamation action by the lawyer against the complainant",
+          "C. If the grievance committee dismisses a complaint, the complainant has a right to appeal the dismissal",
+          "D. Complaints are always heard in public hearings"
+        ],
+        correct: 1,
+        explanation:
+          "Complaints may be brought by anyone with knowledge. Filing is privileged. If dismissed, the complainant generally has no right to appeal. Many complaints are screened out without hearings."
+      },
+
+      {
+        question: "Disciplinary hearing: Which statement is MOST accurate about evidence rules in many jurisdictions (per the module)?",
+        options: [
+          "A. Hearsay is always admissible because discipline is not a court proceeding",
+          "B. Most states require that only evidence admissible under rules of evidence be considered; inadmissible hearsay may be excluded",
+          "C. Evidence rules never apply in discipline matters",
+          "D. Only the lawyer’s testimony is admissible"
+        ],
+        correct: 1,
+        explanation:
+          "The module notes many jurisdictions require admissible evidence under rules of evidence; inadmissible hearsay may be excluded. (Separately, exclusionary rule doesn’t apply.)"
+      },
+
+      {
+        question: "After a disciplinary hearing, the committee recommends a suspension. Lawyer L seeks review. Which is MOST accurate under the module?",
+        options: [
+          "A. No review is available once a sanction is recommended",
+          "B. L is entitled to review by the state’s highest court, and L bears the burden to show the action/recommendation is unsupported or unlawful",
+          "C. Review is available only if the complainant agrees",
+          "D. Review is available only in federal court"
+        ],
+        correct: 1,
+        explanation:
+          "The module states the lawyer is entitled to review by the state’s highest court when sanctions are recommended or imposed, and the lawyer then bears the burden to challenge the decision."
+      },
+
+      {
+        question: "Sanctions: Which of the following is the BEST statement under the module?",
+        options: [
+          "A. Disbarment is always temporary and automatically ends after a set period",
+          "B. Suspension always requires a new bar exam to reinstate",
+          "C. Common sanctions include private/public reprimand, suspension for a definite period (often automatic reinstatement), and disbarment (potential later readmission upon proof of rehabilitation)",
+          "D. The only available sanction is monetary fines"
+        ],
+        correct: 2,
+        explanation:
+          "Those are the standard sanctions described in the module. Suspension is commonly for a defined period with reinstatement; disbarment is permanent revocation but may allow later readmission on rehabilitation (varies)."
+      },
+
+      {
+        question: "Reciprocal discipline: Lawyer L is suspended in State A. L is also admitted in State B. Which is MOST accurate?",
+        options: [
+          "A. State B must impose the exact same sanction automatically",
+          "B. State B may treat State A’s finding of misconduct as conclusive proof of misconduct but is free to impose its own sanction",
+          "C. State B cannot discipline unless the misconduct occurred in State B",
+          "D. State B must ignore the suspension because it is “another state’s problem”"
+        ],
+        correct: 1,
+        explanation:
+          "The module notes sister states often accept another state’s disciplinary determination as conclusive proof of misconduct, but not necessarily of the sanction; they may impose their own sanction."
+      },
+
+      {
+        question: "Federal courts: Lawyer L is disbarred by State A. L is admitted to practice in Federal District Court F. What is MOST accurate under the module?",
+        options: [
+          "A. Federal court must automatically disbar L because state disbarment binds federal courts",
+          "B. Federal court must independently evaluate the conduct; state discipline is competent evidence and may be sufficient to impose similar discipline",
+          "C. Federal court has no authority to discipline lawyers",
+          "D. Federal court can discipline L only if the misconduct occurred in federal court"
+        ],
+        correct: 1,
+        explanation:
+          "Federal courts make an independent evaluation (Theard). State discipline is competent evidence and may be enough to persuade a federal court to impose a similar sanction."
+      },
+
+      {
+        question: "Disability proceedings: Lawyer L’s severe substance abuse renders L unable to competently function and creates client risk. Which is MOST accurate under the module?",
+        options: [
+          "A. The only option is disbarment",
+          "B. Many jurisdictions have disability proceedings that suspend practice until rehabilitation is shown; procedures resemble discipline but may include evaluation/diversion",
+          "C. Substance abuse is irrelevant unless it leads to a conviction",
+          "D. Disability proceedings are handled solely by the ABA"
+        ],
+        correct: 1,
+        explanation:
+          "The module describes disability proceedings: suspension from practice until rehabilitation, generally similar procedures to discipline, potentially including psychiatric evaluation and diversion."
+      },
+
+      {
+        question: "UPL/MJP: Lawyer L admitted only in State A travels to State B temporarily to negotiate a contract for L’s State A client; the matter is reasonably related to L’s State A practice and is not a tribunal matter. Under Rule 5.5(c)(4), which is MOST accurate?",
+        options: [
+          "A. Improper because only litigation can be temporary practice",
+          "B. Proper temporary practice if the services are reasonably related to L’s practice in State A",
+          "C. Proper only if L opens an office in State B",
+          "D. Proper only if L becomes admitted in State B first"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.5(c)(4) is the catch-all allowing temporary out-of-state practice reasonably related to the lawyer’s home-state practice."
+      },
+
+      {
+        question: "UPL: Which activity by a nonlawyer is MOST likely to be treated as the unauthorized practice of law (UPL) under the module’s general considerations?",
+        options: [
+          "A. Filling in blanks on a standard form provided by a lawyer (scrivener work) without giving legal advice",
+          "B. Negotiating a settlement on behalf of an injured person based on a legal rights analysis",
+          "C. Publishing a general do-it-yourself booklet about divorce",
+          "D. Preparing tax returns and answering questions incidental to preparation"
+        ],
+        correct: 1,
+        explanation:
+          "Negotiating settlement on behalf of another about binding legal rights/remedies is a classic law-practice activity. Scrivener work, general publications, and permitted agency/tax-prep activities can be outside UPL (depending on scope)."
+      },
+
+      {
+        question: "Delegation to nonlawyer assistants: Secretary S performs initial client intake and conflict checks under Lawyer L’s training and supervision, and prospective clients have the opportunity to discuss scope/fees with L. Which is MOST accurate?",
+        options: [
+          "A. Always improper because intake is “practice of law”",
+          "B. Proper if tasks do not constitute law practice and L trains/supervises S; L remains responsible",
+          "C. Proper only if S is a licensed attorney",
+          "D. Proper only if S never speaks to any prospective client"
+        ],
+        correct: 1,
+        explanation:
+          "The module (and related guidance) allows delegation of intake-type tasks to trained/supervised nonlawyers so long as it doesn’t cross into law practice and lawyer oversight remains."
+      },
+
+      {
+        question: "Assisting a suspended lawyer: Firm hires disbarred Lawyer D to draft settlement letters to opposing counsel and sign them “for the firm,” negotiate terms, and advise clients on strategy. Which is MOST accurate?",
+        options: [
+          "A. Proper because D is experienced and supervised",
+          "B. Improper because assisting a suspended/disbarred lawyer in practicing law violates Rule 5.5(a)",
+          "C. Proper if D never appears in court",
+          "D. Proper if D discloses status in small print"
+        ],
+        correct: 1,
+        explanation:
+          "It is improper to assist a suspended/disbarred lawyer in practicing law. A suspended/disbarred lawyer may do only work a layperson may do and must not perform tasks constituting law practice."
+      },
+
+      {
+        question: "Permanent multi-jurisdictional practice: Lawyer A admitted in Maryland and Virginia is employed solely by GM and is assigned to work as in-house counsel in Idaho (not admitted there). Which is MOST accurate under Rule 5.5(d)(1)?",
+        options: [
+          "A. A may establish an in-house office in Idaho for GM without Idaho admission, but must seek pro hac vice if litigating in Idaho tribunals",
+          "B. A may litigate in Idaho courts freely because in-house counsel are exempt",
+          "C. A must be admitted in Idaho before doing any work there, even internal advice",
+          "D. A may practice in Idaho only if Idaho is “temporary” rather than permanent"
+        ],
+        correct: 0,
+        explanation:
+          "Rule 5.5(d)(1) allows permanent practice in a jurisdiction for a lawyer employed by their only client (in-house/government), but tribunal appearances generally require pro hac vice/admission."
+      },
+
+      {
+        question: "Professional independence: Insurer I pays Lawyer L to represent insured Client C. I pressures L to recommend settlement terms that benefit I but harm C. Under Rule 5.4(c), which is MOST accurate?",
+        options: [
+          "A. L must follow I’s instructions because I pays",
+          "B. L must maintain independent professional judgment for C and must not allow I to direct or regulate that judgment",
+          "C. L may follow I’s instructions if disclosed to C after the fact",
+          "D. Rule 5.4(c) applies only when a nonlawyer owns part of the law firm"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.4(c) prohibits allowing a third-party payor/employer/recommender to direct or regulate the lawyer’s professional judgment. The duty is to the client, not the payor."
+      },
+
+      {
+        question: "Nonlawyer ownership/control: Which is MOST clearly prohibited by Rule 5.4(d)?",
+        options: [
+          "A. A nonlawyer office manager supervises nonlawyer staff and handles firm accounting",
+          "B. A deceased lawyer’s estate temporarily holds an interest during administration",
+          "C. A nonlawyer owns an equity interest in a for-profit law firm",
+          "D. A firm hires a nonlawyer consultant to advise on technology"
+        ],
+        correct: 2,
+        explanation:
+          "Rule 5.4(d) prohibits nonlawyers from owning any interest in a for-profit law practice (with a narrow estate exception), serving as officer/director equivalents, or having the right to direct/control lawyers’ judgment."
+      },
+
+      {
+        question: "Restriction on practice: Firm offers Associate A an employment agreement with a clause: “If you leave, you may not practice law within 20 miles for 2 years.” Under Rule 5.6(a), which is MOST accurate?",
+        options: [
+          "A. Proper if the firm pays A additional consideration for the restriction",
+          "B. Improper; both the offering lawyer(s) and A risk discipline because post-employment noncompetes are prohibited (except retirement benefits)",
+          "C. Proper if A is an at-will employee",
+          "D. Proper if clients consent in advance"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.6(a) prohibits agreements restricting a lawyer’s right to practice after termination, except agreements concerning benefits upon retirement."
+      },
+
+      {
+        question: "Settlement restriction: Defendant offers to settle Client C’s case only if C’s lawyer agrees not to represent any future plaintiffs against Defendant in the same product line. Under Rule 5.6(b), the lawyer should:",
+        options: [
+          "A. Accept if C gets a higher settlement amount",
+          "B. Reject; it is unethical to make/offer such a restriction as part of settling a client controversy",
+          "C. Accept if the restriction lasts only 1 year",
+          "D. Accept if the lawyer discloses it to future clients"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.6(b) forbids settlement terms that restrict the lawyer’s right to practice, regardless of duration or client payout."
+      },
+
+      {
+        question: "Sale of law practice: Seller S sells an entire practice to Buyer B. S properly gives written notice to all clients, including the 90-day presumed-consent language. One client cannot be located despite reasonable efforts. What is required to transfer that client’s file/matter to B?",
+        options: [
+          "A. Nothing; presumed consent applies even without notice",
+          "B. A court order authorizing the transfer",
+          "C. A notarized statement from B promising confidentiality",
+          "D. Approval from the ABA"
+        ],
+        correct: 1,
+        explanation:
+          "If notice cannot be given to a client, a court order is required to authorize transfer of representation/file to the purchaser."
+      },
+
+      {
+        question: "Sale of law practice: After a Rule 1.17 sale, Buyer B raises the hourly rates for all transferred clients solely to recoup the purchase price. Which is MOST accurate?",
+        options: [
+          "A. Proper if B discloses the rate increase",
+          "B. Improper; clients’ fees must not be increased because of the sale, and existing fee agreements must be honored",
+          "C. Proper because B is a new lawyer and may set any rates",
+          "D. Proper only if clients did not object within 90 days"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 1.17 requires that client fees not be increased because of the sale, and the purchaser must honor existing fee arrangements (subject to typical modification rules with client consent)."
+      },
+
+      {
+        question: "Ancillary services distinctness: Lawyer L provides both legal representation and separate financial planning services to the same individual, in circumstances NOT distinct from the legal services (bundled, same meetings, same engagement). Under Rule 5.7(a)(1), which is MOST accurate?",
+        options: [
+          "A. The Rules apply only to the legal services, never to financial planning",
+          "B. The Rules apply to both the legal and nonlegal services because the nonlegal services are not distinct from legal services",
+          "C. The Rules apply only if L forms a separate LLC for financial planning",
+          "D. The Rules apply only if L charges a separate fee for financial planning"
+        ],
+        correct: 1,
+        explanation:
+          "If law-related services are provided in circumstances not distinct from legal services, the Rules of Professional Conduct apply to both."
+      },
+
+      {
+        question: "Law-related services + business transaction with client: Lawyer L sells a side business service to an existing client while a client-lawyer relationship exists. Which additional rule is highlighted by the module as applicable?",
+        options: [
+          "A. Rule 1.8(a) (business transactions with a client: fairness, written disclosure, advice to seek independent counsel, informed written consent)",
+          "B. Rule 5.6(b) (settlement restrictions)",
+          "C. Rule 8.3(a) (duty to report)",
+          "D. Rule 8.4(e) (improper influence)"
+        ],
+        correct: 0,
+        explanation:
+          "When a client-lawyer relationship exists and the lawyer provides law-related services to the client, the lawyer must comply with Rule 1.8(a)’s safeguards for business transactions with clients."
+      },
+
+      {
+        question: "Partner/manager duty re nonlawyers: Managing Partner P knows paralegal Q is sending clients legal advice emails signed “Attorney Q,” but P does nothing. Under Rule 5.3(c), P is:",
+        options: [
+          "A. Not responsible because Q is not a lawyer",
+          "B. Potentially responsible because P is a manager, knows of misconduct in time to mitigate, and failed to take reasonable remedial action",
+          "C. Responsible only if P personally drafted the emails",
+          "D. Immune because only Rule 5.1 applies to supervision"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.3(c) mirrors Rule 5.1(c) for nonlawyers: ordering/ratifying, or managerial/supervisory knowledge in time to prevent/mitigate plus failure to take reasonable remedial action."
+      },
+
+      {
+        question: "Subordinate lawyer + clear violation: Supervisor S orders Associate A to backdate a client letter to mislead a court. A complies. Under Rule 5.2, which is MOST accurate?",
+        options: [
+          "A. A is not responsible because S ordered it",
+          "B. A violates the Rules because orders are no excuse for clear unethical conduct",
+          "C. A is excused because it was a “supervisor’s decision”",
+          "D. A is protected by Rule 8.5 safe harbor"
+        ],
+        correct: 1,
+        explanation:
+          "Rule 5.2: subordinates are bound by the Rules; “orders” do not excuse clearly unethical conduct. The supervisor may also be responsible."
+      },
+
+      {
+        question: "Multi-jurisdictional consequences: Lawyer L is admitted only in State One but temporarily practices in State Two under Rule 5.5(c). Which is MOST accurate about disciplinary authority?",
+        options: [
+          "A. Only State One may discipline L",
+          "B. Only State Two may discipline L",
+          "C. L is subject to the disciplinary authority of BOTH State One and State Two",
+          "D. L is subject to neither state because the practice is “temporary”"
+        ],
+        correct: 2,
+        explanation:
+          "The module states a lawyer practicing in another jurisdiction pursuant to MJP provisions is subject to disciplinary authority of both the admitting jurisdiction and the host jurisdiction (Model Rule 8.5(a) and comments to 5.5)."
+      },
+
+      {
+        question: "Temporary practice by foreign lawyers: Which is MOST accurate under the module’s description?",
+        options: [
+          "A. Foreign lawyers may never provide legal services in the U.S.",
+          "B. Foreign lawyers may engage in temporary practice under circumstances similar to 5.5(c)(1)-(4), and may provide services governed primarily by international law or foreign law",
+          "C. Foreign lawyers may advise directly on U.S. state law without consulting local counsel",
+          "D. Foreign lawyers are automatically admitted pro hac vice nationwide"
+        ],
+        correct: 1,
+        explanation:
+          "The module notes foreign lawyers may temporarily practice in the U.S. in similar circumstances and may provide services primarily governed by international/foreign law; advising on U.S. law may be restricted in some settings (especially in-house contexts)."
+      },
+
+      {
+        question: "Foreign in-house counsel: Foreign Lawyer F works as in-house counsel in a U.S. state under Rule 5.5(d)(1)-type authority. Under the module, which is MOST accurate about advising on U.S. jurisdiction law?",
+        options: [
+          "A. F may freely advise on any U.S. state law because F is in-house",
+          "B. F may not directly advise on U.S. jurisdiction law; F must consult with locally licensed counsel and base advice on that counsel’s advice",
+          "C. F may advise on U.S. law only if the client signs a waiver",
+          "D. F may advise on U.S. law only in court filings"
+        ],
+        correct: 1,
+        explanation:
+          "The module states foreign lawyers practicing as in-house counsel under such a rule may not directly advise on U.S. jurisdiction law; they must consult with locally licensed lawyers and base advice on that."
+      },
+
+      {
+        question: "Definition: In Rule 8.3’s terminology, “substantial” MOST closely means:",
+        options: [
+          "A. Any violation, no matter how small",
+          "B. A material matter of clear and weighty importance",
+          "C. More likely than not",
+          "D. Any conduct that annoys a judge"
+        ],
+        correct: 1,
+        explanation:
+          "The Model Rules’ terminology defines “substantial” as a material matter of clear and weighty importance—so not every minor violation triggers mandatory reporting."
+      },
+
+      {
+        question: "Admission: Which statement is MOST accurate about admission in multiple states?",
+        options: [
+          "A. Admission in one state automatically authorizes practice in all states",
+          "B. Admission in one state generally does not authorize practice in another state without more (e.g., separate admission, pro hac vice, or MJP rules)",
+          "C. Admission in a federal court automatically authorizes admission in every state",
+          "D. Admission depends solely on ABA membership"
+        ],
+        correct: 1,
+        explanation:
+          "Each state has its own bar; admission in one state does not by itself authorize practice in other states absent additional authority."
+      },
+
+      {
+        question: "Character & fitness: Applicant A was acquitted of theft charges years ago. The admissions committee considers the incident anyway. Which is MOST accurate under the module?",
+        options: [
+          "A. The committee may not consider any conduct for which the applicant was acquitted",
+          "B. The committee may consider the conduct/charges (even if acquitted) as part of evaluating moral character",
+          "C. The committee may consider only convictions, never arrests or allegations",
+          "D. The committee must automatically deny admission after any theft allegation"
+        ],
+        correct: 1,
+        explanation:
+          "The module states committees may consider conduct or charges, including those of which the applicant was acquitted, when evaluating moral character."
+      },
+
+      {
+        question: "Rehabilitation: Applicant A previously committed a crime involving moral turpitude but has demonstrated substantial rehabilitation and present fitness. Which is MOST accurate?",
+        options: [
+          "A. Admission is impossible after any moral turpitude offense",
+          "B. Admission may still be possible if the applicant demonstrates sufficient rehabilitation and present fitness",
+          "C. Admission is guaranteed if enough time passes",
+          "D. Rehabilitation is relevant only for minor misdemeanors"
+        ],
+        correct: 1,
+        explanation:
+          "The module notes rehabilitation can allow admission despite past moral-turpitude conduct if the applicant shows present fitness."
+      },
+
+      {
+        question: "Concealment: Applicant A lies about a minor arrest that would not itself be moral turpitude. Under the module, which is MOST accurate?",
+        options: [
+          "A. The lie is irrelevant because the underlying conduct was minor",
+          "B. Concealment/false statements in response to admissions inquiries can itself constitute moral turpitude and justify denial",
+          "C. The committee must ignore the lie unless it is under oath",
+          "D. Lying is excused if the applicant was embarrassed"
+        ],
+        correct: 1,
+        explanation:
+          "The module emphasizes concealment itself is a serious honesty problem and can justify denial/discipline even if the underlying conduct was not disqualifying."
+      }
+    ];
+
+
+    /***********************
+     *  QUIZ STATE
+     ***********************/
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    const bottomBar = document.getElementById("bottom-bar");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+
+    startButton.addEventListener("click", startNewQuiz);
+    resumeButton.addEventListener("click", resumeQuiz);
+    clearProgressButton.addEventListener("click", () => {
+      clearSavedProgress();
+      resumeButton.classList.add("hidden");
+      clearProgressButton.classList.add("hidden");
+      alert("Saved progress cleared.");
+    });
+
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    // If saved progress exists, show Resume/Clear buttons
+    const saved = loadSavedProgress();
+    if (saved && Array.isArray(saved.userAnswers)) {
+      resumeButton.classList.remove("hidden");
+      clearProgressButton.classList.remove("hidden");
+    }
+
+    // Save on tab close / refresh too
+    window.addEventListener("beforeunload", () => {
+      saveProgress();
+    });
+
+    /***********************
+     *  START / RESUME
+     ***********************/
+    function startNewQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+      bottomBar.classList.remove("hidden");
+      loadQuestion();
+      saveProgress();
+    }
+
+    function resumeQuiz() {
+      const state = loadSavedProgress();
+      if (!state || !Array.isArray(state.userAnswers)) {
+        startNewQuiz();
+        return;
+      }
+
+      // If question count changed, reset safely
+      if (state.userAnswers.length !== questions.length) {
+        startNewQuiz();
+        return;
+      }
+
+      userAnswers = state.userAnswers;
+      currentQuestionIndex = Math.min(
+        Math.max(parseInt(state.currentQuestionIndex || 0, 10), 0),
+        questions.length - 1
+      );
+
+      // Restore phase
+      startScreen.classList.add("hidden");
+      if (state.phase === "results") {
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+        bottomBar.classList.add("hidden");
+        showResults();
+      } else {
+        quizScreen.classList.remove("hidden");
+        resultScreen.classList.add("hidden");
+        bottomBar.classList.remove("hidden");
+        loadQuestion();
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  BOTTOM BAR
+     ***********************/
+    function updateBottomBar() {
+      if (quizScreen.classList.contains("hidden")) return;
+
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      bottomBarMeta.innerHTML =
+        `Q <strong>${currentQuestionIndex + 1}</strong> / ${questions.length} <span class="pill">${answeredCount} answered</span>`;
+
+      bottomBarList.innerHTML = "";
+
+      for (let i = 0; i < questions.length; i++) {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.textContent = (i + 1);
+
+        if (i === currentQuestionIndex) btn.classList.add("current");
+
+        const ans = userAnswers[i];
+        if (ans !== null) {
+          if (ans === questions[i].correct) btn.classList.add("answered-correct");
+          else btn.classList.add("answered-wrong");
+        }
+
+        btn.addEventListener("click", function() {
+          currentQuestionIndex = i;
+          loadQuestion();
+          saveProgress();
+        });
+
+        bottomBarList.appendChild(btn);
+      }
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) {
+        currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+
+    /***********************
+     *  LOAD QUESTION
+     ***********************/
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach(function(option, index) {
+        const button = document.createElement("button");
+        button.textContent = option;
+
+        if (userAnswers[currentQuestionIndex] === index) {
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", function() {
+          handleAnswer(index);
+        });
+
+        optionsElement.appendChild(button);
+      });
+
+      // If already answered, show feedback/explanation automatically
+      if (userAnswers[currentQuestionIndex] !== null) {
+        showAnswerFeedback(userAnswers[currentQuestionIndex], false);
+      }
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+
+      if (userAnswers[currentQuestionIndex] !== null) nextButton.classList.remove("hidden");
+      else nextButton.classList.add("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function showAnswerFeedback(selectedIndex, lockButtons) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach(function(btn, idx) {
+        btn.classList.remove("correct", "wrong");
+
+        if (idx === currentQuestion.correct) {
+          btn.classList.add("correct");
+        }
+
+        if (idx === selectedIndex && selectedIndex !== currentQuestion.correct) {
+          btn.classList.add("wrong");
+        }
+
+        btn.disabled = !!lockButtons;
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+      nextButton.classList.remove("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function handleAnswer(selectedIndex) {
+      showAnswerFeedback(selectedIndex, true);
+    }
+
+    /***********************
+     *  NAV
+     ***********************/
+    function goNext() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+      saveProgress();
+    }
+
+    function goBack() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+      saveProgress();
+    }
+
+    /***********************
+     *  RESULTS
+     ***********************/
+    function showResults() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+
+      const correctAnswers = userAnswers.filter(function(answer, index) {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent =
+        "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach(function(q, index) {
+        const row = document.createElement("tr");
+        if (userAnswers[index] === q.correct) row.classList.add("correct");
+        else row.classList.add("wrong");
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", function() {
+          reviewQuestion(index);
+        });
+      });
+
+      saveProgress();
+    }
+
+    function reviewQuestion(index) {
+      currentQuestionIndex = index;
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton) {
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.className = "secondary-button";
+        backToResultsButton.addEventListener("click", showResults);
+        quizScreen.appendChild(backToResultsButton);
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  RESTART
+     ***********************/
+    function restartQuiz() {
+      clearSavedProgress();
+      location.reload();
+    }
+  </script>
+</body>
+</html>

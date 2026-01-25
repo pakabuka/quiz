@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MPRE – Regulation of the Legal Profession (Module 2)</title>
+
+  <style>
+    :root{
+      --bottomBarHeight: 92px;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+
+      /* Leave room for bottom bar + iPhone safe area */
+      padding-bottom: calc(var(--bottomBarHeight) + env(safe-area-inset-bottom));
+
+      background-color: #f5f5f5;
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container{
+      max-width: 650px;
+      width: min(92%, 650px);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.10);
+      margin: 18px auto;
+    }
+
+    .hidden{ display: none; }
+
+    .question-count{
+      font-size: clamp(15px, 2.5vw, 18px);
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .question{
+      font-size: clamp(18px, 3.4vw, 20px);
+      margin-bottom: 15px;
+      line-height: 1.35;
+    }
+
+    .options button{
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .options button.correct{
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .options button.wrong{
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .options button.selected{
+      border-color: #007bff;
+    }
+
+    .options button:focus{ outline: none; }
+
+    .navigation{
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .navigation button{
+      margin: 5px 0;
+      padding: 10px 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .explanation{
+      font-size: clamp(14px, 3vw, 16px);
+      margin-top: 18px;
+      padding: 12px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+      border-radius: 8px;
+      line-height: 1.35;
+    }
+
+    .primary-button{
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      font-size: clamp(16px, 3.2vw, 18px);
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+      margin: 0 auto;
+      touch-action: manipulation;
+    }
+
+    .primary-button:hover{ background-color: #0056b3; transform: scale(1.02); }
+    .primary-button:active{ transform: scale(0.98); }
+
+    .secondary-button{
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    .danger-button{
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    footer{
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    #result-screen{
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .review-table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .review-table th, .review-table td{
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .review-table .correct{ background-color: #d4edda; }
+    .review-table .wrong{ background-color: #f8d7da; }
+
+    .pill{
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+      border: 1px solid rgba(30,64,175,0.18);
+    }
+
+    /* ===== Bottom Question Jump Bar ===== */
+    #bottom-bar{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.96);
+      border-top: 1px solid rgba(0,0,0,0.12);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.08);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+
+    .bottom-bar-inner{
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #bottom-bar-meta{
+      flex: 0 0 auto;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    #bottom-bar-list{
+      flex: 1 1 auto;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #bottom-bar-list::-webkit-scrollbar{ height: 6px; }
+    #bottom-bar-list::-webkit-scrollbar-thumb{
+      background: rgba(0,0,0,0.18);
+      border-radius: 999px;
+    }
+
+    .qnav-btn{
+      flex: 0 0 auto;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .qnav-btn:hover{ transform: translateY(-1px); }
+
+    .qnav-btn.current{
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.18);
+    }
+
+    .qnav-btn.answered-correct{
+      background: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .qnav-btn.answered-wrong{
+      background: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    @media (max-width: 480px){
+      .container{
+        width: 94%;
+        padding: 14px;
+        margin: 12px auto;
+        border-radius: 14px;
+      }
+      .options button{
+        padding: 12px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center; margin-top: 4px;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 2 – Client-Lawyer Relationship</h5>
+
+      <p style="text-align:center; color:#444; margin-top: 14px; line-height: 1.35;">
+        Tricky MPRE-style questions on formation, duties, fees, scope limits, authority, withdrawal, and client communications.
+      </p>
+
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button id="resume-button" class="secondary-button hidden">Resume Quiz</button>
+      <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <!-- Bottom Question Jump Bar -->
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     *  SAVE / RESUME SETUP
+     ***********************/
+    const STORAGE_KEY = "mpre_module2_progress_v1";
+
+    function saveProgress(){
+      try{
+        const state = {
+          currentQuestionIndex,
+          userAnswers,
+          phase: getPhase(), // "start" | "quiz" | "results"
+          savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }catch(e){
+        // ignore (private mode may block)
+      }
+    }
+
+    function loadSavedProgress(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return null;
+        return JSON.parse(raw);
+      }catch(e){
+        return null;
+      }
+    }
+
+    function clearSavedProgress(){
+      try{
+        localStorage.removeItem(STORAGE_KEY);
+      }catch(e){}
+    }
+
+    function getPhase(){
+      if(!startScreen.classList.contains("hidden")) return "start";
+      if(!quizScreen.classList.contains("hidden")) return "quiz";
+      if(!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    /***********************
+     *  QUESTIONS
+     ***********************/
+    // Module 2 — Client-Lawyer Relationship
+   
+
+// Module 2 — Client-Lawyer Relationship
+const questions = [
+  {
+    question:
+      "Which statement BEST describes the legal nature of the client-lawyer relationship in this module?",
+    options: [
+      "A. It is purely fiduciary and not contractual, so parties cannot vary its terms",
+      "B. It is contractual, and many terms are implied by custom but can generally be varied by mutual agreement",
+      "C. It is a tort-based relationship that arises only upon malpractice or negligence",
+      "D. It is created only by a signed writing and court filing"
+    ],
+    correct: 1,
+    explanation:
+      "The relationship is contractual, with many implied terms, but generally modifiable by mutual agreement—subject to fiduciary fairness scrutiny and ethics limits."
+  },
+
+  {
+    question:
+      "Because a lawyer is a fiduciary to the client, which consequence is MOST accurate under this module?",
+    options: [
+      "A. The contract is construed against the client because the client has superior knowledge",
+      "B. The contract is construed against the lawyer and closely scrutinized for fairness",
+      "C. The contract is unenforceable unless notarized",
+      "D. The lawyer owes no agency duties once fees are paid"
+    ],
+    correct: 1,
+    explanation:
+      "Fiduciary status triggers close scrutiny for fairness and construction against the lawyer, who typically has superior expertise and drafting power."
+  },
+
+  {
+    question:
+      "Under Restatement §14, a lawyer-client relationship arises in which situation?",
+    options: [
+      "A. A person hopes a lawyer will help and tells a friend about it",
+      "B. A person manifests intent that the lawyer provide legal services and the lawyer agrees",
+      "C. A person reads a lawyer’s website and feels reassured",
+      "D. A person leaves a voicemail and receives no response"
+    ],
+    correct: 1,
+    explanation:
+      "Formation requires (i) client’s manifested intent + lawyer’s agreement; or (ii) client’s manifested intent + lawyer’s failure to clearly decline when the lawyer knows/should know of reasonable reliance; or (iii) tribunal appointment."
+  },
+
+  {
+    question:
+      "Implied assent / reasonable reliance: Carla sends Attorney Aida a letter asking for representation. Aida never responds. A year later the statute runs. Which is MOST accurate?",
+    options: [
+      "A. An attorney-client relationship existed because silence is acceptance",
+      "B. No relationship existed because Carla’s reliance on an unanswered letter was unreasonable",
+      "C. A relationship existed only if Carla enclosed a retainer check",
+      "D. A relationship existed only if Aida had handled Carla’s matters before"
+    ],
+    correct: 1,
+    explanation:
+      "The module’s example treats reliance on an unanswered letter as unreasonable; no attorney-client relationship formed on those facts."
+  },
+
+  {
+    question:
+      "Casey calls Lawyer Lisa’s office 10 days before court and asks Lisa to represent him. The secretary says, “Send the papers,” but does NOT clarify that Lisa hasn’t agreed and will decide later. Lisa declines only 1 day before court. Which is MOST accurate?",
+    options: [
+      "A. No relationship because only Lisa (not staff) can create it",
+      "B. No relationship because Casey never met Lisa in person",
+      "C. A relationship likely existed because reliance was reasonable given the office’s response and the imminent hearing",
+      "D. A relationship exists only if Lisa files an appearance"
+    ],
+    correct: 2,
+    explanation:
+      "A lawyer’s assent can be implied when the lawyer (or agent) fails to clearly decline and the prospective client reasonably relies—especially with imminent deadlines."
+  },
+
+  {
+    question:
+      "Which BEST states the rule for implied assent under Restatement §14(ii)?",
+    options: [
+      "A. If a person asks for help, representation automatically begins",
+      "B. A lawyer’s silence always equals assent",
+      "C. A relationship arises if the lawyer fails to make clear they do not undertake representation and the lawyer knows/should know the person is reasonably relying",
+      "D. A relationship arises only if the lawyer receives confidential information"
+    ],
+    correct: 2,
+    explanation:
+      "The key is failure to clearly decline + lawyer’s knowledge (or should-know) of the prospective client’s reasonable reliance."
+  },
+
+  {
+    question:
+      "Which is a THIRD way a lawyer-client relationship can be formed under Restatement §14?",
+    options: [
+      "A. The client posts about hiring the lawyer on social media",
+      "B. A tribunal appoints the lawyer to represent the client",
+      "C. The lawyer sends marketing materials to the client",
+      "D. The lawyer offers a free consultation on a website"
+    ],
+    correct: 1,
+    explanation:
+      "Tribunal appointment independently forms the relationship, even without the usual mutual assent dynamics."
+  },
+
+  {
+    question:
+      "United States vs. English barrister lore: which is MOST accurate in this module?",
+    options: [
+      "A. U.S. lawyers generally must accept any case if offered a proper fee",
+      "B. U.S. lawyers are generally free to refuse service to any person for any reason (subject to specific ethics limits)",
+      "C. U.S. lawyers must accept all indigent clients",
+      "D. U.S. lawyers must accept any case referred by another lawyer"
+    ],
+    correct: 1,
+    explanation:
+      "The module contrasts the (lore) cab-rank idea with U.S. practice: U.S. lawyers generally may refuse representation, though they must refuse in certain prohibited situations."
+  },
+
+  {
+    question:
+      "A prospective client admits: “I don’t care if I win; I just want to embarrass and burden my ex-business partner.” What must the lawyer do?",
+    options: [
+      "A. Accept if the client can pay up front",
+      "B. Accept but warn the client not to say that again",
+      "C. Refuse because taking steps where the client’s motive is to embarrass, delay, or burden a third person violates Rule 4.4(a)",
+      "D. Accept if the lawyer files a complaint quickly"
+    ],
+    correct: 2,
+    explanation:
+      "Rule 4.4(a) forbids using legal steps with the improper purpose of embarrassing/delaying/burdening a third person; the lawyer must reject such a case."
+  },
+
+  {
+    question:
+      "A civil plaintiff wants to sue on a claim with no evidentiary support and no good-faith basis to change existing law. Under Rule 3.1, the lawyer must:",
+    options: [
+      "A. File anyway if the client insists",
+      "B. Decline because the position is frivolous",
+      "C. File but label it “for settlement leverage only”",
+      "D. File if the lawyer discloses the weakness to opposing counsel"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 3.1 prohibits taking frivolous factual or legal positions. Good-faith arguments for extension/modification of law can be nonfrivolous; this scenario lacks that."
+  },
+
+  {
+    question:
+      "Which statement BEST reflects the module’s nuance about “frivolous” positions under Rule 3.1?",
+    options: [
+      "A. A claim is frivolous unless the lawyer already has all facts in hand at intake",
+      "B. A claim is not frivolous if the lawyer expects to develop missing facts through discovery and has a good-faith basis for the theory",
+      "C. A claim is nonfrivolous whenever the client is emotionally invested",
+      "D. A claim is frivolous whenever the lawyer estimates a low chance of success"
+    ],
+    correct: 1,
+    explanation:
+      "The module emphasizes discovery can supply facts; the key is good faith and a nonfrivolous basis in fact/law or good-faith law-change argument."
+  },
+
+  {
+    question:
+      "Criminal defense exception: which is MOST accurate under Rule 3.1 as described?",
+    options: [
+      "A. Criminal defense counsel may never raise defenses lacking evidentiary support",
+      "B. Criminal defense counsel may defend to the extent allowed by constitutional law even if the defense would otherwise violate Rule 3.1",
+      "C. Criminal cases have no ethics rules because defendants have rights",
+      "D. Only prosecutors are bound by Rule 3.1"
+    ],
+    correct: 1,
+    explanation:
+      "The module notes an important caveat: criminal defense has constitutional overlays that may allow certain defenses/positions beyond the usual Rule 3.1 baseline."
+  },
+
+  {
+    question:
+      "Lawyer L is too busy to prepare competently for a complex trial but accepts anyway. Under this module, what rule is MOST directly implicated at intake?",
+    options: [
+      "A. Rule 1.1 (competence)",
+      "B. Rule 8.3 (reporting)",
+      "C. Rule 5.4(c) (independence)",
+      "D. Rule 7.2 (advertising)"
+    ],
+    correct: 0,
+    explanation:
+      "A lawyer must reject a case if too busy or too inexperienced to handle it competently—Rule 1.1."
+  },
+
+  {
+    question:
+      "Lawyer L’s personal feelings about a client’s cause are so strong that L cannot effectively represent the client. Under the module, L must:",
+    options: [
+      "A. Accept if L promises to stay professional",
+      "B. Refuse (or withdraw) because strong personal feelings can create a material limitation conflict / inability to represent effectively",
+      "C. Accept only if the client signs an “I understand you disagree” waiver",
+      "D. Accept because clients control objectives"
+    ],
+    correct: 1,
+    explanation:
+      "If personal feelings materially impair representation, the lawyer must refuse/withdraw (linked in the module to Rule 1.16(a)(1) and 1.7(a)(2))."
+  },
+
+  {
+    question:
+      "Lawyer L’s mental condition materially impairs L’s ability to represent a client. Which is MOST accurate?",
+    options: [
+      "A. L may continue as long as the client consents",
+      "B. L must decline or withdraw under Rule 1.16(a)(2)",
+      "C. L must continue if a court case is already filed",
+      "D. L may continue if another lawyer “checks” L’s work occasionally"
+    ],
+    correct: 1,
+    explanation:
+      "Material impairment triggers mandatory decline/withdrawal under Rule 1.16(a)(2), regardless of client consent."
+  },
+
+  {
+    question:
+      "Prospective client duties: A person consults Lawyer L about a possible representation, but no relationship forms. Under Restatement §15, L still must:",
+    options: [
+      "A. Represent the person in any related matter for free",
+      "B. Protect the person’s confidential information, safeguard any property given, and use reasonable care in any advice provided",
+      "C. Report the person’s wrongdoing to authorities",
+      "D. File a lawsuit to preserve the statute of limitations"
+    ],
+    correct: 1,
+    explanation:
+      "The module lists three core duties to prospective clients: confidentiality/conflicts protection, property protection, and reasonable-care legal advice."
+  },
+
+  {
+    question:
+      "Prospective client conflicts: Lawyer L learns harmful confidential information from Prospective Client P in a consult. Later, Opponent O asks L to represent O in the same matter. Under the module, L should:",
+    options: [
+      "A. Take O because no lawyer-client relationship existed with P",
+      "B. Take O if L charges O a higher fee for the risk",
+      "C. Decline if P’s confidential info could be harmful to P in the same/related matter",
+      "D. Take O if L promises not to “use” what was learned"
+    ],
+    correct: 2,
+    explanation:
+      "Even without a formed relationship, prospective client confidentiality can bar representing an adverse party in the same/related matter if the info could be significantly harmful."
+  },
+
+  {
+    question:
+      "Ethical obligation to accept unpopular cases (Rule 6.2 comment): which is MOST accurate under this module?",
+    options: [
+      "A. Lawyers must accept every unpopular client who requests help",
+      "B. Lawyers should help make legal services available, including by accepting a fair share of unpopular/indigent matters",
+      "C. Lawyers must accept only unpopular matters and may refuse ordinary paying clients",
+      "D. The obligation applies only to public defenders"
+    ],
+    correct: 1,
+    explanation:
+      "The module frames this as an ethical aspiration: help make services available, e.g., accept a fair share of unpopular/indigent matters."
+  },
+
+  {
+    question:
+      "Fee communication (Rule 1.5(b)): which is MOST accurate?",
+    options: [
+      "A. A writing is always required for every fee agreement",
+      "B. The lawyer must communicate the basis/rate of the fee and expenses before or within a reasonable time after commencing representation, and must communicate changes",
+      "C. The lawyer may keep fees vague as long as they are “fair”",
+      "D. Fee communication is required only if the client asks"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.5(b) requires timely communication of fee basis/rate and expenses, and ongoing communication about changes; writing is preferred but not generally required (except contingent fees)."
+  },
+
+  {
+    question:
+      "Regularly represented client exception: Lawyer L has represented Client C for years at the same hourly rate. For a new routine matter at the same rate, L must:",
+    options: [
+      "A. Re-communicate the fee basis every time without exception",
+      "B. Not necessarily re-communicate if the basis/rate is the same as in other matters",
+      "C. Get a signed writing each time",
+      "D. Charge a lower rate automatically"
+    ],
+    correct: 1,
+    explanation:
+      "If the lawyer regularly represents the client and charges the same basis/rate, re-communication each time is not required."
+  },
+
+  {
+    question:
+      "Which response is a DISCIPLINARY VIOLATION under Rule 1.5(b) as described?",
+    options: [
+      'A. “My fee is $175/hour; I estimate ~100 hours, but it could vary.”',
+      'B. “I cannot predict exactly; here is my hourly rate and how costs work.”',
+      'C. “Impossible to tell. Don’t worry—I assure you it’ll be fair.”',
+      "D. “Here’s the rate; if complexity increases, I’ll update you promptly.”"
+    ],
+    correct: 2,
+    explanation:
+      "The module’s example flags vague assurances of “fairness” without communicating the basis/rate as a Rule 1.5(b) violation."
+  },
+
+  {
+    question:
+      "Unreasonable fee discipline (Rule 1.5(a)): which statement is MOST accurate?",
+    options: [
+      "A. Courts always enforce the fee contract if the client signed it",
+      "B. A lawyer may charge any fee as long as it matches local custom",
+      "C. A lawyer is subject to discipline for trying to exact an unreasonable fee or unreasonable expenses",
+      "D. Only contingent fees are reviewed for reasonableness"
+    ],
+    correct: 2,
+    explanation:
+      "Rule 1.5(a) bars unreasonable fees/expenses; courts may refuse enforcement and discipline may follow."
+  },
+
+  {
+    question:
+      "Which is NOT one of the Rule 1.5(a) reasonableness factors listed in the module?",
+    options: [
+      "A. Time and labor required",
+      "B. Novelty and difficulty of the questions",
+      "C. Lawyer’s political connections",
+      "D. Amount at stake and results obtained"
+    ],
+    correct: 2,
+    explanation:
+      "Political connections are irrelevant. The module lists the standard 1.5(a) factors (time/labor, difficulty, skill, preclusion, custom, stake/results, time limits, relationship, experience/reputation/ability, fixed vs contingent)."
+  },
+
+  {
+    question:
+      "Billing: which is MOST accurate under this module’s overhead rule?",
+    options: [
+      "A. A lawyer may charge clients for ordinary office overhead (rent, normal staff salaries) as itemized expenses",
+      "B. A lawyer must not charge clients for ordinary overhead, but may charge actual costs of special services (or a reasonable amount agreed in advance)",
+      "C. A lawyer may mark up third-party charges as a profit center",
+      "D. A lawyer may always bill a flat “office operations fee” without disclosure"
+    ],
+    correct: 1,
+    explanation:
+      "Ordinary overhead isn’t billable as an expense; special services may be charged at actual cost (or reasonable agreed amount). Third-party services generally may not be marked up beyond actual cost."
+  },
+
+  {
+    question:
+      "Double billing: Lawyer spends 3 hours working on Client A’s case while flying to take depositions for Client B. Under the module, Lawyer may:",
+    options: [
+      "A. Bill both A and B for the full 3 hours",
+      "B. Bill neither A nor B because travel time cancels work time",
+      "C. Bill either A or B for the full 3 hours, or apportion—BUT not bill both for the same 3 hours",
+      "D. Bill A for 3 hours and B for 3 hours if disclosed after the fact"
+    ],
+    correct: 2,
+    explanation:
+      "The module forbids double billing the same time. The lawyer can bill one client, or apportion the time, but not bill both for the full block."
+  },
+
+  {
+    question:
+      "Third-party vendor charges: Lawyer pays a court reporter $500 and bills the client $700 “for handling.” Under the module, this is:",
+    options: [
+      "A. Proper if the client is wealthy",
+      "B. Proper if the client signed a general engagement letter",
+      "C. Improper because the lawyer must not charge more than actual cost for third-party services",
+      "D. Required because lawyers are entitled to overhead recovery"
+    ],
+    correct: 2,
+    explanation:
+      "The module states the lawyer must not charge more than actual cost for services provided by third parties (e.g., court reporters, experts, travel agents)."
+  },
+
+  {
+    question:
+      "Advance payments: Client pays $5,000 up front for future hourly work. Under this module, which is MOST accurate?",
+    options: [
+      "A. The lawyer may treat it as earned immediately if labeled “nonrefundable”",
+      "B. It must be placed in a client trust account and withdrawn only as earned",
+      "C. It may be deposited into the lawyer’s operating account if the lawyer sends monthly invoices",
+      "D. It is always a true retainer fee"
+    ],
+    correct: 1,
+    explanation:
+      "Fees paid in advance for future services must be held in trust and withdrawn only as earned (Rule 1.15(a)); labels don’t control."
+  },
+
+  {
+    question:
+      "True retainer vs. advance fee: which is the BEST description of a true retainer fee in this module?",
+    options: [
+      "A. Any fee paid before work begins",
+      "B. Money paid solely to ensure the lawyer’s availability and not credited against future work",
+      "C. Any “nonrefundable” fee stated in a contract",
+      "D. A percentage of a future recovery"
+    ],
+    correct: 1,
+    explanation:
+      "A true retainer is for availability only (not a prepayment for work). If fired/withdrawn, it generally need not be refunded—if reasonable and consistent with the agreement."
+  },
+
+  {
+    question:
+      "A fee agreement says: “$6,000 nonrefundable retainer deemed earned upon receipt,” and also states the lawyer bills $300/hour and the $6,000 covers 20 hours. Under the module, the $6,000 is BEST treated as:",
+    options: [
+      "A. A true retainer fee (kept no matter what)",
+      "B. An advance fee payment, despite the label, requiring trust-account handling and refund of unearned portions",
+      "C. A contingent fee",
+      "D. A court-ordered fee"
+    ],
+    correct: 1,
+    explanation:
+      "If it functionally buys future hours (here, 20 hours at $300), it’s an advance fee, not a true retainer—labels don’t override substance."
+  },
+
+  {
+    question:
+      "Cutting off services mid-representation: A fee agreement requires payment in advance, and the lawyer stops work mid-case when the initial advance is used up—leaving the client without time to replace counsel. Under the module, this clause is:",
+    options: [
+      "A. Proper because lawyers can condition work on payment",
+      "B. Improper because a fee agreement must not curtail services mid-relationship in a way that puts the client at a bargaining disadvantage",
+      "C. Required by the Model Rules",
+      "D. Proper only in criminal cases"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.5 comment 5: lawyers must not structure fee terms that allow cutting off services midstream in a way that disadvantages the client."
+  },
+
+  {
+    question:
+      "Contingent fees: which is TRUE under Rule 1.5(d) as described?",
+    options: [
+      "A. Contingent fees are permitted in criminal defense cases",
+      "B. Contingent fees are prohibited in criminal cases",
+      "C. Contingent fees are prohibited in all domestic relations matters, including collecting past-due support",
+      "D. Contingent fees are always capped at 10%"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.5(d)(2) prohibits contingent fees in criminal defense. Domestic relations has a narrower prohibition tied to divorce/alimony/support/property terms, with an exception for collecting past-due support."
+  },
+
+  {
+    question:
+      "Domestic relations contingent fee: Lawyer agrees to represent W in a divorce in exchange for 10% of W’s property settlement. Under the module, this is:",
+    options: [
+      "A. Proper because it’s a civil case",
+      "B. Proper if W signs a writing",
+      "C. Improper; contingent fees based on securing a divorce or amount of alimony/support/property settlement are prohibited",
+      "D. Proper if the case is uncontested"
+    ],
+    correct: 2,
+    explanation:
+      "The module’s example: a percentage of property settlement in marital dissolution is prohibited."
+  },
+
+  {
+    question:
+      "Past-due support exception: which contingent fee arrangement is MOST likely permitted under this module?",
+    options: [
+      "A. 25% contingent fee to obtain a divorce decree",
+      "B. 20% contingent fee to increase future child support amounts",
+      "C. 30% contingent fee to recover money past due under an existing alimony/support decree",
+      "D. 40% contingent fee to negotiate a property settlement in divorce"
+    ],
+    correct: 2,
+    explanation:
+      "A lawyer may use a contingent fee to recover past-due alimony/support under an existing decree; the prohibition focuses on divorce/prospective alimony/support/property settlement amounts."
+  },
+
+  {
+    question:
+      "Contingent fee reasonableness: Liability is clear, damages are large, defendants are affluent, and lawyer can settle in a few hours but signs a 33% contingent fee. Under the module, this is:",
+    options: [
+      "A. Automatically reasonable because the client agreed",
+      "B. Potentially unreasonable to use a contingent fee at all (and collecting 1/3 would be unreasonable)",
+      "C. Required because contingent fees ensure access to justice",
+      "D. Proper if the lawyer worked quickly"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.5 requires reasonableness; the module notes some cases make contingency unreasonable from the outset when risk is minimal and work is trivial."
+  },
+
+  {
+    question:
+      "Writing requirement: which fee agreement MUST be in a writing signed by the client under this module?",
+    options: [
+      "A. Any hourly fee agreement",
+      "B. Any flat fee agreement",
+      "C. A contingent fee agreement",
+      "D. Any fee agreement over $1,000"
+    ],
+    correct: 2,
+    explanation:
+      "Contingent fee agreements must be in a signed writing and include specific disclosures (calculation, expenses, before/after, client responsibility)."
+  },
+
+  {
+    question:
+      "Which is REQUIRED content in a contingent fee writing under Rule 1.5(c) as described?",
+    options: [
+      "A. The lawyer’s guarantee of a minimum recovery",
+      "B. The percentage the lawyer gets if the case settles before trial, won after trial, or won after appeal (as applicable)",
+      "C. A clause waiving malpractice liability",
+      "D. A promise not to withdraw under any circumstances"
+    ],
+    correct: 1,
+    explanation:
+      "The writing must explain how the fee is calculated (including percentages by stage, if relevant), expense deductions and timing, and what the client pays win or lose."
+  },
+
+  {
+    question:
+      "End-of-case duty in contingent fee matters: at the end, the lawyer must provide:",
+    options: [
+      "A. Nothing if the client received funds",
+      "B. Only an invoice showing hours worked",
+      "C. A written statement showing outcome, remittance to client, and how the remittance was calculated",
+      "D. A new fee agreement for the next case"
+    ],
+    correct: 2,
+    explanation:
+      "Rule 1.5(c) requires a closing written statement showing the outcome, the client’s remittance, and the calculation."
+  },
+
+  {
+    question:
+      "Fee splitting across firms (Rule 1.5(e)): which set of conditions is REQUIRED for a permissible split billed as a single fee to the client?",
+    options: [
+      "A. The total fee is reasonable, the split is proportional to services (or joint responsibility), and the client agrees in a writing disclosing each lawyer’s share",
+      "B. The lawyers are friends, and the client is notified verbally",
+      "C. The split can be any ratio as long as both lawyers are admitted in the same state",
+      "D. The client agrees after the matter is over"
+    ],
+    correct: 0,
+    explanation:
+      "Rule 1.5(e) requires: total fee reasonable; proportional services OR joint responsibility; and client’s written agreement disclosing each share."
+  },
+
+  {
+    question:
+      "Referral fees: Lawyer R refers a case to Lawyer L and does no work and assumes no joint responsibility, but demands 20% of L’s fee. Under this module, this is:",
+    options: [
+      "A. Permitted under Rule 1.5(e) as long as the client consents",
+      "B. Unethical because true referral fees are prohibited; Rule 1.5(e) doesn’t permit a cut absent work or joint responsibility",
+      "C. Required by custom",
+      "D. Permitted if R is semi-retired"
+    ],
+    correct: 1,
+    explanation:
+      "The module states “true referral fees are unethical.” Rule 7.2(b) bars paying for recommendations, and Rule 1.5(e) requires proportional work or joint responsibility."
+  },
+
+  {
+    question:
+      "Reciprocal referral arrangements: which is MOST accurate under the module?",
+    options: [
+      "A. They are always prohibited because they are “payment for referrals”",
+      "B. They are permitted if nonexclusive and the client is informed of the arrangement’s existence and nature",
+      "C. They are permitted only if exclusive so referrals are consistent",
+      "D. They are permitted only if the client signs a waiver of conflicts rules"
+    ],
+    correct: 1,
+    explanation:
+      "The module allows nonexclusive reciprocal referral arrangements with disclosure to the client (Rule 7.2(b) comment 8)."
+  },
+
+  {
+    question:
+      "Client decisions (Rule 1.2(a)): which decision is ultimately the CLIENT’S (not the lawyer’s)?",
+    options: [
+      "A. Whether to accept a settlement offer",
+      "B. Which objections to raise during cross-examination in real time",
+      "C. Which font to use in the brief",
+      "D. Which office assistant will handle scheduling"
+    ],
+    correct: 0,
+    explanation:
+      "Clients control key objectives/substantial rights decisions like settlement. Tactical in-the-moment trial decisions can be lawyer-controlled when immediate action is required."
+  },
+
+  {
+    question:
+      "A contingent fee agreement says: “No settlement without the lawyer’s consent.” Under the module, this clause is:",
+    options: [
+      "A. Proper because the lawyer has a financial stake",
+      "B. Proper if the lawyer explains the risks",
+      "C. Improper; the settlement decision belongs to the client even in contingent fee cases",
+      "D. Proper only if the settlement is below a threshold"
+    ],
+    correct: 2,
+    explanation:
+      "Rule 1.2(a): client decides settlement. A lawyer cannot contract around that decision right."
+  },
+
+  {
+    question:
+      "Scope limitation (Rule 1.2(c)): Lawyer agrees to advise a tenant about a landlord dispute but not to handle arbitration/litigation. Under the module, this is permitted if:",
+    options: [
+      "A. The limitation is reasonable under the circumstances and the client gives informed consent",
+      "B. The client is wealthy",
+      "C. The lawyer is inexperienced",
+      "D. The lawyer includes the limitation in small print only"
+    ],
+    correct: 0,
+    explanation:
+      "A lawyer may limit scope if reasonable and the client gives informed consent."
+  },
+
+  {
+    question:
+      "Crime/fraud assistance (Rule 1.2(d)): which is MOST accurate?",
+    options: [
+      "A. A lawyer may advise a client how to commit fraud if the lawyer never touches client money",
+      "B. A lawyer must not advise or assist conduct the lawyer knows is criminal or fraudulent, but may discuss legal consequences and help the client make a good-faith effort to determine the law’s scope/validity",
+      "C. A lawyer must withdraw whenever a client asks any question about legality",
+      "D. A lawyer may draft fraudulent documents if the client promises to keep them private"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.2(d) bars advising/assisting known crime/fraud; it still allows explaining consequences and assisting good-faith efforts to interpret/test the law."
+  },
+
+  {
+    question:
+      "Risk-based inquiry (ABA Formal Op. 513 concept): which statement BEST matches the module?",
+    options: [
+      "A. A lawyer must run a full investigation into every fact about every client",
+      "B. A lawyer may do no inquiry at all unless the client confesses intent to commit fraud",
+      "C. The lawyer must conduct a reasonable, risk-based inquiry tailored to the circumstances; not perfunctory, but not a dragnet",
+      "D. Inquiry is required only for criminal defense clients"
+    ],
+    correct: 2,
+    explanation:
+      "The module describes a reasonable risk-based inquiry approach—resolve key uncertainties reasonably, but not every doubt."
+  },
+
+  {
+    question:
+      "Noisy withdrawal: a client is using the lawyer’s prior documents/opinions to further ongoing fraud. Under the module, which is MOST accurate?",
+    options: [
+      "A. Withdrawal is always enough; the lawyer may never say anything further",
+      "B. Sometimes withdrawal alone is not enough; the lawyer may need to give notice of withdrawal and disaffirm prior work being used to further the wrongdoing",
+      "C. Noisy withdrawal is mandatory in every withdrawal",
+      "D. Noisy withdrawal is allowed only if the client consents"
+    ],
+    correct: 1,
+    explanation:
+      "The module notes that in some ongoing crime/fraud settings, “noisy withdrawal” and disaffirmance may be necessary to avoid assisting the wrongdoing."
+  },
+
+  {
+    question:
+      "Disagreements about means: which is MOST accurate under the module?",
+    options: [
+      "A. The lawyer always controls means and the client must comply",
+      "B. The client always controls means and the lawyer must comply",
+      "C. The lawyer and client should try to resolve disagreements; if they cannot, the client may fire the lawyer or the lawyer may withdraw (as permitted/required)",
+      "D. Disagreements automatically terminate the relationship"
+    ],
+    correct: 2,
+    explanation:
+      "Clients control objectives; lawyers generally control tactics/strategy, but disagreements may lead to withdrawal/firing under Rule 1.16."
+  },
+
+  {
+    question:
+      "Agency—actual authority: Lawyer has actual authority when:",
+    options: [
+      "A. The opposing party believes the lawyer is authorized",
+      "B. The lawyer reasonably believes she is authorized based on dealings with the client (express or implied authority to carry out representation)",
+      "C. A judge assumes the lawyer is authorized",
+      "D. The lawyer announces she is authorized"
+    ],
+    correct: 1,
+    explanation:
+      "Actual authority focuses on the lawyer’s reasonable belief based on client manifestations/dealings; it can be express or implied to carry out the engagement."
+  },
+
+  {
+    question:
+      "Agency—apparent authority: which statement is MOST accurate?",
+    options: [
+      "A. Apparent authority depends on the lawyer’s private belief",
+      "B. Apparent authority depends on the third party’s reasonable belief based on the client’s manifestations",
+      "C. Apparent authority exists only if the client signs a power of attorney",
+      "D. Apparent authority never binds a client"
+    ],
+    correct: 1,
+    explanation:
+      "Apparent authority turns on the third party’s reasonable assumption of authority based on the client’s manifestations—even if the lawyer lacked actual authority."
+  },
+
+  {
+    question:
+      "Settlement authority: Client retains Lawyer for litigation but never tells the opponent anything about settlement authority. Lawyer purports to settle without actual authority. Under the module, which is MOST accurate?",
+    options: [
+      "A. Client is bound because retaining a lawyer automatically gives apparent authority to settle",
+      "B. Client is not bound unless the client manifested to the opposing party that the lawyer was authorized to settle",
+      "C. Client is always bound in court-related matters",
+      "D. Client is bound only if the lawyer acted in good faith"
+    ],
+    correct: 1,
+    explanation:
+      "Retention alone usually creates apparent authority for many acts, but NOT for settlement (a client-controlled decision) without further client manifestation to the opposing party."
+  },
+
+  {
+    question:
+      "Ratification: Lawyer accepts a settlement without authority. Client later cashes the settlement check after learning the terms. Under the module, this MOST likely means:",
+    options: [
+      "A. The settlement remains void and client can both keep money and sue to reopen the case",
+      "B. The client ratified the settlement; the client is bound as if authority existed",
+      "C. Ratification is impossible without a notarized statement",
+      "D. Ratification binds the lawyer but not the client"
+    ],
+    correct: 1,
+    explanation:
+      "Ratification can make the act effective as if originally authorized (e.g., cashing the settlement check), binding the client."
+  },
+
+  {
+    question:
+      "When does a lawyer’s actual authority to represent a client end under this module?",
+    options: [
+      "A. Only when the lawyer files a motion to withdraw",
+      "B. When the matter is complete or the lawyer is fired/withdraws; or the client dies/dissolves; or the lawyer dies/is unable to continue",
+      "C. Only when the client pays all bills",
+      "D. Never—agency continues indefinitely"
+    ],
+    correct: 1,
+    explanation:
+      "The module lists multiple endpoints for actual authority: completion, firing/withdrawal, client death/dissolution, lawyer death/disability/disbarment."
+  },
+
+  {
+    question:
+      "After actual authority ends, what is the lawyer’s duty toward third parties who may still rely on the lawyer’s authority?",
+    options: [
+      "A. No duty—third parties must figure it out",
+      "B. The lawyer must continue negotiating until replaced",
+      "C. The lawyer must not purport to have authority and must notify third parties relying on the continued existence of authority",
+      "D. The lawyer must disclose all client confidences to prove withdrawal"
+    ],
+    correct: 2,
+    explanation:
+      "Restatement §31 comment i: once actual authority ends, the lawyer must stop purporting authority and notify third parties who are relying on it."
+  },
+
+  {
+    question:
+      "Client with diminished capacity (Rule 1.14(a)): which is MOST accurate?",
+    options: [
+      "A. The lawyer must treat the guardian, not the client, as the client in all respects",
+      "B. The lawyer must, as far as reasonably possible, maintain a normal lawyer-client relationship with the client",
+      "C. The lawyer must refuse all representation of minors or elderly clients",
+      "D. The lawyer may ignore the client’s views entirely"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.14(a) emphasizes maintaining as normal a relationship as possible and treating the client with attention and respect—even if a guardian exists."
+  },
+
+  {
+    question:
+      "Protective action (Rule 1.14(b)-(c)): Client with diminished capacity faces substantial financial harm. The lawyer may:",
+    options: [
+      "A. Do nothing unless the client gives informed consent",
+      "B. Take reasonable protective action (consulting with protectors, seeking guardian) and reveal confidential info only to the extent necessary to protect the client",
+      "C. Disclose all confidences to the client’s family without limitation",
+      "D. Automatically report the client to authorities"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.14 allows protective action and limited disclosure of confidential information only as necessary to protect the client."
+  },
+
+  {
+    question:
+      "Emergency legal assistance to a nonclient with seriously diminished capacity (Rule 1.14 comments): which is MOST accurate?",
+    options: [
+      "A. A lawyer may act without any consultation if the lawyer sees someone in distress",
+      "B. A lawyer may take limited action to maintain the status quo or avoid imminent irreparable harm, but generally only after the person (or someone on their behalf) consults the lawyer and no representative is available",
+      "C. A lawyer may take any action the lawyer believes is best, including long-term litigation strategy",
+      "D. The lawyer is not bound by confidentiality because there is no client"
+    ],
+    correct: 1,
+    explanation:
+      "The module limits emergency action: consultation requirement, no available representative, actions limited to what’s reasonably necessary, and the lawyer owes client-like duties including confidentiality limits."
+  },
+
+  {
+    question:
+      "Communication—material errors (ABA Formal Op. 481 concept): which is MOST accurate?",
+    options: [
+      "A. A lawyer must disclose every tiny mistake, even harmless typos",
+      "B. A lawyer must inform a current client of a material error—i.e., one reasonably likely to harm/prejudice, or one that would reasonably cause the client to consider firing the lawyer",
+      "C. A lawyer must never disclose mistakes due to self-incrimination",
+      "D. A lawyer must disclose material errors to former clients indefinitely"
+    ],
+    correct: 1,
+    explanation:
+      "The duty to communicate includes informing current clients of material errors. The module notes no obligation to inform former clients of material errors discovered after the relationship ends."
+  },
+
+  {
+    question:
+      "Withholding information (Rule 1.4 comment 7): Lawyer delays telling a client bad news because the client might react imprudently. Under the module, this is:",
+    options: [
+      "A. Always prohibited—never delay any communication",
+      "B. Sometimes permitted, but not if withholding serves the lawyer’s or a third person’s interest or convenience",
+      "C. Always permitted for any reason",
+      "D. Permitted only if the client signed a waiver"
+    ],
+    correct: 1,
+    explanation:
+      "The module allows limited delay to prevent imprudent reactions, but forbids withholding to serve the lawyer/third party’s interests."
+  },
+
+  {
+    question:
+      "Court order restricting disclosure: A protective order forbids sharing certain trade secret documents with the client. The lawyer must:",
+    options: [
+      "A. Ignore the order because the client has a right to know everything",
+      "B. Obey the order or challenge it through appropriate legal means",
+      "C. Secretly summarize the documents to the client anyway",
+      "D. Withdraw automatically"
+    ],
+    correct: 1,
+    explanation:
+      "A lawyer must comply with court rules/orders (Rule 3.4(c)) and may use lawful procedures to challenge them."
+  },
+
+  {
+    question:
+      "Fee contracts made mid-representation: a lawyer proposes a fee increase halfway through a case. Under the module, the client may avoid the modification unless:",
+    options: [
+      "A. The lawyer shows the modification and its formation circumstances were fair and reasonable to the client",
+      "B. The lawyer labels it “standard market adjustment”",
+      "C. The client is sophisticated",
+      "D. The lawyer threatens withdrawal"
+    ],
+    correct: 0,
+    explanation:
+      "Midstream contracts/modifications are scrutinized because switching lawyers is burdensome; the lawyer bears the burden to show fairness and reasonable formation circumstances."
+  },
+
+  {
+    question:
+      "Client fires lawyer: which is MOST accurate under this module?",
+    options: [
+      "A. The client may fire the lawyer only for good cause",
+      "B. The client may fire the lawyer at any time, with or without just cause; attorney employment contracts are treated as terminable at will by the client",
+      "C. Firing is a breach of contract and automatically triggers expectation damages",
+      "D. The client may fire only if the court permits"
+    ],
+    correct: 1,
+    explanation:
+      "Clients may terminate at will. Courts typically construe attorney employment contracts as terminable at will for policy reasons."
+  },
+
+  {
+    question:
+      "Quantum meruit after firing: Client fires Lawyer hired on an hourly or flat-fee arrangement. Under the module, Client generally owes:",
+    options: [
+      "A. Nothing because the lawyer was fired",
+      "B. The full contract price no matter what",
+      "C. Quantum meruit for the reasonable value of work done before firing (with flat/max fee acting as a ceiling)",
+      "D. Only out-of-pocket expenses, never fees"
+    ],
+    correct: 2,
+    explanation:
+      "After firing, the client owes the reasonable value of services already provided (quantum meruit), and any flat fee or maximum fee is a cap on recovery."
+  },
+
+  {
+    question:
+      "Contingent fee + firing: Client fires Lawyer before the case ends. Under the module, Lawyer’s quantum meruit claim:",
+    options: [
+      "A. Arises immediately upon firing",
+      "B. Does not arise unless and until the contingency occurs (e.g., recovery/settlement)",
+      "C. Is barred because contingent fee means “no fee ever unless lawyer stays to the end”",
+      "D. Is automatically the full contingent percentage"
+    ],
+    correct: 1,
+    explanation:
+      "The claim is for reasonable value of work, but it typically becomes enforceable only when the contingency occurs."
+  },
+
+  {
+    question:
+      "Substitution of counsel after suit filed: which is MOST accurate?",
+    options: [
+      "A. Courts never require permission to substitute attorneys",
+      "B. Courts generally require permission, usually grant it when the client fires counsel, but may deny if it would cause undue delay/disruption",
+      "C. Courts always deny substitution within 30 days of trial",
+      "D. Only prosecutors need court permission"
+    ],
+    correct: 1,
+    explanation:
+      "The module notes court permission is often required; firing counsel is usually allowed, but last-minute switches can be denied to prevent disruption."
+  },
+
+  {
+    question:
+      "Withdrawal and tribunal control: which is MOST accurate under Rule 1.16(c) as described?",
+    options: [
+      "A. A lawyer may withdraw at any time without court involvement once the client breaches the fee agreement",
+      "B. When a case is pending, a tribunal may deny permission to withdraw, and the lawyer must continue despite good cause",
+      "C. Courts must always allow withdrawal if the lawyer asks",
+      "D. The client may veto a mandatory withdrawal"
+    ],
+    correct: 1,
+    explanation:
+      "Even when ethics would otherwise permit/require withdrawal, court rules may require permission; if denied, the lawyer must continue."
+  },
+
+  {
+    question:
+      "Mandatory withdrawal (Rule 1.16(a)(1)): Discovery reveals the client has no evidence and admits the case is purely to harass. Under this module, the lawyer must:",
+    options: [
+      "A. Continue because the client is paying",
+      "B. Withdraw because continuing would require violating the rule against frivolous litigation",
+      "C. Continue but stop filing motions",
+      "D. Continue unless the judge sanctions the lawyer"
+    ],
+    correct: 1,
+    explanation:
+      "If continued representation would require violating law or ethics rules (e.g., Rule 3.1), withdrawal is mandatory."
+  },
+
+  {
+    question:
+      "Permissive withdrawal: Client refuses to pay fees, despite warning, and the nonpayment is substantial. Under Rule 1.16(b) as described, the lawyer may withdraw if:",
+    options: [
+      "A. Withdrawal is never allowed for nonpayment",
+      "B. The client substantially fails to fulfill an obligation to the lawyer and has been warned the lawyer will withdraw unless it is fulfilled",
+      "C. The lawyer refunds all fees already earned",
+      "D. The lawyer obtains opposing counsel’s consent"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.16(b)(5) permits withdrawal for substantial failure to fulfill obligations (like paying fees) after warning—subject to tribunal permission if required."
+  },
+
+  {
+    question:
+      "Duties upon termination (Rule 1.16(d)): which is NOT listed as a required step in this module?",
+    options: [
+      "A. Give reasonable notice and time for the client to obtain other counsel",
+      "B. Refund unearned fee advances and unspent expense advances",
+      "C. Return papers/property the client is entitled to",
+      "D. Publicly explain the client’s misconduct to justify withdrawal"
+    ],
+    correct: 3,
+    explanation:
+      "The module lists notice/time, refund unearned/unspent advances, and return papers/property. Public disclosure is not a listed duty and may violate confidentiality."
+  },
+
+  {
+    question:
+      "File retention to compel payment: Client requests the case file for new counsel; Lawyer refuses until past-due fees are paid. Under the module’s example (better view), this is:",
+    options: [
+      "A. Proper; retaining the file is always allowed",
+      "B. Improper; many jurisdictions do not allow holding a client’s file hostage to compel payment",
+      "C. Required; it encourages payment",
+      "D. Proper only if the lawyer has a written lien clause"
+    ],
+    correct: 1,
+    explanation:
+      "The module highlights a strong view against holding case files hostage; refusal can be disciplinary misconduct depending on local law."
+  },
+
+  {
+    question:
+      "Disputed settlement funds: Lawyer receives a settlement check and the client disputes the lawyer’s fee amount. Under Rule 1.15(e) as described, the lawyer must:",
+    options: [
+      "A. Immediately take the full disputed fee and send the rest to the client",
+      "B. Hold the disputed portion in the client trust account until the dispute is resolved",
+      "C. Send the entire amount to the lawyer’s operating account and sort it out later",
+      "D. Give all funds to the client and sue later"
+    ],
+    correct: 1,
+    explanation:
+      "Rule 1.15(e): disputed funds must remain in trust until the dispute is resolved; undisputed portions should be promptly distributed."
+  }
+];
+
+    /***********************
+     *  QUIZ STATE
+     ***********************/
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    const bottomBar = document.getElementById("bottom-bar");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+
+    startButton.addEventListener("click", startNewQuiz);
+    resumeButton.addEventListener("click", resumeQuiz);
+    clearProgressButton.addEventListener("click", () => {
+      clearSavedProgress();
+      resumeButton.classList.add("hidden");
+      clearProgressButton.classList.add("hidden");
+      alert("Saved progress cleared.");
+    });
+
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    // Show Resume / Clear if saved progress exists
+    const saved = loadSavedProgress();
+    if (saved && Array.isArray(saved.userAnswers)) {
+      resumeButton.classList.remove("hidden");
+      clearProgressButton.classList.remove("hidden");
+    }
+
+    // Save on refresh / close
+    window.addEventListener("beforeunload", () => {
+      saveProgress();
+    });
+
+    /***********************
+     *  START / RESUME
+     ***********************/
+    function startNewQuiz(){
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+      saveProgress();
+    }
+
+    function resumeQuiz(){
+      const state = loadSavedProgress();
+      if (!state || !Array.isArray(state.userAnswers)){
+        startNewQuiz();
+        return;
+      }
+
+      // If the quiz changed length, restart safely
+      if (state.userAnswers.length !== questions.length){
+        startNewQuiz();
+        return;
+      }
+
+      userAnswers = state.userAnswers;
+      currentQuestionIndex = Math.min(
+        Math.max(parseInt(state.currentQuestionIndex || 0, 10), 0),
+        questions.length - 1
+      );
+
+      startScreen.classList.add("hidden");
+
+      if (state.phase === "results"){
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+        bottomBar.classList.add("hidden");
+        showResults();
+      } else {
+        quizScreen.classList.remove("hidden");
+        resultScreen.classList.add("hidden");
+        bottomBar.classList.remove("hidden");
+        loadQuestion();
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  BOTTOM BAR
+     ***********************/
+    function updateBottomBar(){
+      if (quizScreen.classList.contains("hidden")) return;
+
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      bottomBarMeta.innerHTML =
+        `Q <strong>${currentQuestionIndex + 1}</strong> / ${questions.length} <span class="pill">${answeredCount} answered</span>`;
+
+      bottomBarList.innerHTML = "";
+
+      for (let i = 0; i < questions.length; i++){
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.textContent = (i + 1);
+
+        if (i === currentQuestionIndex) btn.classList.add("current");
+
+        const ans = userAnswers[i];
+        if (ans !== null){
+          if (ans === questions[i].correct) btn.classList.add("answered-correct");
+          else btn.classList.add("answered-wrong");
+        }
+
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = i;
+          loadQuestion();
+          saveProgress();
+        });
+
+        bottomBarList.appendChild(btn);
+      }
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn){
+        currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+
+    /***********************
+     *  LOAD QUESTION
+     ***********************/
+    function loadQuestion(){
+      const currentQuestion = questions[currentQuestionIndex];
+
+      questionCount.textContent =
+        "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+
+        // show "selected" outline if chosen before
+        if (userAnswers[currentQuestionIndex] === index){
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+          handleAnswer(index);
+        });
+
+        optionsElement.appendChild(button);
+      });
+
+      // If already answered, show feedback automatically
+      if (userAnswers[currentQuestionIndex] !== null){
+        showAnswerFeedback(userAnswers[currentQuestionIndex], false);
+      }
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+
+      if (userAnswers[currentQuestionIndex] !== null) nextButton.classList.remove("hidden");
+      else nextButton.classList.add("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function showAnswerFeedback(selectedIndex, lockButtons){
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.classList.remove("correct", "wrong");
+
+        // highlight correct answer
+        if (idx === currentQuestion.correct){
+          btn.classList.add("correct");
+        }
+
+        // highlight chosen wrong answer
+        if (idx === selectedIndex && selectedIndex !== currentQuestion.correct){
+          btn.classList.add("wrong");
+        }
+
+        btn.disabled = !!lockButtons;
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+
+      nextButton.classList.remove("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function handleAnswer(selectedIndex){
+      showAnswerFeedback(selectedIndex, true);
+    }
+
+    /***********************
+     *  NAV
+     ***********************/
+    function goNext(){
+      if (currentQuestionIndex < questions.length - 1){
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+      saveProgress();
+    }
+
+    function goBack(){
+      if (currentQuestionIndex > 0){
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+      saveProgress();
+    }
+
+    /***********************
+     *  RESULTS
+     ***********************/
+    function showResults(){
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+
+      const correctAnswers = userAnswers.filter((answer, index) => {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent =
+        "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const row = document.createElement("tr");
+
+        if (userAnswers[index] === q.correct) row.classList.add("correct");
+        else row.classList.add("wrong");
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", () => {
+          reviewQuestion(index);
+        });
+      });
+
+      saveProgress();
+    }
+
+    function reviewQuestion(index){
+      currentQuestionIndex = index;
+
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton){
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.className = "secondary-button";
+        backToResultsButton.addEventListener("click", showResults);
+        quizScreen.appendChild(backToResultsButton);
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  RESTART
+     ***********************/
+    function restartQuiz(){
+      clearSavedProgress();
+      location.reload();
+    }
+  </script>
+</body>
+</html>

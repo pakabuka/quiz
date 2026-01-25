@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MPRE – Regulation of the Legal Profession (Module 7)</title>
+
+  <style>
+    :root{
+      --bottomBarHeight: 92px;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+
+      padding-bottom: calc(var(--bottomBarHeight) + env(safe-area-inset-bottom));
+
+      background-color: #f5f5f5;
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container{
+      max-width: 650px;
+      width: min(92%, 650px);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.10);
+      margin: 18px auto;
+    }
+
+    .hidden{ display: none; }
+
+    .question-count{
+      font-size: clamp(15px, 2.5vw, 18px);
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .question{
+      font-size: clamp(18px, 3.4vw, 20px);
+      margin-bottom: 15px;
+      line-height: 1.35;
+    }
+
+    .options button{
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .options button.correct{
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .options button.wrong{
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .options button.selected{
+      border-color: #007bff;
+    }
+
+    .options button:focus{ outline: none; }
+
+    .navigation{
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .navigation button{
+      margin: 5px 0;
+      padding: 10px 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .explanation{
+      font-size: clamp(14px, 3vw, 16px);
+      margin-top: 18px;
+      padding: 12px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+      border-radius: 8px;
+      line-height: 1.35;
+    }
+
+    .primary-button{
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      font-size: clamp(16px, 3.2vw, 18px);
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+      margin: 0 auto;
+      touch-action: manipulation;
+    }
+
+    .primary-button:hover{ background-color: #0056b3; transform: scale(1.02); }
+    .primary-button:active{ transform: scale(0.98); }
+
+    .secondary-button{
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    .danger-button{
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    footer{
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    #result-screen{
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .review-table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .review-table th, .review-table td{
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .review-table .correct{ background-color: #d4edda; }
+    .review-table .wrong{ background-color: #f8d7da; }
+
+    .pill{
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+      border: 1px solid rgba(30,64,175,0.18);
+    }
+
+    /* ===== Bottom Question Jump Bar ===== */
+    #bottom-bar{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.96);
+      border-top: 1px solid rgba(0,0,0,0.12);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.08);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+
+    .bottom-bar-inner{
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #bottom-bar-meta{
+      flex: 0 0 auto;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    #bottom-bar-list{
+      flex: 1 1 auto;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #bottom-bar-list::-webkit-scrollbar{ height: 6px; }
+    #bottom-bar-list::-webkit-scrollbar-thumb{
+      background: rgba(0,0,0,0.18);
+      border-radius: 999px;
+    }
+
+    .qnav-btn{
+      flex: 0 0 auto;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .qnav-btn:hover{ transform: translateY(-1px); }
+
+    .qnav-btn.current{
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.18);
+    }
+
+    .qnav-btn.answered-correct{
+      background: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .qnav-btn.answered-wrong{
+      background: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    @media (max-width: 480px){
+      .container{
+        width: 94%;
+        padding: 14px;
+        margin: 12px auto;
+        border-radius: 14px;
+      }
+      .options button{
+        padding: 12px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center; margin-top: 4px;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 7 – Transactions And Communications With Persons Other Than Clients</h5>
+
+      <p style="text-align:center; color:#444; margin-top: 14px; line-height: 1.35;">
+        Tricky MPRE-style questions on truthfulness, communications with represented/unrepresented persons,
+        third-party dealings, settlement and negotiation ethics, and related rules.
+      </p>
+
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button id="resume-button" class="secondary-button hidden">Resume Quiz</button>
+      <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <!-- Bottom Question Jump Bar -->
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     *  SAVE / RESUME SETUP
+     ***********************/
+    const STORAGE_KEY = "mpre_module7_progress_v1";
+
+    function saveProgress(){
+      try{
+        const state = {
+          currentQuestionIndex,
+          userAnswers,
+          phase: getPhase(), // "start" | "quiz" | "results"
+          savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }catch(e){}
+    }
+
+    function loadSavedProgress(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return null;
+        return JSON.parse(raw);
+      }catch(e){
+        return null;
+      }
+    }
+
+    function clearSavedProgress(){
+      try{
+        localStorage.removeItem(STORAGE_KEY);
+      }catch(e){}
+    }
+
+    function getPhase(){
+      if(!startScreen.classList.contains("hidden")) return "start";
+      if(!quizScreen.classList.contains("hidden")) return "quiz";
+      if(!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    /***********************
+     *  QUESTIONS
+     ***********************/
+    // Module 7 — Transactions and Communications With Persons Other Than Clients
+    // Module 7 — Transactions and Communications With Persons Other Than Clients
+
+const questions = [
+  // A) Truthfulness in Statements to Third Persons — Rule 4.1
+  {
+    question: "Rule 4.1(a): When dealing on behalf of a client with a third person, a lawyer must not knowingly:",
+    options: [
+      "A. Fail to volunteer all relevant facts",
+      "B. Make a false statement of material fact or law",
+      "C. Make any statement that helps the client",
+      "D. Use negotiation tactics that include puffery"
+    ],
+    correct: 1,
+    explanation: "Rule 4.1(a) forbids knowing false statements of material fact or law; there is generally no duty to volunteer facts."
+  },
+  {
+    question: "Under Rule 4.1, a lawyer generally has:",
+    options: [
+      "A. A duty to disclose all relevant facts to third persons",
+      "B. No duty to inform a third person of relevant facts, but must not misrepresent facts",
+      "C. A duty to disclose all weaknesses in the client’s case",
+      "D. A duty to correct every misunderstanding of the other side"
+    ],
+    correct: 1,
+    explanation: "No general duty to disclose facts, but you can’t misrepresent—by words, half-truths, or (sometimes) silence."
+  },
+  {
+    question: "Which is a recognized type of misrepresentation under Rule 4.1 cmt. 1?",
+    options: [
+      "A. A statement that is technically true but misleading in context",
+      "B. Silence, but only when a statute explicitly requires disclosure",
+      "C. Any optimistic statement about litigation outcomes",
+      "D. Any refusal to answer a question in negotiations"
+    ],
+    correct: 0,
+    explanation: "Misrepresentation includes false statements, adopting false statements, half-truths, and in some contexts silence."
+  },
+  {
+    question: "Seller’s lawyer knows soil is unsuitable for walnuts. Buyer says: “I assume this is good for a walnut orchard.” Seller replies vaguely: “You’d be surprised what can grow here.” Lawyer stays silent. Result:",
+    options: [
+      "A. Proper—no duty to volunteer facts",
+      "B. Improper—silence in this context is equivalent to an affirmative misrepresentation",
+      "C. Proper—buyer should do their own diligence",
+      "D. Proper—statements about agriculture are never “material”"
+    ],
+    correct: 1,
+    explanation: "Context makes the silence misleading; Rule 4.1 can treat it as misrepresentation."
+  },
+  {
+    question: "During settlement talks, plaintiff dies. Plaintiff’s lawyer continues negotiating without disclosing the death. Under the outline:",
+    options: [
+      "A. Permissible because death is confidential client information",
+      "B. Not permitted—lawyer must disclose the death and cannot negotiate as if client were alive",
+      "C. Permissible if lawyer has authority from the estate",
+      "D. Permissible if defense never asks"
+    ],
+    correct: 1,
+    explanation: "Continuing negotiations without revealing the death is a misrepresentation."
+  },
+  {
+    question: "Which statement is MOST likely treated as permissible “puffery” (not a statement of material fact) under Rule 4.1 cmt. 2?",
+    options: [
+      "A. “My client never signed the contract.”",
+      "B. “We have a key witness who will testify X.”",
+      "C. “I doubt my client will be interested in settling; we think we can win at trial.”",
+      "D. “The product has never failed safety testing.”"
+    ],
+    correct: 2,
+    explanation: "Negotiation conventions treat some value/settlement-intentions talk as puffery; concrete factual claims are different."
+  },
+  {
+    question: "Which is LEAST likely to be protected as “puffery” under Rule 4.1?",
+    options: [
+      "A. A party’s estimate of a property’s value",
+      "B. A statement of settlement intentions",
+      "C. A knowingly false statement that a material permit has been approved",
+      "D. A prediction that the case will settle quickly"
+    ],
+    correct: 2,
+    explanation: "Puffery doesn’t cover knowing lies about material facts (e.g., permit approval/denial)."
+  },
+  {
+    question: "Rule 4.1(b): A lawyer must disclose material facts to a third person when necessary to avoid assisting a client’s crime or fraud—unless:",
+    options: [
+      "A. The client insists on secrecy",
+      "B. The lawyer would prefer to withdraw instead",
+      "C. Disclosure is forbidden by the duty of confidentiality",
+      "D. The third person is sophisticated"
+    ],
+    correct: 2,
+    explanation: "If confidentiality forbids disclosure and continued representation would assist fraud, the ABA approach is withdrawal."
+  },
+  {
+    question: "Client privately tells lawyer a key license has been denied, but lawyer previously provided a statement/opinion implying approval was likely. Client demands lawyer keep pushing the sale without telling buyer. Under the ABA Model Rules approach in the outline, the lawyer should:",
+    options: [
+      "A. Continue and say nothing—no duty to disclose",
+      "B. Disclose the denial to the buyer even if confidential",
+      "C. Withdraw (and may notify buyer of withdrawal and disaffirm prior opinion/document), because continuing would assist fraud",
+      "D. Stay on the case but “hint” at problems without specifics"
+    ],
+    correct: 2,
+    explanation: "ABA approach: confidentiality may block direct disclosure; if continued work would assist fraud → withdraw, and may disaffirm prior work."
+  },
+  {
+    question: "After withdrawing to avoid assisting client fraud, the lawyer may:",
+    options: [
+      "A. Tell the third party all confidential details of the fraud",
+      "B. Notify the third party of the withdrawal and withdraw/disaffirm prior opinions/documents previously furnished",
+      "C. Stay silent forever and take no remedial steps",
+      "D. Demand the third party sign an NDA"
+    ],
+    correct: 1,
+    explanation: "ABA approach permits notice of withdrawal and disaffirmance of prior statements without spilling all confidences."
+  },
+  {
+    question: "Restatement vs ABA on disclosure to avoid client fraud (as summarized in the outline):",
+    options: [
+      "A. Restatement is more forthright: if fraud law requires disclosure, the information is not protected by confidentiality and must be disclosed",
+      "B. Restatement always forbids disclosure to third parties",
+      "C. ABA requires disclosure in all fraud situations no matter what",
+      "D. Both take identical approaches"
+    ],
+    correct: 0,
+    explanation: "Outline: Restatement treats required fraud disclosures as not protected by confidentiality; ABA approach often pushes toward withdrawal."
+  },
+
+  // B) Communication with Persons Represented by Counsel — Rule 4.2
+  {
+    question: "Rule 4.2: A lawyer must not communicate about the matter with a person the lawyer knows is represented by counsel unless:",
+    options: [
+      "A. The represented person initiates the contact",
+      "B. The represented person consents",
+      "C. The person’s counsel consents (expressly or impliedly), or law/court order authorizes the contact",
+      "D. The lawyer labels the communication “informational only”"
+    ],
+    correct: 2,
+    explanation: "Even if the represented person initiates/consents, Rule 4.2 requires counsel consent or legal authorization."
+  },
+  {
+    question: "Defense counsel suspects plaintiff’s lawyer never conveyed a settlement offer, so defense counsel calls the represented plaintiff directly to convey the offer. Result:",
+    options: [
+      "A. Proper because it protects the plaintiff",
+      "B. Improper—communication with a represented person without counsel consent violates Rule 4.2",
+      "C. Proper if the offer is below policy limits",
+      "D. Proper if defense counsel documents the call"
+    ],
+    correct: 1,
+    explanation: "Rule 4.2 violation even if plaintiff’s counsel is behaving badly."
+  },
+  {
+    question: "A prosecutor visits an indicted defendant in jail to discuss a plea bargain without the defendant’s appointed counsel consenting. Under Rule 4.2:",
+    options: [
+      "A. Permitted because prosecutors are exempt",
+      "B. Permitted if defendant wants to talk",
+      "C. Prohibited; prosecutor is subject to discipline",
+      "D. Permitted if no Miranda issues"
+    ],
+    correct: 2,
+    explanation: "Rule 4.2 applies; counsel consent (or lawful authorization) is required."
+  },
+  {
+    question: "Rule 4.2 applies to communications that:",
+    options: [
+      "A. Concern the subject of the representation",
+      "B. Concern any topic, including the weather",
+      "C. Are only written, not oral",
+      "D. Occur only in court"
+    ],
+    correct: 0,
+    explanation: "The key is communication about the matter."
+  },
+  {
+    question: "Which is NOT prohibited by Rule 4.2 (as described in the outline)?",
+    options: [
+      "A. A lawyer interviewing an unrepresented person who will be a witness for another party",
+      "B. A lawyer negotiating directly with a represented opposing party about the matter",
+      "C. A prosecutor discussing plea terms with a represented defendant without counsel consent",
+      "D. A defense lawyer calling the represented plaintiff directly about settlement without counsel consent"
+    ],
+    correct: 0,
+    explanation: "Rule 4.2 doesn’t bar interviewing unrepresented witnesses; it bars lawyer-to-represented-person about the matter."
+  },
+  {
+    question: "Direct communication between represented persons themselves (party-to-party) is:",
+    options: [
+      "A. Always prohibited by Rule 4.2",
+      "B. Not prohibited by Rule 4.2 (the rule restricts lawyers, not the represented parties talking to each other)",
+      "C. Prohibited unless both lawyers are present",
+      "D. Prohibited only in criminal cases"
+    ],
+    correct: 1,
+    explanation: "Rule 4.2 targets lawyers’ communications with represented persons."
+  },
+
+  // Rule 4.2 and organizations
+  {
+    question: "For an organization, Rule 4.2 generally requires consent of the organization’s counsel before communicating with which constituent?",
+    options: [
+      "A. Any employee, even a janitor with no knowledge",
+      "B. Anyone who supervises/directs/regularly consults with org counsel about the matter, whose conduct may be imputed for liability, or who can obligate the org on the matter",
+      "C. Any former employee",
+      "D. Any shareholder"
+    ],
+    correct: 1,
+    explanation: "Rule 4.2 covers key constituents tied to counsel, liability, or authority to bind the org."
+  },
+  {
+    question: "If a current employee is represented by their own lawyer in the matter, consent to communicate can come from:",
+    options: [
+      "A. Only the organization’s lawyer",
+      "B. Only the employee’s personal lawyer",
+      "C. Either the organization’s lawyer or the employee’s personal lawyer",
+      "D. No one—communication is never allowed"
+    ],
+    correct: 1,
+    explanation: "Outline: if the constituent has their own counsel in the matter, that counsel’s consent is sufficient."
+  },
+  {
+    question: "Rule 4.2 and former constituents of an organization:",
+    options: [
+      "A. Consent is required to speak with any former employee",
+      "B. Consent is not needed to speak with former constituents, but lawyer must avoid intruding on privilege/other rights",
+      "C. Former employees are never allowed to speak",
+      "D. Former employees may be contacted only if the org’s counsel is copied on emails"
+    ],
+    correct: 1,
+    explanation: "You may contact former constituents, but must not pry into privileged communications."
+  },
+  {
+    question: "Plaintiff’s lawyer interviews a newspaper’s former editor and induces disclosure of privileged communications between the editor and the newspaper’s counsel about the case. This is best characterized as:",
+    options: [
+      "A. Proper because the editor is a former employee",
+      "B. Improper because the lawyer is prying into privileged communications / violating third-party rights",
+      "C. Proper if the editor volunteers the info",
+      "D. Required by zealous representation"
+    ],
+    correct: 1,
+    explanation: "Even if Rule 4.2 consent isn’t required for former employees, privilege must be respected (Rule 4.4 concerns too)."
+  },
+
+  // Reply-all implied consent + pro se lawyer exception
+  {
+    question: "Email “Reply All” scenario: Lawyer L emails opposing counsel A and copies L’s client C. Absent contrary instruction, L has:",
+    options: [
+      "A. Expressly forbidden any reply",
+      "B. Impliedly consented to A using “Reply All” and thus communicating directly with C",
+      "C. Waived C’s privilege automatically",
+      "D. Committed a Rule 4.2 violation"
+    ],
+    correct: 1,
+    explanation: "Outline: copying your client can imply consent for a reply-all; better practice is forwarding separately."
+  },
+  {
+    question: "Lawyer acting pro se (representing themself) wants to contact an opposing party who is represented. Under the outline’s rule:",
+    options: [
+      "A. Allowed because the lawyer is a party, not a lawyer",
+      "B. Prohibited—pro se lawyer is treated as a lawyer representing a client (themself) and is subject to Rule 4.2",
+      "C. Allowed only by phone, not email",
+      "D. Allowed if the pro se lawyer says “not legal advice”"
+    ],
+    correct: 1,
+    explanation: "A lawyer pro se is still a lawyer for Rule 4.2 purposes."
+  },
+
+  // C) Dealing with Unrepresented Persons — Rule 4.3
+  {
+    question: "Rule 4.3: When dealing with an unrepresented person, a lawyer must not:",
+    options: [
+      "A. Negotiate with them",
+      "B. State or imply that the lawyer is disinterested",
+      "C. Ask them questions",
+      "D. Provide any documents"
+    ],
+    correct: 1,
+    explanation: "You must make clear you represent your client, not the unrepresented person."
+  },
+  {
+    question: "If an unrepresented person misunderstands the lawyer’s role, Rule 4.3 requires the lawyer to:",
+    options: [
+      "A. Use the misunderstanding as leverage",
+      "B. Make reasonable efforts to correct the misunderstanding",
+      "C. End all communications permanently",
+      "D. Give legal advice to build trust"
+    ],
+    correct: 1,
+    explanation: "You must correct role confusion."
+  },
+  {
+    question: "If the lawyer knows (or should know) the unrepresented person’s interests likely conflict with the client’s interests, the lawyer must not give the unrepresented person:",
+    options: [
+      "A. Any negotiation proposals",
+      "B. Legal advice other than advising them to get a lawyer",
+      "C. A copy of the draft agreement",
+      "D. A summary of the client’s demands"
+    ],
+    correct: 1,
+    explanation: "You may negotiate, but you can’t advise the unrepresented person on what’s best for them (beyond “get a lawyer”)."
+  },
+  {
+    question: "Landlord’s lawyer negotiates a lease with an unrepresented tenant. Which is MOST consistent with Rule 4.3?",
+    options: [
+      "A. “I represent both of you, but I’ll be fair.”",
+      "B. “I represent the landlord, not you. I can tell you what terms my client will accept.”",
+      "C. “You don’t need a lawyer; I’ll take care of your interests too.”",
+      "D. “Sign this now or you’ll lose everything—trust me.”"
+    ],
+    correct: 1,
+    explanation: "Clear role disclosure is required; negotiation itself is allowed."
+  },
+  {
+    question: "Under Rule 4.3, the lawyer may draft a proposed agreement for the unrepresented person to review and may explain:",
+    options: [
+      "A. Only the client’s benefits, never the legal effect",
+      "B. What the lawyer believes the legal effect of the agreement will be, while still avoiding legal advice to the unrepresented person beyond “get a lawyer”",
+      "C. That the lawyer is neutral and disinterested",
+      "D. That the unrepresented person should accept because it’s “best”"
+    ],
+    correct: 1,
+    explanation: "Explaining terms/effects can be okay; advising them what they should do (when interests conflict) is not."
+  },
+  {
+    question: "Which is MOST likely impermissible legal advice to an unrepresented opposing party in a dispute (assuming interests conflict)?",
+    options: [
+      "A. “My client will accept $20,000.”",
+      "B. “You should definitely sign this release; it’s the best deal you’ll ever get.”",
+      "C. “I represent the other side; you may want to consult a lawyer.”",
+      "D. “Here’s a copy of the draft settlement agreement.”"
+    ],
+    correct: 1,
+    explanation: "Telling them what they should do is legal advice in a conflicting-interest setting."
+  },
+
+  // D) Respect for Rights of Third Persons — Rule 4.4
+  {
+    question: "Rule 4.4(a): In representing a client, a lawyer must not use means that have no substantial purpose other than to:",
+    options: [
+      "A. Increase the chance of winning",
+      "B. Embarrass, delay, or burden a third person",
+      "C. Preserve evidence",
+      "D. Seek admissible impeachment"
+    ],
+    correct: 1,
+    explanation: "Rule 4.4 targets harassment/burden tactics and rights-violating evidence methods."
+  },
+  {
+    question: "Cross-examining a witness with irrelevant, inadmissible prostitution convictions solely to humiliate them is:",
+    options: [
+      "A. Proper impeachment",
+      "B. Improper under Rule 4.4(a) (harassment/embarrassment with no substantial purpose)",
+      "C. Required for zealous advocacy",
+      "D. Proper if the lawyer believes the jury will care"
+    ],
+    correct: 1,
+    explanation: "If it’s inadmissible and irrelevant, and the purpose is embarrassment, it violates Rule 4.4."
+  },
+  {
+    question: "In discovery, lawyer uses a nonparty subpoena to access documents. With permission to copy responsive documents, lawyer secretly copies many nonresponsive documents too. Result:",
+    options: [
+      "A. Proper—lawyer was lawfully present",
+      "B. Improper—method of obtaining evidence violated the third party’s rights; discipline likely",
+      "C. Proper if lawyer later returns them",
+      "D. Proper if lawyer does not use the documents in court"
+    ],
+    correct: 1,
+    explanation: "Overreaching beyond subpoena scope violates third-party rights under Rule 4.4."
+  },
+  {
+    question: "Prosecutor tells police to arrest a suspect on a pretext to pressure them into giving evidence about a different case. Under the outline, this is:",
+    options: [
+      "A. Proper investigation strategy",
+      "B. Improper heavy-handed tactic; discipline likely",
+      "C. Proper if the suspect has a criminal record",
+      "D. Required if evidence is important"
+    ],
+    correct: 1,
+    explanation: "Using police power to burden a third person for leverage is improper."
+  },
+
+  // 4.4(b) Inadvertent documents
+  {
+    question: "Rule 4.4(b): If a lawyer receives a document and knows or reasonably should know it was sent by mistake, the lawyer must:",
+    options: [
+      "A. Immediately file it with the court",
+      "B. Promptly notify the sender",
+      "C. Return it and delete all copies in every jurisdiction",
+      "D. Assume privilege is waived and use it freely"
+    ],
+    correct: 1,
+    explanation: "Model Rule requires prompt notice; other duties (return/delete/waiver) vary by jurisdiction."
+  },
+  {
+    question: "The Model Rule 4.4(b) (as described in the outline) does NOT settle which issue because states differ:",
+    options: [
+      "A. Whether the receiving lawyer must notify the sender",
+      "B. Whether the receiving lawyer must return the document or delete ESI",
+      "C. Whether the receiving lawyer must keep the document secret forever",
+      "D. Whether the receiving lawyer must call the judge immediately"
+    ],
+    correct: 1,
+    explanation: "Notice is required; return/delete and privilege-waiver consequences vary by state law."
+  },
+  {
+    question: "A lawyer receives an obviously misdirected privileged email from opposing counsel. Under Rule 4.4(b), the MINIMUM required step is:",
+    options: [
+      "A. Use it in settlement talks immediately",
+      "B. Promptly notify opposing counsel/sender",
+      "C. Post it to the docket for transparency",
+      "D. Forward it to the client for advice first"
+    ],
+    correct: 1,
+    explanation: "Prompt notification is the core Model Rule requirement."
+  },
+
+  // Mixed / tricky integrations
+  {
+    question: "A lawyer tells a third party: “We definitely have government approval,” knowing approval is still pending. Best characterization:",
+    options: [
+      "A. Puffery about value",
+      "B. False statement of material fact under Rule 4.1(a)",
+      "C. Permissible prediction about future events",
+      "D. Allowed because the third party can verify"
+    ],
+    correct: 1,
+    explanation: "Concrete false approval status is a material factual misstatement."
+  },
+  {
+    question: "A lawyer says: “My client’s bottom line is $100,000,” even though client privately authorized settling as low as $60,000. Under negotiation conventions, this is MOST likely:",
+    options: [
+      "A. A false statement of material fact under Rule 4.1 in all cases",
+      "B. Potentially permissible as negotiation puffery about settlement intentions (depending on context)",
+      "C. Always required disclosure of true authority",
+      "D. Fraud automatically"
+    ],
+    correct: 1,
+    explanation: "Statements of settlement intention/position are often treated as non-factual negotiation conventions."
+  },
+  {
+    question: "A lawyer knows a third party is relying on a half-true statement the lawyer helped create, and the context makes silence misleading. Under Rule 4.1, the lawyer:",
+    options: [
+      "A. May always stay silent because there is no duty to disclose facts",
+      "B. Must avoid misrepresentation; in some contexts, silence can be equivalent to an affirmative misrepresentation",
+      "C. Must always disclose every negative fact about the client",
+      "D. Must immediately withdraw from the profession"
+    ],
+    correct: 1,
+    explanation: "No general duty to disclose, but you can’t mislead—sometimes silence counts."
+  },
+  {
+    question: "Opposing counsel’s represented client emails you directly: “Can we settle without lawyers?” You know they’re represented in this matter. Under Rule 4.2, you should:",
+    options: [
+      "A. Respond substantively because the client initiated",
+      "B. Respond only if their lawyer consents (or law/court order authorizes), otherwise do not communicate about the matter",
+      "C. Call them to talk faster",
+      "D. Negotiate but copy their lawyer after the fact"
+    ],
+    correct: 1,
+    explanation: "Initiation/consent by the represented person doesn’t eliminate the Rule 4.2 bar."
+  },
+  {
+    question: "You want to interview a current manager of a represented corporation about the event at issue; the manager’s conduct could be imputed to the corporation. Under Rule 4.2:",
+    options: [
+      "A. You may contact them freely because they are just an employee",
+      "B. You must obtain consent from the organization’s counsel (unless authorized by law/court order)",
+      "C. You may contact them if you say “I’m not asking for privileged info”",
+      "D. You may contact them only outside business hours"
+    ],
+    correct: 1,
+    explanation: "That constituent is within the protected categories under Rule 4.2."
+  },
+  {
+    question: "You interview a former employee of a represented corporation. Which is the key ethical pitfall emphasized in the outline?",
+    options: [
+      "A. Former employees can never be interviewed",
+      "B. You must not solicit or pry into privileged communications between the former employee and the corporation’s counsel",
+      "C. You must tell them to destroy documents",
+      "D. You must promise them a job"
+    ],
+    correct: 1,
+    explanation: "Former constituents are not categorically off-limits, but privilege/rights must be respected."
+  },
+  {
+    question: "Negotiating with an unrepresented opposing party: which combo is MOST consistent with Rule 4.3?",
+    options: [
+      "A. Imply neutrality + recommend they sign immediately",
+      "B. Disclose you represent your client + correct misunderstandings + avoid legal advice other than “get a lawyer”",
+      "C. Tell them you represent them too because it’s faster",
+      "D. Draft the agreement and tell them what’s best for them"
+    ],
+    correct: 1,
+    explanation: "Rule 4.3 is about role clarity and avoiding legal advice to unrepresented persons when interests conflict."
+  },
+  {
+    question: "A lawyer uses an abusive subpoena strategy on a nonparty solely to make the nonparty’s life miserable and pressure settlement. Under Rule 4.4(a), that is:",
+    options: [
+      "A. Fine—third parties are collateral damage",
+      "B. Improper—means with no substantial purpose other than burdening a third person",
+      "C. Required if it helps the client",
+      "D. Proper if the subpoena is formatted correctly"
+    ],
+    correct: 1,
+    explanation: "Rule 4.4 bars tactics aimed primarily at burden/embarrassment rather than legitimate purpose."
+  }
+];
+
+
+
+    /***********************
+     *  QUIZ STATE
+     ***********************/
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    const bottomBar = document.getElementById("bottom-bar");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+
+    startButton.addEventListener("click", startNewQuiz);
+    resumeButton.addEventListener("click", resumeQuiz);
+    clearProgressButton.addEventListener("click", () => {
+      clearSavedProgress();
+      resumeButton.classList.add("hidden");
+      clearProgressButton.classList.add("hidden");
+      alert("Saved progress cleared.");
+    });
+
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    const saved = loadSavedProgress();
+    if (saved && Array.isArray(saved.userAnswers)) {
+      resumeButton.classList.remove("hidden");
+      clearProgressButton.classList.remove("hidden");
+    }
+
+    window.addEventListener("beforeunload", () => {
+      saveProgress();
+    });
+
+    /***********************
+     *  START / RESUME
+     ***********************/
+    function startNewQuiz(){
+      if (questions.length === 0){
+        alert("No questions have been added yet for Module 7.");
+        return;
+      }
+
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+      saveProgress();
+    }
+
+    function resumeQuiz(){
+      if (questions.length === 0){
+        alert("No questions have been added yet for Module 7.");
+        return;
+      }
+
+      const state = loadSavedProgress();
+      if (!state || !Array.isArray(state.userAnswers)){
+        startNewQuiz();
+        return;
+      }
+
+      if (state.userAnswers.length !== questions.length){
+        startNewQuiz();
+        return;
+      }
+
+      userAnswers = state.userAnswers;
+      currentQuestionIndex = Math.min(
+        Math.max(parseInt(state.currentQuestionIndex || 0, 10), 0),
+        questions.length - 1
+      );
+
+      startScreen.classList.add("hidden");
+
+      if (state.phase === "results"){
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+        bottomBar.classList.add("hidden");
+        showResults();
+      } else {
+        quizScreen.classList.remove("hidden");
+        resultScreen.classList.add("hidden");
+        bottomBar.classList.remove("hidden");
+        loadQuestion();
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  BOTTOM BAR
+     ***********************/
+    function updateBottomBar(){
+      if (quizScreen.classList.contains("hidden")) return;
+
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      bottomBarMeta.innerHTML =
+        `Q <strong>${currentQuestionIndex + 1}</strong> / ${questions.length} <span class="pill">${answeredCount} answered</span>`;
+
+      bottomBarList.innerHTML = "";
+
+      for (let i = 0; i < questions.length; i++){
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.textContent = (i + 1);
+
+        if (i === currentQuestionIndex) btn.classList.add("current");
+
+        const ans = userAnswers[i];
+        if (ans !== null){
+          if (ans === questions[i].correct) btn.classList.add("answered-correct");
+          else btn.classList.add("answered-wrong");
+        }
+
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = i;
+          loadQuestion();
+          saveProgress();
+        });
+
+        bottomBarList.appendChild(btn);
+      }
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn){
+        currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+
+    /***********************
+     *  LOAD QUESTION
+     ***********************/
+    function loadQuestion(){
+      const currentQuestion = questions[currentQuestionIndex];
+
+      questionCount.textContent =
+        "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+
+        if (userAnswers[currentQuestionIndex] === index){
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+          handleAnswer(index);
+        });
+
+        optionsElement.appendChild(button);
+      });
+
+      if (userAnswers[currentQuestionIndex] !== null){
+        showAnswerFeedback(userAnswers[currentQuestionIndex], false);
+      }
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+
+      if (userAnswers[currentQuestionIndex] !== null) nextButton.classList.remove("hidden");
+      else nextButton.classList.add("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function showAnswerFeedback(selectedIndex, lockButtons){
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.classList.remove("correct", "wrong");
+
+        if (idx === currentQuestion.correct){
+          btn.classList.add("correct");
+        }
+
+        if (idx === selectedIndex && selectedIndex !== currentQuestion.correct){
+          btn.classList.add("wrong");
+        }
+
+        btn.disabled = !!lockButtons;
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+
+      nextButton.classList.remove("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function handleAnswer(selectedIndex){
+      showAnswerFeedback(selectedIndex, true);
+    }
+
+    /***********************
+     *  NAV
+     ***********************/
+    function goNext(){
+      if (currentQuestionIndex < questions.length - 1){
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+      saveProgress();
+    }
+
+    function goBack(){
+      if (currentQuestionIndex > 0){
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+      saveProgress();
+    }
+
+    /***********************
+     *  RESULTS
+     ***********************/
+    function showResults(){
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+
+      const correctAnswers = userAnswers.filter((answer, index) => {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent =
+        "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const row = document.createElement("tr");
+
+        if (userAnswers[index] === q.correct) row.classList.add("correct");
+        else row.classList.add("wrong");
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", () => {
+          reviewQuestion(index);
+        });
+      });
+
+      saveProgress();
+    }
+
+    function reviewQuestion(index){
+      currentQuestionIndex = index;
+
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton){
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.className = "secondary-button";
+        backToResultsButton.addEventListener("click", showResults);
+        quizScreen.appendChild(backToResultsButton);
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  RESTART
+     ***********************/
+    function restartQuiz(){
+      clearSavedProgress();
+      location.reload();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>MPRE – Regulation of the Legal Profession (Module 10)</title>
+
+  <style>
+    :root{
+      --bottomBarHeight: 92px;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+
+      padding-bottom: calc(var(--bottomBarHeight) + env(safe-area-inset-bottom));
+
+      background-color: #f5f5f5;
+      min-height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container{
+      max-width: 650px;
+      width: min(92%, 650px);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.10);
+      margin: 18px auto;
+    }
+
+    .hidden{ display: none; }
+
+    .question-count{
+      font-size: clamp(15px, 2.5vw, 18px);
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .question{
+      font-size: clamp(18px, 3.4vw, 20px);
+      margin-bottom: 15px;
+      line-height: 1.35;
+    }
+
+    .options button{
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      width: 100%;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .options button.correct{
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .options button.wrong{
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    .options button.selected{
+      border-color: #007bff;
+    }
+
+    .options button:focus{ outline: none; }
+
+    .navigation{
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .navigation button{
+      margin: 5px 0;
+      padding: 10px 12px;
+      font-size: clamp(14px, 3vw, 16px);
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background: #fff;
+      touch-action: manipulation;
+    }
+
+    .explanation{
+      font-size: clamp(14px, 3vw, 16px);
+      margin-top: 18px;
+      padding: 12px;
+      background-color: #e9ecef;
+      border-left: 4px solid #007bff;
+      white-space: pre-wrap;
+      border-radius: 8px;
+      line-height: 1.35;
+    }
+
+    .primary-button{
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      font-size: clamp(16px, 3.2vw, 18px);
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.15s;
+      display: block;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+      margin: 0 auto;
+      touch-action: manipulation;
+    }
+
+    .primary-button:hover{ background-color: #0056b3; transform: scale(1.02); }
+    .primary-button:active{ transform: scale(0.98); }
+
+    .secondary-button{
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    .danger-button{
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px auto 0;
+      display: block;
+      touch-action: manipulation;
+    }
+
+    footer{
+      text-align: center;
+      color: gray;
+      font-size: 12px;
+      padding: 10px 0;
+      background-color: #f9f9f9;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+
+    #result-screen{
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .review-table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .review-table th, .review-table td{
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .review-table .correct{ background-color: #d4edda; }
+    .review-table .wrong{ background-color: #f8d7da; }
+
+    .pill{
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #eef2ff;
+      color: #1e40af;
+      margin-left: 6px;
+      border: 1px solid rgba(30,64,175,0.18);
+    }
+
+    /* ===== Bottom Question Jump Bar ===== */
+    #bottom-bar{
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.96);
+      border-top: 1px solid rgba(0,0,0,0.12);
+      box-shadow: 0 -8px 20px rgba(0,0,0,0.08);
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      z-index: 999;
+      backdrop-filter: blur(6px);
+    }
+
+    .bottom-bar-inner{
+      max-width: 650px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #bottom-bar-meta{
+      flex: 0 0 auto;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+    }
+
+    #bottom-bar-list{
+      flex: 1 1 auto;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #bottom-bar-list::-webkit-scrollbar{ height: 6px; }
+    #bottom-bar-list::-webkit-scrollbar-thumb{
+      background: rgba(0,0,0,0.18);
+      border-radius: 999px;
+    }
+
+    .qnav-btn{
+      flex: 0 0 auto;
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.05s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .qnav-btn:hover{ transform: translateY(-1px); }
+
+    .qnav-btn.current{
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.18);
+    }
+
+    .qnav-btn.answered-correct{
+      background: #d4edda;
+      border-color: #c3e6cb;
+    }
+
+    .qnav-btn.answered-wrong{
+      background: #f8d7da;
+      border-color: #f5c6cb;
+    }
+
+    @media (max-width: 480px){
+      .container{
+        width: 94%;
+        padding: 14px;
+        margin: 12px auto;
+        border-radius: 14px;
+      }
+      .options button{
+        padding: 12px;
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="start-screen">
+      <h1 style="text-align:center; margin-top: 4px;">Welcome to the Quiz</h1>
+      <h4 style="text-align: center; margin: 6px 0;">MPRE</h4>
+      <h5 style="text-align: center; margin: 6px 0;">Module 10 – Communications About Legal Services</h5>
+
+      <p style="text-align:center; color:#444; margin-top: 14px; line-height: 1.35;">
+        MPRE-style questions on attorney advertising & solicitation (Model Rules 7.1–7.3),
+        misleading statements, firm names, required disclaimers, referrals, and targeted outreach.
+      </p>
+
+      <button id="start-button" class="primary-button">Start Quiz</button>
+      <button id="resume-button" class="secondary-button hidden">Resume Quiz</button>
+      <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+      <div class="question-count" id="question-count"></div>
+      <div class="question" id="question"></div>
+      <div class="options" id="options"></div>
+      <div id="explanation" class="explanation hidden"></div>
+
+      <div class="navigation">
+        <button id="prev-button" class="hidden">Go Back</button>
+        <button id="next-button" class="hidden">Next</button>
+      </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+      <h1>Quiz Results</h1>
+      <div id="final-score" style="font-size: 18px; margin-top: 6px;"></div>
+
+      <div style="max-height: 80vh; overflow-y: auto;">
+        <table class="review-table" id="review-table">
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <button id="restart-button" class="primary-button">Restart Quiz</button>
+
+      <button
+        onclick="location.href='index.html'"
+        style="font-size: 12px; margin-top: 10px; padding: 7px 12px; background-color: grey; color: white; border: none; border-radius: 10px; cursor: pointer; display:block; margin-left:auto; margin-right:auto;">
+        Main Page
+      </button>
+    </div>
+
+    <footer>
+      © 2025 Frederick Liu. All rights reserved.
+    </footer>
+  </div>
+
+  <!-- Bottom Question Jump Bar -->
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    /***********************
+     *  SAVE / RESUME SETUP
+     ***********************/
+    const STORAGE_KEY = "mpre_module10_progress_v1";
+
+    function saveProgress(){
+      try{
+        const state = {
+          currentQuestionIndex,
+          userAnswers,
+          phase: getPhase(), // "start" | "quiz" | "results"
+          savedAt: Date.now()
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }catch(e){}
+    }
+
+    function loadSavedProgress(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return null;
+        return JSON.parse(raw);
+      }catch(e){
+        return null;
+      }
+    }
+
+    function clearSavedProgress(){
+      try{
+        localStorage.removeItem(STORAGE_KEY);
+      }catch(e){}
+    }
+
+    function getPhase(){
+      if(!startScreen.classList.contains("hidden")) return "start";
+      if(!quizScreen.classList.contains("hidden")) return "quiz";
+      if(!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    /***********************
+     *  QUESTIONS
+     ***********************/
+    // Module 10 — Communications About Legal Services (ABA Model Rules 7.1–7.3; plus key concepts/cases)
+    // Module 10 — Communications About Legal Services (ABA Model Rules 7.1–7.3; plus key cases)
+
+const questions = [
+  // A) Content-based rules: 7.1 truth/not misleading
+  {
+    question: "Rule 7.1 basic rule: A lawyer may be disciplined for any communication about the lawyer or services that is:",
+    options: [
+      "A. Aggressive or overly confident",
+      "B. False or misleading",
+      "C. Too expensive to run",
+      "D. Directed to nonclients"
+    ],
+    correct: 1,
+    explanation: "Rule 7.1: all lawyer communications must be true and not misleading."
+  },
+  {
+    question: "Rule 7.1 applies to which of the following?",
+    options: [
+      "A. Only paid advertisements",
+      "B. Only communications to prospective clients",
+      "C. Advertisements, letters, emails, websites, office signs, business cards, recorded messages, etc.",
+      "D. Only communications approved by the state bar"
+    ],
+    correct: 2,
+    explanation: "It applies broadly to virtually all communications about the lawyer/services."
+  },
+
+  // Types of misleading communications (outright falsehoods, omissions, unfounded conclusions, unjustified expectations, unsubstantiated comparisons)
+  {
+    question: "Letterhead lists Attorney A as “Trial Counsel—ExxonMobil Corporation.” A previously worked in-house but left 18 months ago and no one held that title. This is best classified as:",
+    options: [
+      "A. Permissible puffery",
+      "B. True but misleading by omission",
+      "C. An outright falsehood",
+      "D. An unsubstantiated comparison"
+    ],
+    correct: 2,
+    explanation: "It’s simply false (wrong title + not current)."
+  },
+  {
+    question: "Lawyer L runs an ad stating “Yale Law School—1987,” but only attended a 2-week summer program and earned the JD elsewhere. The problem is primarily:",
+    options: [
+      "A. None—technically true statements can never be misleading",
+      "B. Omitted facts needed to avoid a materially misleading impression",
+      "C. Unfounded conclusions",
+      "D. Unjustified expectations from past results"
+    ],
+    correct: 1,
+    explanation: "True words, misleading overall because it omits key context."
+  },
+  {
+    question: "Lawyer L calls himself “The Juris DOCTOR,” claims “decades of experience in health care,” and appears in scrubs with a stethoscope—yet has no medical training. This is misleading because it invites:",
+    options: [
+      "A. An unjustified expectation about outcomes",
+      "B. A specific conclusion with no reasonable factual foundation (e.g., that L is a physician)",
+      "C. A permissible subjective opinion",
+      "D. A required disclosure under Zauderer"
+    ],
+    correct: 1,
+    explanation: "Unfounded conclusion: reasonable person may believe L is a doctor/physician."
+  },
+  {
+    question: "Attorney A truthfully advertises: “I won three asbestos jury verdicts over $500,000.” No disclaimer/context is provided. The likely issue is:",
+    options: [
+      "A. Unjustified expectations—implying similar results without regard to facts/law",
+      "B. Unsubstantiated comparisons",
+      "C. Outright falsehood",
+      "D. Per se prohibited content"
+    ],
+    correct: 0,
+    explanation: "Past results can mislead if they create unjustified expectations absent context/disclaimer."
+  },
+  {
+    question: "Lawyer L advertises: “My estate-planning fees are 15% lower than the prevailing county rate,” but cannot substantiate with data. This is:",
+    options: [
+      "A. Permissible puffery",
+      "B. A misleading unsubstantiated comparison",
+      "C. A required disclosure problem only",
+      "D. Allowed if L subjectively believes it’s true"
+    ],
+    correct: 1,
+    explanation: "Unsubstantiated comparisons can mislead if they suggest they can be proved."
+  },
+  {
+    question: "Disclaimers: Under the rules, adding an appropriate disclaimer can sometimes:",
+    options: [
+      "A. Never help—misleading is misleading",
+      "B. Cure or reduce the risk a statement is misleading (depending on circumstances)",
+      "C. Automatically immunize any advertisement",
+      "D. Replace the need for truthful content"
+    ],
+    correct: 1,
+    explanation: "Qualifying language may preclude a finding of misleadingness in context."
+  },
+
+  // Rule 7.2 — media, required info, client consent for naming clients
+  {
+    question: "Rule 7.2(a): Lawyers may generally advertise/communicate through:",
+    options: [
+      "A. Only print media",
+      "B. Only websites and billboards",
+      "C. Any media, as long as the communication is true and not misleading",
+      "D. Any media only with prior bar approval"
+    ],
+    correct: 2,
+    explanation: "Broad latitude: any media, subject to truth/non-misleading."
+  },
+  {
+    question: "Identification requirement (Rule 7.2(d)): Every advertisement must include:",
+    options: [
+      "A. The lawyer’s hourly rate",
+      "B. A disclaimer that outcomes are not guaranteed",
+      "C. Name and contact information of at least one responsible lawyer or firm",
+      "D. Client testimonials"
+    ],
+    correct: 2,
+    explanation: "Must identify responsible lawyer/firm + contact info."
+  },
+  {
+    question: "Generally permitted public info includes all EXCEPT:",
+    options: [
+      "A. Types of services offered and fee basis/prices/payment arrangements",
+      "B. Foreign language ability and names of references",
+      "C. Names of regular clients without consent",
+      "D. Contact information and other info inviting attention of people needing legal help"
+    ],
+    correct: 2,
+    explanation: "Naming clients requires client consent first."
+  },
+  {
+    question: "If a lawyer wants to identify a regular client in an advertisement, the lawyer must:",
+    options: [
+      "A. Do it only in print, not online",
+      "B. Obtain the client’s consent",
+      "C. Ensure the client is not currently represented by the lawyer",
+      "D. Provide the client a discount"
+    ],
+    correct: 1,
+    explanation: "Client consent required before naming them."
+  },
+
+  // Firm names and designations: deceased/retired partners; public office; nonlawyers; government/legal aid implication; false partnership; affiliated firms & conflicts; office-sharing clarity; multistate.
+  {
+    question: "Firm name using deceased/retired partner: “X, Y & Z” continues after X dies. This is:",
+    options: [
+      "A. Always misleading",
+      "B. Permissible if X was a former member of the firm",
+      "C. Permissible only with court permission",
+      "D. Permissible only for sole practitioners"
+    ],
+    correct: 1,
+    explanation: "Names of deceased/retired partners may continue if they were actually part of the firm."
+  },
+  {
+    question: "Which firm name is misleading under Rule 7.1 comment 5?",
+    options: [
+      "A. Using the name of a deceased former partner",
+      "B. Using the name of a nonlawyer in the firm name",
+      "C. Using the name of a current partner",
+      "D. Using a trade name that is not misleading"
+    ],
+    correct: 1,
+    explanation: "Including a nonlawyer (or implying connection with non-associated lawyer) is misleading."
+  },
+  {
+    question: "Lawyer Tzao leaves private firm to serve as an FCC commissioner for an extended period and is not actively practicing with the firm. The firm must:",
+    options: [
+      "A. Keep his name—public service enhances prestige",
+      "B. Remove his name from the firm name during the substantial period of non-active practice",
+      "C. Keep his name only if they add “of counsel”",
+      "D. Keep his name if clients consent"
+    ],
+    correct: 1,
+    explanation: "Cannot use name of lawyer in public office when not regularly/actively practicing with firm."
+  },
+  {
+    question: "Trade names (e.g., “The Bulldog Law Firm”) are:",
+    options: [
+      "A. Always prohibited",
+      "B. Allowed if not misleading and not implying connection with government or legal aid/charitable org",
+      "C. Allowed only if they include a partner’s surname",
+      "D. Allowed only if registered with the ABA"
+    ],
+    correct: 1,
+    explanation: "Trade names are permitted if not misleading; beware implying govt/legal aid connection."
+  },
+  {
+    question: "Office-sharing lawyers A and B share space and resources but are not partners. Their door sign reads “Offices of A and B, Attorneys at Law.” This is:",
+    options: [
+      "A. Proper—common signage is always fine",
+      "B. Improper—misleadingly implies they are a single firm/partnership",
+      "C. Proper if they split costs evenly",
+      "D. Proper if they refer cases to each other"
+    ],
+    correct: 1,
+    explanation: "False indication of partnership/practicing together is misleading."
+  },
+  {
+    question: "Two firms may call themselves “affiliated” if they have a close, ongoing relationship and it’s not misleading. A major downside is:",
+    options: [
+      "A. They cannot refer cases to each other",
+      "B. They may be treated as one unit for conflicts of interest",
+      "C. They must merge financially",
+      "D. They must share malpractice insurance"
+    ],
+    correct: 1,
+    explanation: "Affiliation often triggers imputed conflicts like a single firm."
+  },
+  {
+    question: "Multistate firm naming: A firm with offices in multiple jurisdictions may:",
+    options: [
+      "A. Use the same firm name and website in each jurisdiction",
+      "B. Use the same name only in its home state",
+      "C. Never advertise a multistate presence",
+      "D. Use only lawyer surnames, no trade names"
+    ],
+    correct: 0,
+    explanation: "Permitted to use same name/Internet address across jurisdictions."
+  },
+
+  // Identifying practice fields; specialist certification; patent/admiralty special treatment
+  {
+    question: "A lawyer may say she “specializes” or “concentrates” in an area if:",
+    options: [
+      "A. She is certified by any organization (even if not recognized)",
+      "B. The statement is not false or misleading based on experience/training/education",
+      "C. She has handled at least one case in that area",
+      "D. She includes a disclaimer that she is not a lawyer"
+    ],
+    correct: 1,
+    explanation: "Permitted if not misleading; but “certified specialist” has extra requirements."
+  },
+  {
+    question: "A lawyer may state or imply she is “certified as a specialist” only if:",
+    options: [
+      "A. She has strong experience and good reviews",
+      "B. She is in fact certified by an ABA-approved or state-authority-approved organization AND names the certifying organization",
+      "C. She uses the word “specialist” but not “certified”",
+      "D. The certification is from her law school"
+    ],
+    correct: 1,
+    explanation: "Two-part requirement: actual approved certification + identify certifier."
+  },
+  {
+    question: "Special categories: Which designation is traditionally allowed if true?",
+    options: [
+      "A. “Patent Attorney” if admitted to practice before the USPTO",
+      "B. “Board-Certified Specialist” without identifying the certifier",
+      "C. “Official Court Lawyer” for any litigator",
+      "D. “State Prosecutor” for a defense lawyer"
+    ],
+    correct: 0,
+    explanation: "Patent/admiralty have traditional special treatment if properly qualified."
+  },
+
+  // B) Recommendations / paying for referrals (Rule 7.2(b))
+  {
+    question: "General rule on recommendations: A lawyer must not give anything of value for a person to recommend the lawyer’s services, unless an exception applies. A ‘recommendation’ is:",
+    options: [
+      "A. Any directory list of lawyers by practice area",
+      "B. An endorsement/vouching for credentials, competence, character, or qualities",
+      "C. Any advertisement the lawyer pays for",
+      "D. Any mention of the lawyer’s name online"
+    ],
+    correct: 1,
+    explanation: "Recommendation = endorsement/vouching; simple listings typically aren’t recommendations."
+  },
+  {
+    question: "Which payment is generally permitted under Rule 7.2(b)?",
+    options: [
+      "A. Paying a nonlawyer a percentage of each referred client’s recovery",
+      "B. Paying reasonable costs of permitted advertising",
+      "C. Paying a friend $200 for every client they send",
+      "D. Paying a website to post “Best Lawyer—Guaranteed!”"
+    ],
+    correct: 1,
+    explanation: "Permitted: reasonable ad costs; also usual charges for legal service plans/referral services."
+  },
+  {
+    question: "Lead generators: A lawyer may pay a lead generator if:",
+    options: [
+      "A. The lead generator recommends the lawyer as ‘top choice’",
+      "B. The lead generator’s communications are not false/misleading and do not create the impression of recommendation/analysis/no-payment",
+      "C. The lead generator guarantees outcomes",
+      "D. The lawyer pays per signed client only"
+    ],
+    correct: 1,
+    explanation: "Allowed if no recommendation + not misleading about analysis or payment."
+  },
+  {
+    question: "Reciprocal referral agreements (lawyer ↔ other lawyer or nonlawyer professional) are allowed only if:",
+    options: [
+      "A. They are exclusive so the pipeline is steady",
+      "B. The referred client is told about the agreement, it doesn’t interfere with judgment, and it’s not exclusive (plus conflicts handled)",
+      "C. They are secret to avoid bias concerns",
+      "D. They are indefinite and never reviewed"
+    ],
+    correct: 1,
+    explanation: "Must be nonexclusive, disclosed to client, no interference with professional judgment; review periodically; conflict consent if needed."
+  },
+  {
+    question: "Nominal gifts: A lawyer may give a small holiday-type gift to someone who recommended the lawyer if:",
+    options: [
+      "A. It was not intended or reasonably expected as compensation for referrals and no understanding existed",
+      "B. It’s always a percentage of the fee",
+      "C. The giver demands future referrals",
+      "D. The gift is promised in advance for each referral"
+    ],
+    correct: 0,
+    explanation: "Token gratitude allowed; quid pro quo (even implied) is not."
+  },
+
+  // C) Solicitation (Rule 7.3) definition + live person-to-person generally prohibited for profit; exceptions; written permitted; impermissible regardless if told stop or coercion; authorized by law/court order; use of others/agents
+  {
+    question: "Under Rule 7.3, a ‘solicitation’ is best defined as:",
+    options: [
+      "A. Any billboard or website ad",
+      "B. Any communication about legal services",
+      "C. A lawyer-initiated communication directed to a specific person known/should know to need legal services in a particular matter, offering services",
+      "D. Any recommendation by a former client"
+    ],
+    correct: 2,
+    explanation: "Targeted + lawyer-initiated + specific matter need + offer of services."
+  },
+  {
+    question: "Which is NOT a ‘solicitation’ under the definition?",
+    options: [
+      "A. A billboard ad to the general public",
+      "B. An email responding to a person’s request for information",
+      "C. A message automatically generated in response to an Internet search",
+      "D. All of the above"
+    ],
+    correct: 3,
+    explanation: "Those three categories are excluded from ‘solicitation’ under Rule 7.3(a)."
+  },
+  {
+    question: "Live person-to-person solicitation for pecuniary gain is generally prohibited. ‘Live person-to-person’ includes:",
+    options: [
+      "A. Mailed letters",
+      "B. Emails and texts",
+      "C. In-person, live phone calls, or real-time audio/visual chats (e.g., FaceTime)",
+      "D. Website banner ads"
+    ],
+    correct: 2,
+    explanation: "Real-time direct encounters with no time for reflection → generally barred for profit."
+  },
+  {
+    question: "Which target is generally exempt from the live person-to-person solicitation ban (assuming no coercion/harassment and not told to stop)?",
+    options: [
+      "A. A stranger injured yesterday with no prior relationship",
+      "B. A current or former client with a prior professional relationship",
+      "C. Random members of the public at a hospital",
+      "D. People identified from an accident report you just bought"
+    ],
+    correct: 1,
+    explanation: "Exceptions include other lawyers, close family/personal/prior professional relationships, and routine business users."
+  },
+  {
+    question: "Attorney A prepared an estate plan for C two years ago. A learns the law changed and calls C to suggest revising the plan. This is:",
+    options: [
+      "A. Prohibited live solicitation for profit",
+      "B. Generally permitted due to prior professional relationship",
+      "C. Prohibited unless court-ordered",
+      "D. Prohibited unless A offers free services"
+    ],
+    correct: 1,
+    explanation: "Prior professional relationship exception."
+  },
+  {
+    question: "Written/recorded/electronic targeted communications (mail/email/text/chat) to people known to face a specific legal problem are generally:",
+    options: [
+      "A. Prohibited because targeted",
+      "B. Permitted if truthful and nondeceptive (not live person-to-person)",
+      "C. Permitted only if the recipient is a business user",
+      "D. Permitted only if the lawyer never gets paid"
+    ],
+    correct: 1,
+    explanation: "Generally allowed because easily disregarded; still must be truthful and noncoercive."
+  },
+  {
+    question: "Regardless of method or target, solicitation is prohibited if:",
+    options: [
+      "A. The lawyer hopes to earn money",
+      "B. The recipient previously said they do not want to be solicited, or the solicitation involves coercion/duress/harassment",
+      "C. The lawyer uses email rather than phone",
+      "D. The lawyer includes contact info"
+    ],
+    correct: 1,
+    explanation: "Rule 7.3(c): stop-contact request + coercion/harassment = forbidden across the board."
+  },
+  {
+    question: "Lawyer L sends targeted letters to potential drug plaintiffs. Recipient C calls and says ‘Stop contacting me.’ L keeps sending follow-ups. L is:",
+    options: [
+      "A. Fine because written solicitation is generally allowed",
+      "B. Subject to discipline because C made known she does not want to be solicited",
+      "C. Fine if letters are truthful",
+      "D. Fine if L includes a disclaimer"
+    ],
+    correct: 1,
+    explanation: "Once told ‘do not solicit,’ continued contact violates Rule 7.3(c)."
+  },
+  {
+    question: "Communications authorized by law or court order (e.g., class action notices) are:",
+    options: [
+      "A. Still prohibited solicitation",
+      "B. Permitted under Rule 7.3(d)",
+      "C. Permitted only if sent by a nonlawyer",
+      "D. Permitted only if recipients are current clients"
+    ],
+    correct: 1,
+    explanation: "Rule 7.3(d) carve-out."
+  },
+  {
+    question: "Using others to solicit: A lawyer may NOT do indirectly (through a ‘runner/capper’) what the lawyer can’t do directly. The key rule is:",
+    options: [
+      "A. Rule 8.4(a) (no violation through acts of another)",
+      "B. Rule 1.6 (confidentiality)",
+      "C. Rule 3.3 (candor)",
+      "D. Rule 1.15 (trust accounts)"
+    ],
+    correct: 0,
+    explanation: "Rule 8.4(a): cannot violate rules through an agent."
+  },
+  {
+    question: "Lawyer L hires R to check accident reports and personally contact victims in real-time, ‘advise them of legal rights,’ and sign them up with L’s retainer forms. This is:",
+    options: [
+      "A. Permissible lead generation",
+      "B. Prohibited solicitation via an agent; L is subject to discipline",
+      "C. Allowed if R is paid hourly",
+      "D. Allowed if R never mentions L’s name"
+    ],
+    correct: 1,
+    explanation: "Using an agent to conduct prohibited live solicitation is not allowed."
+  },
+  {
+    question: "Reciprocal arrangement: Debt consolidation employees have face-to-face conversations with debtors and refer those needing legal help to Attorney A. A refers clients back. A is:",
+    options: [
+      "A. Safe because it’s a reciprocal referral agreement",
+      "B. Subject to discipline because A is using others to initiate prohibited live person-to-person solicitation",
+      "C. Safe if clients consent in writing",
+      "D. Safe if A pays no money"
+    ],
+    correct: 1,
+    explanation: "The problem is using third parties to do the live targeted solicitation."
+  },
+  {
+    question: "Banker friend gives lawyer’s contact info to customers who might want estate plans (lawyer doesn’t script messages or target specific people). This is best characterized as:",
+    options: [
+      "A. Prohibited solicitation",
+      "B. Permissible word-of-mouth recommendation not controlled by the lawyer",
+      "C. Prohibited because it’s a ‘recommendation’",
+      "D. Prohibited because it’s for pecuniary gain"
+    ],
+    correct: 1,
+    explanation: "Not the lawyer’s targeted solicitation; not controlled; typical word-of-mouth referral is permissible."
+  },
+
+  // D) Group & prepaid legal service plans
+  {
+    question: "Group/prepaid legal service plans: A lawyer may personally contact representatives of an organization to propose adopting a plan because:",
+    options: [
+      "A. It’s directed at individuals known to need specific legal services",
+      "B. It’s more like advertising to fiduciary decisionmakers seeking services for a group",
+      "C. All in-person solicitation is always allowed to anyone",
+      "D. The ABA requires plans for all employers"
+    ],
+    correct: 1,
+    explanation: "Contacting plan sponsors is not the same as targeting individuals needing a particular matter."
+  },
+  {
+    question: "A plan may use live person-to-person contacts to enroll members if:",
+    options: [
+      "A. The enrolling contact is done by the participating lawyer",
+      "B. The plan contacts people known to need legal services in a particular matter",
+      "C. The personal contact is not undertaken by the lawyer and is directed to people not known to need specific legal services in a particular matter",
+      "D. The plan guarantees outcomes"
+    ],
+    correct: 2,
+    explanation: "Rule 7.3(e): plan can enroll via live contact under those conditions."
+  },
+  {
+    question: "A lawyer participating in a legal service plan must:",
+    options: [
+      "A. Own or direct the plan to ensure quality",
+      "B. Reasonably assure the plan’s communications comply with advertising/solicitation rules (not false or misleading)",
+      "C. Avoid any advertising at all",
+      "D. Only accept clients through the plan"
+    ],
+    correct: 1,
+    explanation: "Participant lawyer must reasonably assure plan complies; and lawyer must not participate if lawyer owns/directs the plan."
+  },
+
+  // E) Government regulation / key cases (commercial speech; bans; disclosures; intermediate scrutiny)
+  {
+    question: "Bates v. State Bar of Arizona holds that lawyer advertising is:",
+    options: [
+      "A. Unprotected speech that may be totally banned",
+      "B. Commercial speech protected by the First and Fourteenth Amendments; states may regulate to prevent deception but not flatly ban all ads",
+      "C. Protected like political speech (strict scrutiny for all regulation)",
+      "D. Only protected for nonprofit lawyers"
+    ],
+    correct: 1,
+    explanation: "Bates: cannot flatly prohibit all lawyer advertising; can regulate false/misleading."
+  },
+  {
+    question: "A state may flatly prohibit lawyer ads that are false or misleading (In re RMJ) and may adopt prophylactic rules against in-person solicitation for profit likely to overreach (Ohralik). This statement is:",
+    options: [
+      "A. False—states cannot prohibit any lawyer speech",
+      "B. True",
+      "C. True only for criminal defense lawyers",
+      "D. True only if the state proves strict scrutiny"
+    ],
+    correct: 1,
+    explanation: "These are core holdings: false/misleading can be banned; in-person solicitation for profit can be restricted."
+  },
+  {
+    question: "Zauderer disclosure requirements: The government may require factual disclosures to prevent deception if the requirement is:",
+    options: [
+      "A. Extremely burdensome and unrelated to deception",
+      "B. Not unduly burdensome and reasonably related to preventing deception",
+      "C. Narrowly tailored under strict scrutiny",
+      "D. Approved by the ABA"
+    ],
+    correct: 1,
+    explanation: "Zauderer: rational-basis-like standard for compelled factual disclosures preventing deception."
+  },
+  {
+    question: "Milavetz (debt relief agencies) example supports the idea that:",
+    options: [
+      "A. Lawyers may never advertise bankruptcy services",
+      "B. Lawyers can be required to include specific factual statements in ads identifying debt relief/bankruptcy nature of services",
+      "C. All disclaimers are unconstitutional compelled speech",
+      "D. Only in-person solicitations may be regulated"
+    ],
+    correct: 1,
+    explanation: "Milavetz upheld certain required disclosures for bankruptcy-related ads."
+  },
+  {
+    question: "Regulation of truthful, nondeceptive lawyer advertising is evaluated under intermediate scrutiny (Central Hudson / Florida Bar v. Went For It). The test generally requires:",
+    options: [
+      "A. Compelling interest + least restrictive means",
+      "B. Substantial interest; regulation materially advances it; regulation narrowly drawn",
+      "C. Any rational basis",
+      "D. No test—states can regulate freely"
+    ],
+    correct: 1,
+    explanation: "Commercial speech: substantial interest, direct/material advancement, narrowly drawn."
+  },
+  {
+    question: "Florida Bar v. Went For It upheld a rule banning targeted direct-mail solicitations to accident/disaster victims for 30 days because:",
+    options: [
+      "A. All direct mail is unprotected",
+      "B. The state showed substantial interests (privacy/reputation), evidence the ban advanced them, and narrow tailoring",
+      "C. Strict scrutiny was met",
+      "D. The ABA required a 30-day cooling-off period"
+    ],
+    correct: 1,
+    explanation: "Upheld under commercial speech intermediate scrutiny with supporting studies and narrow tailoring."
+  }
+];
+
+
+
+    /***********************
+     *  QUIZ STATE
+     ***********************/
+    let currentQuestionIndex = 0;
+    let userAnswers = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const explanationElement = document.getElementById("explanation");
+
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+
+    const reviewTableBody = document.getElementById("review-table").querySelector("tbody");
+    const finalScore = document.getElementById("final-score");
+
+    const bottomBar = document.getElementById("bottom-bar");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+
+    startButton.addEventListener("click", startNewQuiz);
+    resumeButton.addEventListener("click", resumeQuiz);
+    clearProgressButton.addEventListener("click", () => {
+      clearSavedProgress();
+      resumeButton.classList.add("hidden");
+      clearProgressButton.classList.add("hidden");
+      alert("Saved progress cleared.");
+    });
+
+    prevButton.addEventListener("click", goBack);
+    nextButton.addEventListener("click", goNext);
+    document.getElementById("restart-button").addEventListener("click", restartQuiz);
+
+    const saved = loadSavedProgress();
+    if (saved && Array.isArray(saved.userAnswers)) {
+      resumeButton.classList.remove("hidden");
+      clearProgressButton.classList.remove("hidden");
+    }
+
+    window.addEventListener("beforeunload", () => {
+      saveProgress();
+    });
+
+    /***********************
+     *  START / RESUME
+     ***********************/
+    function startNewQuiz(){
+      if (questions.length === 0){
+        alert("No questions have been added yet for Module 10.");
+        return;
+      }
+
+      userAnswers = new Array(questions.length).fill(null);
+      currentQuestionIndex = 0;
+
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      resultScreen.classList.add("hidden");
+
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+      saveProgress();
+    }
+
+    function resumeQuiz(){
+      if (questions.length === 0){
+        alert("No questions have been added yet for Module 10.");
+        return;
+      }
+
+      const state = loadSavedProgress();
+      if (!state || !Array.isArray(state.userAnswers)){
+        startNewQuiz();
+        return;
+      }
+
+      if (state.userAnswers.length !== questions.length){
+        startNewQuiz();
+        return;
+      }
+
+      userAnswers = state.userAnswers;
+      currentQuestionIndex = Math.min(
+        Math.max(parseInt(state.currentQuestionIndex || 0, 10), 0),
+        questions.length - 1
+      );
+
+      startScreen.classList.add("hidden");
+
+      if (state.phase === "results"){
+        quizScreen.classList.add("hidden");
+        resultScreen.classList.remove("hidden");
+        bottomBar.classList.add("hidden");
+        showResults();
+      } else {
+        quizScreen.classList.remove("hidden");
+        resultScreen.classList.add("hidden");
+        bottomBar.classList.remove("hidden");
+        loadQuestion();
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  BOTTOM BAR
+     ***********************/
+    function updateBottomBar(){
+      if (quizScreen.classList.contains("hidden")) return;
+
+      const answeredCount = userAnswers.filter(a => a !== null).length;
+      bottomBarMeta.innerHTML =
+        `Q <strong>${currentQuestionIndex + 1}</strong> / ${questions.length} <span class="pill">${answeredCount} answered</span>`;
+
+      bottomBarList.innerHTML = "";
+
+      for (let i = 0; i < questions.length; i++){
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.textContent = (i + 1);
+
+        if (i === currentQuestionIndex) btn.classList.add("current");
+
+        const ans = userAnswers[i];
+        if (ans !== null){
+          if (ans === questions[i].correct) btn.classList.add("answered-correct");
+          else btn.classList.add("answered-wrong");
+        }
+
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = i;
+          loadQuestion();
+          saveProgress();
+        });
+
+        bottomBarList.appendChild(btn);
+      }
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn){
+        currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    }
+
+    /***********************
+     *  LOAD QUESTION
+     ***********************/
+    function loadQuestion(){
+      const currentQuestion = questions[currentQuestionIndex];
+
+      questionCount.textContent =
+        "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = "";
+      explanationElement.classList.add("hidden");
+      explanationElement.textContent = "";
+
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.textContent = option;
+
+        if (userAnswers[currentQuestionIndex] === index){
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+          handleAnswer(index);
+        });
+
+        optionsElement.appendChild(button);
+      });
+
+      if (userAnswers[currentQuestionIndex] !== null){
+        showAnswerFeedback(userAnswers[currentQuestionIndex], false);
+      }
+
+      prevButton.classList.toggle("hidden", currentQuestionIndex === 0);
+
+      if (userAnswers[currentQuestionIndex] !== null) nextButton.classList.remove("hidden");
+      else nextButton.classList.add("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function showAnswerFeedback(selectedIndex, lockButtons){
+      const currentQuestion = questions[currentQuestionIndex];
+      const buttons = optionsElement.querySelectorAll("button");
+
+      buttons.forEach((btn, idx) => {
+        btn.classList.remove("correct", "wrong");
+
+        if (idx === currentQuestion.correct){
+          btn.classList.add("correct");
+        }
+
+        if (idx === selectedIndex && selectedIndex !== currentQuestion.correct){
+          btn.classList.add("wrong");
+        }
+
+        btn.disabled = !!lockButtons;
+      });
+
+      userAnswers[currentQuestionIndex] = selectedIndex;
+
+      explanationElement.textContent = currentQuestion.explanation;
+      explanationElement.classList.remove("hidden");
+
+      nextButton.classList.remove("hidden");
+
+      updateBottomBar();
+      saveProgress();
+    }
+
+    function handleAnswer(selectedIndex){
+      showAnswerFeedback(selectedIndex, true);
+    }
+
+    /***********************
+     *  NAV
+     ***********************/
+    function goNext(){
+      if (currentQuestionIndex < questions.length - 1){
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+      saveProgress();
+    }
+
+    function goBack(){
+      if (currentQuestionIndex > 0){
+        currentQuestionIndex--;
+        loadQuestion();
+      }
+      saveProgress();
+    }
+
+    /***********************
+     *  RESULTS
+     ***********************/
+    function showResults(){
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+
+      const correctAnswers = userAnswers.filter((answer, index) => {
+        return answer === questions[index].correct;
+      }).length;
+
+      finalScore.textContent =
+        "You got " + correctAnswers + " out of " + questions.length + " questions correct.";
+
+      reviewTableBody.innerHTML = "";
+
+      questions.forEach((q, index) => {
+        const row = document.createElement("tr");
+
+        if (userAnswers[index] === q.correct) row.classList.add("correct");
+        else row.classList.add("wrong");
+
+        const questionCell = document.createElement("td");
+        questionCell.textContent = q.question;
+
+        const statusCell = document.createElement("td");
+        statusCell.textContent = userAnswers[index] === q.correct ? "Correct" : "Wrong";
+
+        row.appendChild(questionCell);
+        row.appendChild(statusCell);
+        reviewTableBody.appendChild(row);
+
+        row.addEventListener("click", () => {
+          reviewQuestion(index);
+        });
+      });
+
+      saveProgress();
+    }
+
+    function reviewQuestion(index){
+      currentQuestionIndex = index;
+
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+
+      loadQuestion();
+
+      let backToResultsButton = document.getElementById("back-to-results-button");
+      if (!backToResultsButton){
+        backToResultsButton = document.createElement("button");
+        backToResultsButton.id = "back-to-results-button";
+        backToResultsButton.textContent = "Back to Results";
+        backToResultsButton.className = "secondary-button";
+        backToResultsButton.addEventListener("click", showResults);
+        quizScreen.appendChild(backToResultsButton);
+      }
+
+      saveProgress();
+    }
+
+    /***********************
+     *  RESTART
+     ***********************/
+    function restartQuiz(){
+      clearSavedProgress();
+      location.reload();
+    }
+  </script>
+</body>
+</html>

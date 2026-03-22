@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPRE Conflict of Interest Quiz</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #cbd5e1;
+      --accent: #1d4ed8;
+      --accent-soft: #dbeafe;
+      --correct: #166534;
+      --correct-bg: #dcfce7;
+      --wrong: #991b1b;
+      --wrong-bg: #fee2e2;
+      --unanswered-bg: #fff7ed;
+      --unanswered-border: #fdba74;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding: 32px 18px 60px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .subtitle {
+      margin: 0 0 22px;
+      color: var(--muted);
+    }
+
+    .tip {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+
+    .controls {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      background: rgba(248, 250, 252, 0.95);
+      backdrop-filter: blur(6px);
+      padding: 14px 0 18px;
+      margin-bottom: 18px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .secondary {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .score-box {
+      margin-left: auto;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .qnum {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+
+    .question {
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    label.option {
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: 0.15s ease;
+      background: #fff;
+    }
+
+    label.option:hover {
+      border-color: var(--accent);
+      background: #f8fbff;
+    }
+
+    label.option input {
+      margin-right: 10px;
+      transform: translateY(1px);
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.96rem;
+    }
+
+    .feedback.correct {
+      display: block;
+      background: var(--correct-bg);
+      color: var(--correct);
+      border: 1px solid #86efac;
+    }
+
+    .feedback.wrong {
+      display: block;
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid #fca5a5;
+    }
+
+    .feedback.unanswered {
+      display: block;
+      background: var(--unanswered-bg);
+      border: 1px solid var(--unanswered-border);
+      color: #9a3412;
+    }
+
+    .explanation {
+      margin-top: 6px;
+      color: inherit;
+    }
+
+    .correct-answer {
+      font-weight: 700;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .results-summary {
+      display: none;
+      margin-bottom: 24px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+    }
+
+    .results-summary.show {
+      display: block;
+    }
+
+    .results-summary h2 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    @media (max-width: 720px) {
+      .score-box {
+        margin-left: 0;
+      }
+
+      .button-row {
+        align-items: stretch;
+      }
+
+      button, .score-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>MPRE Conflict of Interest Quiz</h1>
+    <p class="subtitle">
+      Focus: current-client vs. former-client conflicts, direct adversity, substantial relationship, consentability, and who must consent.
+    </p>
+
+    <div class="tip">
+      <strong>Quick approach:</strong> Ask:
+      (1) current or former client?
+      (2) same matter / same proceeding / substantially related?
+      (3) directly adverse, materially adverse, or only economically adverse?
+      (4) if conflict exists, is it waivable and whose informed written consent is needed?
+    </div>
+
+    <div class="controls">
+      <div class="button-row">
+        <button class="primary" onclick="gradeQuiz()">Submit Quiz</button>
+        <button class="secondary" onclick="resetQuiz()">Reset Quiz</button>
+        <div class="score-box" id="liveProgress">Answered: 0 / 12</div>
+      </div>
+    </div>
+
+    <div class="results-summary" id="resultsSummary">
+      <h2 id="scoreText"></h2>
+      <div class="muted" id="scoreMessage"></div>
+    </div>
+
+    <form id="quizForm">
+      <!-- Q1 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 1</div>
+        <div class="question">
+          Lawyer represents Paula in a contract action against David. David asks Lawyer to represent him in the same action because he believes Lawyer is especially skilled and both clients are willing to consent. May Lawyer represent both Paula and David?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q1" value="A">A. Yes, if Lawyer reasonably believes she can be fair to both and both clients give informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q1" value="B">B. Yes, because the conflict is waivable whenever both clients are sophisticated parties.</label>
+          <label class="option"><input type="radio" name="q1" value="C">C. No, because representing opposing parties in the same litigation is a nonconsentable conflict.</label>
+          <label class="option"><input type="radio" name="q1" value="D">D. No, unless the tribunal also gives written consent.</label>
+        </div>
+        <div class="feedback" id="feedback-q1"></div>
+      </div>
+
+      <!-- Q2 -->
+<div class="card question-card" data-answer="C">
+  <div class="qnum">Question 2</div>
+  <div class="question">
+    Lawyer represents Defendant Corp in unrelated corporate matters. Plaintiff asks Lawyer to sue Defendant Corp in a separate negligence action. Defendant Corp is a current client of Lawyer, but Lawyer does not represent Plaintiff yet. Which is most accurate?
+  </div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q2" value="A">A. No conflict exists because the matters are unrelated.</label>
+    <label class="option"><input type="radio" name="q2" value="B">B. The conflict is nonconsentable because the case would place Plaintiff and Defendant in the same lawsuit.</label>
+    <label class="option"><input type="radio" name="q2" value="C">C. A concurrent conflict exists because Lawyer would be directly adverse to a current client, but Lawyer may proceed only if Rule 1.7(b) is satisfied and each affected client gives informed consent, confirmed in writing.</label>
+    <label class="option"><input type="radio" name="q2" value="D">D. No conflict exists unless the new lawsuit is substantially related to the corporate work.</label>
+  </div>
+  <div class="feedback" id="feedback-q2"></div>
+</div>
+
+      <!-- Q3 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 3</div>
+        <div class="question">
+          Lawyer represents two current clients, each of whom owns a different software company. The companies compete in the marketplace, but Lawyer handles unrelated tax work for one and lease negotiations for the other. Neither client is suing or negotiating against the other. Is Lawyer subject to discipline for representing both without consent?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q3" value="A">A. Yes, because representing economic competitors always creates direct adversity.</label>
+          <label class="option"><input type="radio" name="q3" value="B">B. Yes, unless both clients give informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q3" value="C">C. No, because mere economic competition in unrelated matters ordinarily is not direct adversity and may not create a conflict at all.</label>
+          <label class="option"><input type="radio" name="q3" value="D">D. No, but only if both clients are former clients.</label>
+        </div>
+        <div class="feedback" id="feedback-q3"></div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 4</div>
+        <div class="question">
+          Lawyer formerly represented Frank in negotiating the sale of a small medical practice. Now Client Carla asks Lawyer to represent her in suing Frank over alleged fraud in that same sale transaction. Carla is not otherwise adverse to any current client of Lawyer. May Lawyer represent Carla?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q4" value="A">A. Yes, because Frank is a former client rather than a current client.</label>
+          <label class="option"><input type="radio" name="q4" value="B">B. Yes, if Carla consents in writing.</label>
+          <label class="option"><input type="radio" name="q4" value="C">C. No, unless Frank gives informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q4" value="D">D. No, because former-client conflicts are never waivable.</label>
+        </div>
+        <div class="feedback" id="feedback-q4"></div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="card question-card" data-answer="B">
+        <div class="qnum">Question 5</div>
+        <div class="question">
+          Lawyer formerly represented Fiona in drafting a commercial lease five years ago. Lawyer now wants to represent Current Client Carl in a personal-injury action against Fiona arising from a car accident. Which is the best answer?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q5" value="A">A. Lawyer may not represent Carl unless Fiona consents in writing, because adversity to a former client always requires consent.</label>
+          <label class="option"><input type="radio" name="q5" value="B">B. Lawyer may represent Carl because Rule 1.9(a) generally does not apply when the new matter is unrelated to the former representation.</label>
+          <label class="option"><input type="radio" name="q5" value="C">C. Lawyer may represent Carl only if Carl and Fiona both consent in writing.</label>
+          <label class="option"><input type="radio" name="q5" value="D">D. Lawyer may not represent Carl because any suit against a former client is prohibited.</label>
+        </div>
+        <div class="feedback" id="feedback-q5"></div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 6</div>
+        <div class="question">
+          Lawyer formerly represented Former Client F in a regulatory investigation. Lawyer now represents Current Client C in a separate transaction that is not materially adverse to F. However, Lawyer knows confidential facts from the prior representation that could be useful in advising C. What is the best answer?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q6" value="A">A. No issue exists because C is not adverse to F.</label>
+          <label class="option"><input type="radio" name="q6" value="B">B. Lawyer may freely use F’s confidential information because the new matter is different.</label>
+          <label class="option"><input type="radio" name="q6" value="C">C. There may be a material-limitation conflict under Rule 1.7(a)(2), and Lawyer still may not use or reveal F’s confidential information absent consent or another exception.</label>
+          <label class="option"><input type="radio" name="q6" value="D">D. The only issue is whether C consents orally.</label>
+        </div>
+        <div class="feedback" id="feedback-q6"></div>
+      </div>
+
+      <!-- Q7 -->
+      <div class="card question-card" data-answer="B">
+        <div class="qnum">Question 7</div>
+        <div class="question">
+          At Lawyer’s old firm, Lawyer personally worked for Former Client F on a patent-licensing dispute and learned material confidential information. After joining a new firm, Lawyer is asked to represent Client C against F in the same dispute. Which is most accurate?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q7" value="A">A. Lawyer may represent C because F was never Lawyer’s own client, only the old firm’s client.</label>
+          <label class="option"><input type="radio" name="q7" value="B">B. Lawyer may represent C only if F gives informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q7" value="C">C. Lawyer may represent C if C gives informed consent in writing.</label>
+          <label class="option"><input type="radio" name="q7" value="D">D. Lawyer may always represent C if the new firm screens Lawyer.</label>
+        </div>
+        <div class="feedback" id="feedback-q7"></div>
+      </div>
+
+      <!-- Q8 -->
+      <div class="card question-card" data-answer="B">
+        <div class="qnum">Question 8</div>
+        <div class="question">
+          Lawyer represents Buyer and Seller in unrelated matters. Buyer asks Lawyer to bring a claim against Seller in a new lawsuit. The claim is unrelated to Lawyer’s existing work for either client. Both clients want to waive the conflict. May Lawyer proceed?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q8" value="A">A. Yes, automatically, because the lawsuit is unrelated to the other work.</label>
+          <label class="option"><input type="radio" name="q8" value="B">B. Yes, but only if Lawyer satisfies the Rule 1.7(b) conditions and each affected client gives informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q8" value="C">C. No, because any adversity between current clients is nonconsentable.</label>
+          <label class="option"><input type="radio" name="q8" value="D">D. No, unless the matter is substantially related.</label>
+        </div>
+        <div class="feedback" id="feedback-q8"></div>
+      </div>
+
+      <!-- Q9 -->
+  <!-- Q9 -->
+<div class="card question-card" data-answer="C">
+  <div class="qnum">Question 9</div>
+  <div class="question">
+    Lawyer already represents Paula as plaintiff and David as defendant in the same lawsuit. Both Paula and David want Lawyer to continue representing them, and both give informed consent, confirmed in writing. Is Lawyer subject to discipline if Lawyer continues to represent both sides in that lawsuit?
+  </div>
+  <div class="options">
+    <label class="option"><input type="radio" name="q9" value="A">A. No, because informed written consent cures any current-client conflict.</label>
+    <label class="option"><input type="radio" name="q9" value="B">B. No, if Lawyer reasonably believes she can be fair to both clients.</label>
+    <label class="option"><input type="radio" name="q9" value="C">C. Yes, because representing opposing parties in the same litigation is a nonconsentable conflict even if both clients consent.</label>
+    <label class="option"><input type="radio" name="q9" value="D">D. No, unless one client later revokes consent.</label>
+  </div>
+  <div class="feedback" id="feedback-q9"></div>
+</div>
+
+      <!-- Q10 -->
+      <div class="card question-card" data-answer="B">
+        <div class="qnum">Question 10</div>
+        <div class="question">
+          Lawyer formerly represented Former Client F in a merger negotiation. Lawyer now wants to represent Client C in a matter that is substantially related to that merger work, but C’s interests are aligned with F rather than adverse to F. Which is the best answer?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q10" value="A">A. Rule 1.9(a) automatically bars the representation because the matter is substantially related.</label>
+          <label class="option"><input type="radio" name="q10" value="B">B. Rule 1.9(a) usually is not triggered without material adversity, though Lawyer still must protect F’s confidential information.</label>
+          <label class="option"><input type="radio" name="q10" value="C">C. Lawyer may proceed only if F consents in writing because all substantially related matters require consent.</label>
+          <label class="option"><input type="radio" name="q10" value="D">D. Lawyer may proceed only if both F and C consent orally.</label>
+        </div>
+        <div class="feedback" id="feedback-q10"></div>
+      </div>
+
+      <!-- Q11 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 11</div>
+        <div class="question">
+          Lawyer represents Current Client A in lease negotiations. Lawyer also represents Current Client B in drafting employee handbooks. A asks Lawyer to sue B in a separate tort action. Lawyer reasonably believes she can competently and diligently represent both, and the representation is not otherwise prohibited by law. What else is required if Lawyer wishes to proceed?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q11" value="A">A. Only A’s informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q11" value="B">B. Only B’s informed consent, confirmed in writing.</label>
+          <label class="option"><input type="radio" name="q11" value="C">C. Informed consent, confirmed in writing, from each affected client.</label>
+          <label class="option"><input type="radio" name="q11" value="D">D. No consent is needed because the matters are unrelated.</label>
+        </div>
+        <div class="feedback" id="feedback-q11"></div>
+      </div>
+
+      <!-- Q12 -->
+      <div class="card question-card" data-answer="C">
+        <div class="qnum">Question 12</div>
+        <div class="question">
+          Lawyer represented Former Client F in drafting a confidentiality agreement. Years later, Lawyer wants to represent Client C against F in a dispute over that same confidentiality agreement. C gives informed written consent, but F refuses. May Lawyer represent C?
+        </div>
+        <div class="options">
+          <label class="option"><input type="radio" name="q12" value="A">A. Yes, because the current client’s consent is enough.</label>
+          <label class="option"><input type="radio" name="q12" value="B">B. Yes, because F is only a former client.</label>
+          <label class="option"><input type="radio" name="q12" value="C">C. No, because in a same or substantially related matter adverse to a former client, the former client must consent in writing.</label>
+          <label class="option"><input type="radio" name="q12" value="D">D. No, because former-client conflicts are never waivable.</label>
+        </div>
+        <div class="feedback" id="feedback-q12"></div>
+      </div>
+    </form>
+
+    <div class="footer">
+      This is a simplified MPRE-style study quiz. Always check the exact rule wording and comments.
+    </div>
+  </div>
+
+  <script>
+    const explanations = {
+      q1: {
+        correct: "C",
+        text: "Representing opposing parties in the same litigation or proceeding before a tribunal is a nonconsentable concurrent conflict under Rule 1.7(b)(3). Client consent cannot cure it."
+      },
+     q2: {
+  correct: "C",
+  text: "This is direct adversity to a current client under Rule 1.7(a)(1), even though the matters are unrelated. Because Lawyer is not representing both sides of the same lawsuit, the conflict is potentially waivable if Rule 1.7(b) is satisfied and each affected client gives informed consent, confirmed in writing."
+},
+      q3: {
+        correct: "C",
+        text: "Mere economic competition in unrelated matters is usually not enough to create direct adversity. The clients must generally be legal opponents, not just market rivals."
+      },
+      q4: {
+        correct: "C",
+        text: "This is a former-client conflict under Rule 1.9(a): same or substantially related matter, materially adverse to the former client. Former Client Frank must give informed consent, confirmed in writing."
+      },
+      q5: {
+        correct: "B",
+        text: "Rule 1.9(a) generally does not apply unless the new matter is the same as or substantially related to the prior one. An unrelated car-accident suit is ordinarily allowed."
+      },
+      q6: {
+        correct: "C",
+        text: "Even if the new matter is not materially adverse to the former client, the lawyer may face a Rule 1.7(a)(2) material-limitation conflict and still may not use or reveal the former client’s confidential information contrary to Rule 1.9(c)."
+      },
+      q7: {
+        correct: "B",
+        text: "Rule 1.9(b) covers this. If the lawyer acquired material protected information at the old firm and the new matter is the same or substantially related and materially adverse, the former client’s informed written consent is required."
+      },
+      q8: {
+        correct: "B",
+        text: "This is direct adversity between current clients under Rule 1.7(a)(1). Because the clients are not opposing parties in the same proceeding, it may be waivable if Rule 1.7(b) is satisfied and each affected client consents in writing."
+      },
+     q9: {
+  correct: "C",
+  text: "Representing opposing parties in the same litigation is a nonconsentable concurrent conflict under Rule 1.7(b)(3). Client consent cannot cure it."
+},
+      q10: {
+        correct: "B",
+        text: "Rule 1.9(a) requires both substantial relatedness and material adversity. Without material adversity, Rule 1.9(a) is usually not triggered, though confidentiality duties still apply."
+      },
+      q11: {
+        correct: "C",
+        text: "For a consentable current-client conflict, each affected client must give informed consent, confirmed in writing."
+      },
+      q12: {
+        correct: "C",
+        text: "In a same or substantially related matter adverse to a former client, the former client’s informed consent, confirmed in writing, is required. The current client’s consent alone is not enough."
+      }
+    };
+
+    function updateProgress() {
+      let answered = 0;
+      for (let i = 1; i <= 12; i++) {
+        const picked = document.querySelector(`input[name="q${i}"]:checked`);
+        if (picked) answered++;
+      }
+      document.getElementById("liveProgress").textContent = `Answered: ${answered} / 12`;
+    }
+
+    document.querySelectorAll('input[type="radio"]').forEach(input => {
+      input.addEventListener('change', updateProgress);
+    });
+
+    function gradeQuiz() {
+      let score = 0;
+      let answered = 0;
+
+      for (let i = 1; i <= 12; i++) {
+        const questionName = `q${i}`;
+        const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+        const feedback = document.getElementById(`feedback-${questionName}`);
+        const correct = explanations[questionName].correct;
+
+        feedback.className = "feedback";
+
+        if (!selected) {
+          feedback.classList.add("unanswered");
+          feedback.innerHTML = `
+            <strong>Unanswered.</strong>
+            <div class="explanation">
+              <span class="correct-answer">Correct answer: ${correct}.</span> ${explanations[questionName].text}
+            </div>
+          `;
+          continue;
+        }
+
+        answered++;
+
+        if (selected.value === correct) {
+          score++;
+          feedback.classList.add("correct");
+          feedback.innerHTML = `
+            <strong>Correct.</strong>
+            <div class="explanation">${explanations[questionName].text}</div>
+          `;
+        } else {
+          feedback.classList.add("wrong");
+          feedback.innerHTML = `
+            <strong>Incorrect.</strong>
+            <div class="explanation">
+              <span class="correct-answer">Correct answer: ${correct}.</span> ${explanations[questionName].text}
+            </div>
+          `;
+        }
+      }
+
+      const results = document.getElementById("resultsSummary");
+      const scoreText = document.getElementById("scoreText");
+      const scoreMessage = document.getElementById("scoreMessage");
+
+      const percent = Math.round((score / 12) * 100);
+
+      scoreText.textContent = `Your score: ${score} / 12 (${percent}%)`;
+
+      let message = "";
+      if (percent >= 85) {
+        message = "Excellent. You’re tracking these conflict distinctions very well.";
+      } else if (percent >= 70) {
+        message = "Good. You’ve got the framework, but a few distinctions still need tightening.";
+      } else if (percent >= 50) {
+        message = "Decent start. Focus especially on current vs. former client, same proceeding, and who must consent.";
+      } else {
+        message = "Keep drilling. The biggest gains usually come from slowing down and spotting: current/former, related/unrelated, and consentable/nonconsentable.";
+      }
+
+      scoreMessage.textContent = `${answered} answered before submission. ${message}`;
+      results.classList.add("show");
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetQuiz() {
+      document.getElementById("quizForm").reset();
+      document.getElementById("resultsSummary").classList.remove("show");
+
+      for (let i = 1; i <= 12; i++) {
+        const feedback = document.getElementById(`feedback-q${i}`);
+        feedback.className = "feedback";
+        feedback.innerHTML = "";
+      }
+
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    updateProgress();
+  </script>
+</body>
+</html>

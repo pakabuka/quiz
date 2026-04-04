@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evidence Exam</title>
+
+  <style>
+    :root{
+      --bg0: #f7f8fb;
+      --bg1: #eef2ff;
+      --card: rgba(255,255,255,.78);
+      --cardSolid: #ffffff;
+
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, .65);
+      --hairline: rgba(15, 23, 42, .10);
+
+      --shadow: 0 18px 50px rgba(2, 6, 23, .12);
+      --shadow2: 0 8px 18px rgba(2, 6, 23, .08);
+
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+
+      --radius: 18px;
+      --maxW: 920px;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg0: #0b1220;
+        --bg1: #111a2e;
+        --card: rgba(17, 24, 39, .62);
+        --cardSolid: rgba(17, 24, 39, .90);
+
+        --text: #e5e7eb;
+        --muted: rgba(229, 231, 235, .65);
+        --hairline: rgba(229, 231, 235, .12);
+
+        --shadow: 0 20px 60px rgba(0,0,0,.55);
+        --shadow2: 0 10px 24px rgba(0,0,0,.35);
+
+        --accent: #60a5fa;
+        --accent2: #3b82f6;
+      }
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
+
+    body{
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(900px 420px at 20% 10%, rgba(37,99,235,.16), transparent 60%),
+        radial-gradient(900px 420px at 80% 15%, rgba(99,102,241,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display: grid;
+      place-items: center;
+      padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+    }
+
+    .wrap{
+      width: min(var(--maxW), 100%);
+      display: grid;
+      gap: 14px;
+    }
+
+    .card{
+      position: relative;
+      border-radius: var(--radius);
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(280px 280px at 12% 18%, rgba(37,99,235,.18), transparent 60%),
+        radial-gradient(280px 280px at 90% 30%, rgba(99,102,241,.14), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .topbar{
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .heading{
+      display: grid;
+      gap: 6px;
+      padding-right: 6px;
+    }
+
+    h1{
+      margin: 0;
+      font-size: clamp(26px, 3.2vw, 40px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle{
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.35;
+      max-width: 70ch;
+    }
+
+    .back{
+      position: relative;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 650;
+      font-size: 13.5px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--hairline);
+      background: rgba(2,6,23,.03);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    @media (prefers-color-scheme: dark){
+      .back{ background: rgba(255,255,255,.06); }
+    }
+
+    .back:hover{
+      transform: translateY(-1px);
+      border-color: rgba(37,99,235,.25);
+      box-shadow: var(--shadow2);
+    }
+
+    .back:active{
+      transform: translateY(0px);
+    }
+
+    .back:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25), var(--shadow2);
+      border-color: rgba(37,99,235,.45);
+    }
+
+    .grid{
+      position: relative;
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 720px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (min-width: 1050px){
+      .grid{ grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .tile{
+      appearance: none;
+      border: 1px solid var(--hairline);
+      background: var(--cardSolid);
+      border-radius: 16px;
+      box-shadow: var(--shadow2);
+      padding: 14px 14px;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      text-align: left;
+
+      color: var(--text);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      min-height: 74px;
+    }
+
+    .tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(37,99,235,.25);
+      box-shadow: 0 18px 42px rgba(2,6,23,.14);
+    }
+
+    .tile:active{
+      transform: translateY(0px) scale(.99);
+    }
+
+    .tile:focus-visible{
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25), var(--shadow2);
+      border-color: rgba(37,99,235,.45);
+    }
+
+    .left{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .badge{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(99,102,241,.10));
+      border: 1px solid rgba(37,99,235,.18);
+      flex: 0 0 auto;
+    }
+
+    .badge span{
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: 14px;
+      opacity: .95;
+    }
+
+    .txt{
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .titleRow{
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      min-width: 0;
+    }
+
+    .module{
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      font-size: 15.5px;
+      white-space: nowrap;
+    }
+
+    .name{
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .arrow{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--hairline);
+      background: rgba(2,6,23,.03);
+      flex: 0 0 auto;
+    }
+
+    @media (prefers-color-scheme: dark){
+      .arrow{ background: rgba(255,255,255,.05); }
+    }
+
+    .arrow svg{
+      width: 18px;
+      height: 18px;
+    }
+
+    .footer{
+      position: relative;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--hairline);
+      text-align: center;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .tile, .back{ transition: none; }
+      .tile:hover, .back:hover{ transform: none; }
+      .tile:active, .back:active{ transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <section class="card" aria-label="Evidence Exam Menu">
+      <div class="topbar">
+        <div class="heading">
+          <h1>Evidence Exam</h1>
+          <p class="subtitle">
+            Practice exams with a clean, mobile-friendly layout.
+          </p>
+        </div>
+
+        <a class="back" href="index.html" aria-label="Back to main menu">
+          <span aria-hidden="true">←</span>
+          Menu
+        </a>
+      </div>
+
+      <div class="grid">
+        <button class="tile" onclick="location.href='exam_2018.html'">
+          <div class="left">
+            <div class="badge"><span>18</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Exam 2018</div>
+                <div class="name">Evidence Practice Exam</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='exam_2019.html'">
+          <div class="left">
+            <div class="badge"><span>19</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Exam 2019</div>
+                <div class="name">Evidence Practice Exam</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='exam_2020.html'">
+          <div class="left">
+            <div class="badge"><span>20</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Exam 2020</div>
+                <div class="name">Evidence Practice Exam</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+
+        <button class="tile" onclick="location.href='exam_2022.html'">
+          <div class="left">
+            <div class="badge"><span>22</span></div>
+            <div class="txt">
+              <div class="titleRow">
+                <div class="module">Exam 2022</div>
+                <div class="name">Evidence Practice Exam</div>
+              </div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+
+      <div class="footer">
+        © <span id="year"></span> Frederick Liu. All rights reserved.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

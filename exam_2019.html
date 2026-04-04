@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Evidence Spring 2019 Exam Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Exam Review</div>
+        <h1>Evidence Spring 2019 Exam</h1>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains the full uploaded 2019 evidence exam, converted into the same interactive study format with saved progress, jump navigation, auto-scoring for multiple-choice questions, and best-effort model answers or study notes for essays.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: some questions refer to outside casebook problems whose full facts are not reproduced in the uploaded exam text. For those, this page leaves an honest study note instead of inventing a specific answer.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file generated for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "evidence_exam_interactive_review_2019_v1";
+    const questions = [{"number": 1, "stem": "Plaintiff is suing Defendant for injuries that occurred on July 1 around noon when\nPlaintiff, crossing the street, was struck by one of Defendant’s trucks. The truck\nwas being driven by Driver, an employee of Defendant. Defendant claims that\nDriver was not on company business at the time of the accident. (Assume that\nthis would constitute a legal defense.) Plaintiff calls Driver, who testifies about\nthe accident. On cross-examination, Defendant asks, “Isn’t it true that at 11\no’clock in the morning on July 1, you dropped by the depot and informed your\nsupervisor that you needed to take the truck for three hours to help your mother\nmove to a new apartment?” Driver answers, “Yes.”\nPlaintiff objects on hearsay grounds. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "Driver’s in-court answer is present testimony, not hearsay. The lawyer’s question only became evidence because Driver adopted it on the stand by answering yes.", "closeCall": false, "correctIndices": null}, {"number": 2, "stem": "Now suppose that the trial judge, whether erroneously or not, overrules the\nobjection. Plaintiff then calls Witness, another employee of Defendant, who was\npresent when Driver arrived at the depot at 11 am on the day of the accident.\nPlaintiff reads the question that Defendant propounded to Driver, then asks,\n“Was any such statement made by Driver at that time?” Witness answers, “No\nsuch statement was made.”\nDefendant objects on hearsay grounds. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "Witness is not repeating an out-of-court assertion for its truth; he is testifying that no such statement was made. That is ordinary testimonial evidence, not hearsay.", "closeCall": false, "correctIndices": null}, {"number": 3, "stem": "Now suppose that the trial judge, whether erroneously or not, overrules the\nobjection. Plaintiff then asks Witness, “What statement if any did Driver make?”\nWitness says, “Driver told Supervisor that he had just finished his most recent\nround of deliveries and was prepared to load up and deliver some more.”\nDefendant objects on hearsay grounds. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "Driver’s statement to Supervisor was made during the employment relationship and concerned Driver’s work duties, so it is admissible against Defendant as a party-opponent statement by an employee.", "closeCall": false, "correctIndices": null}, {"number": 4, "stem": "Now suppose that the trial judge, whether erroneously or not, overrules the\nobjection. On cross-examination, Defendant asks Witness, “Isn’t it a fact that\nyou have a longstanding grudge against your employer for not promoting you?”\nPlaintiff objects, citing Rules 403 and 404. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "A claimed grudge against the employer is classic bias impeachment. Rule 404 does not bar bias evidence, and Rule 403 usually will not exclude so direct a bias question.", "closeCall": false, "correctIndices": null}, {"number": 5, "stem": "Now suppose that Defendant offers what purports to be a screenshot from\nDriver’s social media account. The screenshot bears a date of July 1 and\nincludes a photograph of Driver standing beside his truck with the caption, “Just\nspent the last three hours moving Mom to new digs. Missed lunch.” To\nauthenticate the screenshot, Defendant offers the testimony of Supervisor, who\n\nsays that as part of her job she regularly studies the social media postings of the\nemployees, that she found this image on what she recognizes to be Driver’s\naccount, and that one reason she recognizes it as Driver’s account is that she\nhas frequently communicated with him on it. Plaintiff objects to this means of\nauthentication. How should the court rule and why?", "options": ["The authentication is proper if Quinnipiac follows the Maryland rule but\nimproper if Quinnipiac follows the Texas rule.", "The authentication is proper if Quinnipiac follows the Texas rule but\nimproper if Quinnipiac follows the Maryland rule.", "The authentication is proper whether Quinnipiac follows the Maryland rule\nor the Texas rule.", "The authentication is improper whether Quinnipiac follows the Maryland\nRule or the Texas rule."], "answerType": "mc", "modelAnswer": "c", "explanation": "Supervisor’s familiarity with the account from repeated prior communications is enough circumstantial authentication under either the stricter Maryland approach or the more flexible Texas approach.", "closeCall": false, "correctIndices": [2]}, {"number": 6, "stem": "Plaintiff offers evidence that Defendant employer knew that Driver had a\nreputation for being often high on the job, and still allowed him to drive.\nDefendant objects to this evidence. The objection should be:", "options": ["Sustained, because character can only be proved by specific examples.", "Sustained, because character evidence is admissible only in criminal cases.", "Overruled, if the evidence is offered to show the negligence only of Driver.", "Overruled, if the evidence is offered to show the negligence only of\nDefendant employer."], "answerType": "mc", "modelAnswer": "d", "explanation": "The evidence is proper if used to show negligent hiring, retention, or supervision by the employer. Used to show that Driver acted carelessly on this occasion, it would be propensity evidence.", "closeCall": false, "correctIndices": [3]}, {"number": 7, "stem": "The following four questions test your general knowledge of evidence law.\n\nCarter is on trial for murdering Rich Uncle with a knife. The prosecution offers\nSmarter, who is Carter’s cousin and Rich Uncle’s niece. Smarter testifies that at\nlunch a few weeks before the murder, Carter told her how much he hated Rich\nUncle for decades of verbal abuse. On cross-examination, Carter’s counsel asks\nSmarter whether she was at one point a suspect in the crime. Smarter admits\nthat she was and adds that she was exonerated. On redirect, the prosecution\nasks Smarter when she first told police about Carter’s comments. She replies,\n“The morning after the murder, as soon as I heard the news, I called the police\nand told them that Carter told me he hated Rich Uncle.” Counsel for Carter\nobjects to this testimony as hearsay. Which one of the following facts, if proved,\n\nwould provide the strongest ground for overruling the objection?", "options": ["At the time she made the call to the police about Carter, Smarter was\nunaware that she was a suspect.", "Smarter’s story about Carter in the call to the police was exactly the same\nas the story she is now telling from the stand.", "Subsequent to making the call to the police, Smarter signed a sworn\naffidavit to the same effect.", "Smarter and Carter have long been feuding over who will inherit Rich\nUncle’s estate."], "answerType": "mc", "modelAnswer": "a", "explanation": "The best route is a prior consistent statement made before Smarter had a motive to fabricate. If she did not yet know she was a suspect, the call predates that motive.", "closeCall": false, "correctIndices": [0]}, {"number": 8, "stem": "Sexton is suing Frost for injuries suffered in an automobile accident. To show\nFrost’s culpability, Sexton claims that Frost, who was driving, was impaired at the\ntime of the accident. As part of her proof, Sexton offers through Neruda the out-\nof-court statement of Dickinson, who said to Neruda a few hours before the\naccident, “Frost and I are going out to get drunk now.” Defendant objects to\nthis statement. If the Federal Rules of Evidence apply, how should the court rule\nand why?", "options": ["The statement is admissible to show what Dickinson subsequently did but\nnot to show what Frost subsequently did.", "The statement is admissible to show what Frost subsequently did but not\nto show what Dickinson subsequently did.", "The statement is admissible both to show what Frost subsequently did\nand to show what Dickinson subsequently did.", "The statement is not admissible either to show what Frost subsequently\ndid or to show what Dickinson subsequently did."], "answerType": "mc", "modelAnswer": "a", "explanation": "Under the Hillmon principle, Dickinson’s statement of her own future intent is admissible to show what Dickinson later did. It is not the best route to prove Frost’s later conduct.", "closeCall": false, "correctIndices": [0]}, {"number": 9, "stem": "Carter is suing Yale Law School for injuries he suffered when he fell while\ndescending the central staircase. In order to show Yale’s knowledge that the\nstair was unsafe, Carter offers to prove that one week after the accident the\nschool added non-slip treads to the stairs. Yale objects to this evidence. How\nshould the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Sustain the objection.", "explanation": "Adding non-slip treads one week later is a subsequent remedial measure. Rule 407 does not allow the plaintiff to use it to prove prior negligence or culpable conduct.", "closeCall": false, "correctIndices": null}, {"number": 10, "stem": "Turn to Problem 2.7 (p 132). In no more than three succinct sentences, answer\nthe prompt at the end of the problem.", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I did not invent a specific answer here.", "closeCall": true, "correctIndices": null}, {"number": 11, "stem": "The following nine questions are based on this fact pattern:\nLarkin, who runs Scondell Bloom, a big investment bank, is on trial for allegedly paying\n$300,000 to Sexton, his co-defendant, for assistance in helping his son, Larkin Junior,\nget into Pale University. According to the prosecutors, some of the money paid to\nSexton was used to bribe an SAT proctor to allow someone to check and alter Junior’s\nanswers after the test sheets were collected; some was used to pay Angelou, a test-\ntaking expert, to correct Junior’s answer sheet; and some was used to bribe Frost, the\ncoach of the Pale University chess team, to falsely tell the admissions office that Larkin\nJunior should be admitted because he was a great chess player. Larkin admits paying\nmoney to Sexton but denies any knowledge of what the money was used for. Sexton\nmade a partial confession but has repudiated it. Frost has agreed to cooperate with the\nprosecution. Angelou has left the jurisdiction and cannot be located.\n\nBecause Angelou has not been located, the prosecution offers a transcript of her\ngrand jury testimony. In the grand jury, Angelou stated that over a period of\nthree years, Sexton paid her $20,000 at a time to “fix” answers on standardized\ntests for various students. She said that she did this about nine or ten times\nduring that period, and that she clearly recalls correcting the answer sheet from\nLarkin Junior’s test. She said that Sexton did not tell her where the money came\nfrom but she assumed it came from one or both of Junior’s parents. Defense\nobjects to all of this evidence on hearsay grounds. Assume that Angelou is\nunavailable within the meaning of the statute. Is the prosecution entitled to\nintroduce the grand jury testimony? Why or why not?", "options": [], "answerType": "essay", "modelAnswer": "Only the genuinely self-inculpatory portions are plausibly admissible, and even then only if the rule’s trustworthiness requirements are met.", "explanation": "The transcript does not qualify as former testimony because the defense had no prior chance to cross-examine Angelou. Parts in which Angelou admits her own repeated cheating may fit the statement-against-interest exception, but collateral parts—especially her assumption about where the money came from—do not automatically come in.", "closeCall": false, "correctIndices": null}, {"number": 12, "stem": "The prosecution calls Therapist, who has been treating Larkin, and asks her\nwhether he discussed the alleged scheme with her. Larkin’s counsel objects on\nthe ground of privilege. The prosecution responds that the privilege should not\napply because Therapist does not have a medical degree or any formal training\nin psychiatry. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Sustain the privilege objection.", "explanation": "The psychotherapist-patient privilege is not limited to medical doctors or formally trained psychiatrists. It extends to covered therapeutic professionals, so the lack of an M.D. does not defeat the privilege.", "closeCall": false, "correctIndices": null}, {"number": 13, "stem": "The prosecution calls Whitman, an agent of the Federal Bureau of Investigation,\nwho testifies that a search of Larkin’s office turned up a handwritten diary that\nincluded several entries about telephone calls with Sexton and payments to her,\nincluding one that reads “S wants 100 K immediately, off books, no traces.”\nDefense objects that the handwriting has not been authenticated as Larkin’s.\nWhich of the following would suffice to authenticate the handwriting? (Choose\nas many as apply.)", "options": ["Testimony by one of the agents who searched Larkin’s office that the\nentry in question appears on a page of the diary she found there.", "Testimony by Whitman that he became familiar with Larkin’s handwriting\n\nwhile assisting the United States Attorney in preparing for the trial.", "Testimony by Larkin’s executive assistant that he knows Larkin’s writing\nwell and this is definitely Larkin’s writing.", "Testimony by the co-chair of the law firm that Larkin’s told her he keeps a\nhandwritten diary."], "answerType": "mc", "modelAnswer": "c", "explanation": "A lay witness with prior familiarity not acquired for litigation may authenticate handwriting. The executive assistant’s familiarity with Larkin’s writing does that.", "closeCall": false, "correctIndices": [2]}, {"number": 14, "stem": "Assume that the handwritten notes from the prior question have been properly\nauthenticated. Lawyers for Sexton object on hearsay grounds to offering the\nnotes against their client. If the objection is overruled, which one of the\nfollowing would present the strongest ground?", "options": ["Rule 801(d)(2)(A)", "Rule 801(d)(2)(E)", "Rule 803(3)", "Rule 804(b)(1)(B)"], "answerType": "mc", "modelAnswer": "b", "explanation": "The strongest listed theory is the coconspirator route. The other options fit poorly because the note is not Sexton’s own statement, not classic state-of-mind evidence, and not former testimony.", "closeCall": true, "correctIndices": [1]}, {"number": 15, "stem": "The prosecution offers Sexton’s confession, which inculpates both Sexton and\nLarkin. Sexton has repudiated the confession. The confession is not redacted in\nany way. Lawyers for both defendants object on Confrontation Clause grounds.\nIf Sexton does not testify, the confession is:", "options": ["Admissible against Sexton but not against Larkin.", "Admissible against Larkin but not against Sexton.", "Admissible against both Sexton and Larkin.", "Admissible against neither Sexton nor Larkin."], "answerType": "mc", "modelAnswer": "a", "explanation": "Sexton’s own confession may be used against Sexton, but admitting her unredacted confession against Larkin without cross-examination would violate Bruton and the Confrontation Clause.", "closeCall": false, "correctIndices": [0]}, {"number": 16, "stem": "The prosecution offers Frost, who testifies that Sexton paid him $50,000 to\ninform the Pale University admissions office that Larkin Junior was an excellent\nchess player whom he wanted for the team. On cross-examination, counsel for\nLarkin Senior asks Frost whether he ever had any direct communication with\nLarkin Senior about the matter. Frost says no. The prosecution objects on\nhearsay grounds. The objection should be:", "options": ["Sustained.", "Overruled, because on these facts Frost was clearly authorized by Larkin\nto speak on the matter.", "Overruled, because Frost is testifying to his own state of mind at the time\nof the trial.", "Overruled, because Frost is not repeating an out-of-court assertion."], "answerType": "mc", "modelAnswer": "d", "explanation": "Frost’s answer is not an out-of-court assertion at all. He is testifying from present personal knowledge that he never communicated directly with Larkin.", "closeCall": false, "correctIndices": [3]}, {"number": 17, "stem": "The defense offers Dickinson, who until her retirement ten years ago spent\nfifteen years as dean of admissions at Kingston, one of Pale University’s peer\nschools. The defense seeks to qualify Dickinson as an expert, citing her years of\nexperience and also her broad knowledge of the qualifications of the students\nwho were admitted to both schools. The purpose of her testimony is to offer the\nexpert opinion that Larkin Junior would “almost certainly” have been admitted to\nPale with or without the intervention of the chess coach. The prosecution\nobjects to qualifying Dickinson as an expert. The prosecution also objects to\nadmitting the opinion Dickinson intends to offer, even if the court qualifies her as\nan expert. How should the court rule on each objection and why? (You may\nassume that the testimony, if admissible, is relevant.)", "options": [], "answerType": "essay", "modelAnswer": "The court should likely qualify Dickinson as an expert but exclude or tightly limit the precise opinion offered.", "explanation": "Her admissions experience is enough to make her an expert. But saying Larkin Junior would 'almost certainly' have been admitted to a different school without the coach’s intervention is highly speculative and may not be helpful in that form.", "closeCall": true, "correctIndices": null}, {"number": 18, "stem": "The defense also offers several witnesses who have known Larkin for many\nyears and are willing to testify that they know him to be a man of exemplary\nhonesty and ethics who would never knowingly offer a bribe. The prosecution\nobjects that the testimony is forbidden character evidence. How should the\ncourt rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection, subject to the usual form limits.", "explanation": "In a criminal case the accused may offer opinion or reputation evidence of a pertinent character trait. Honesty and integrity are pertinent to a bribery-style charge.", "closeCall": false, "correctIndices": null}, {"number": 19, "stem": "Larkin offers Sandburg, a friend of Sexton’s, who testifies that when the charges\nwere handed down, Sexton said to him, “I’m in big trouble. I’d better find a way\nto shift the blame to Larkin.” Both the prosecution and Sexton object to this\ntestimony as hearsay. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the hearsay objections.", "explanation": "The statement is admissible at least as evidence of Sexton’s then-existing plan or motive to shift blame to Larkin. It is offered to show her intent, not simply for the truth of every proposition embedded in it.", "closeCall": false, "correctIndices": null}, {"number": 20, "stem": "The following four questions are based on Problem 8.3 (p 644):\n\nIn no more than three trenchant sentences, answer the prompt found at the end\nof the problem. (Be precise.)", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I left this as an open study prompt.", "closeCall": true, "correctIndices": null}, {"number": 21, "stem": "Now suppose that the prosecution offers Dickinson, a police detective, who is\nprepared to testify that she and her partner, in an unmarked car, followed the\ndefendant from the Sweetgum address, and that when they tried to make him\npull over, he sped away, and was stopped only when two marked patrol cars\nresponded and blocked his way. The defense objects to this testimony as\nirrelevant. What is the prosecution’s strongest response?", "options": ["The testimony is relevant as long as Dickinson and her partner did not\nidentify themselves as police detectives.", "The testimony is relevant because it preserves the chain of evidence.", "The testimony is relevant only if defendant was aware at the time of the\nchase that he was wanted in connection with other offenses.", "The testimony is relevant if defendant’s behavior constitutes flight."], "answerType": "mc", "modelAnswer": "c", "explanation": "Flight is probative only if the defendant knew the pursuit was connected to criminal suspicion. Without that link, the chase does little to show consciousness of guilt.", "closeCall": false, "correctIndices": [2]}, {"number": 22, "stem": "On cross-examination, the defense asks Dickinson whether she failed to inform\nher superiors in the department, as regulations required, that her driver’s license\nhad been suspended. The prosecution objects to this question. Based on the\nrelevant case we read this term, the objection should be:", "options": ["Overruled, because the question seeks to elicit a record of a regularly\nconducted activity.", "Overruled, as long as defense counsel has a reasonable basis for asking\nthe question.", "Sustained, if the question is based on otherwise inadmissible hearsay.", "Sustained, because a witness cannot be cross-examined about particular\ninstances of past conduct in order to attack her credibility."], "answerType": "mc", "modelAnswer": "b", "explanation": "A cross-examiner may ask about specific acts probative of truthfulness so long as counsel has a reasonable good-faith basis for the question.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "Defendant Kenneth Polidore denies that he was the individual whom the 911\ncaller saw selling drugs. Instead, he claims that the dealer in question was his\ntwin brother Kevin Polidore. In support of this theory, he offers Witness, who\nlives across the street from 2505 Sweetgum. Witness is prepared to testify that\non the night in question he was in the kitchen with his window open when he\nheard someone outside shout, “Kevin! Get moving! That guy across the street\nwho’s always complaining turned you in!” Witness ran to the window but did not\nsee anyone. He does not know who shouted. The prosecution objects to this\ntestimony on hearsay grounds. If the objection is overruled, the strongest\nground is:", "options": ["Rule 804(b)(6)", "Rule 804(b)(3)", "Rule 803(2)", "Rule 801(d)(2)(E)"], "answerType": "mc", "modelAnswer": "c", "explanation": "The shout was made during an unfolding, stressful event and was an instinctive reaction to it, making the excited-utterance theory the strongest listed ground.", "closeCall": false, "correctIndices": [2]}, {"number": 24, "stem": "The following two questions are based on Broadway musicals.\n\nHarold Hill is being prosecuted for fraud. The essence of the claim is that he\npersuaded multiple residents of River City to purchase band instruments and\nuniforms for their children, in return for his promise to form a band. His plan,\naccording to the indictment, was to deliver the instruments and uniforms, then\ntake the money and leave town without offering any training. The prosecution\noffers to prove that Hill has gone through the same sequence of activities in\nother small towns across the Midwest. Defense objects that Hill was neither\nprosecuted nor charged for any of the other incidents. In deciding whether to\nadmit the evidence, what standard should the court apply?", "options": ["Admit on the condition that the prosecution introduces sufficient evidence\nfrom which a reasonable jury could find by clear and convincing evidence\nthat the prior acts occurred.", "Admit on the condition that the prosecution introduces sufficient evidence\nfrom which a reasonable jury could find from a preponderance of the\nevidence that the prior acts occurred.", "Admit on the condition that the court finds by a preponderance of the\nevidence that the prior acts occurred.", "Admit on the condition that the court finds by clear and convincing\nevidence that the prior acts occurred."], "answerType": "mc", "modelAnswer": "b", "explanation": "Under Huddleston, the judge asks whether the jury could reasonably find the other acts occurred by a preponderance of the evidence.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "Oscar Jaffe, a Broadway producer, is suing Lily Garland, an actor, for breaching a\ncontract to appear in his new show. Garland’s defense is that her agreement\nwas procured by deceit. She testifies that two of Jaffe’s employees told her\nfalsely that he was dying of a gunshot wound and that her signature on the\ncontract was “his last request.” Jaffe objects to the testimony as hearsay. State\na simple ground for overruling the objection that does not rely on any part of\nRule 801.", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection because the statements are offered for their effect on Garland, or as the operative deceit itself.", "explanation": "The words matter because they allegedly induced Garland to sign. They need not be offered for the truth that Jaffe was actually dying.", "closeCall": false, "correctIndices": null}, {"number": 26, "stem": "The following nine questions test your general knowledge of evidence law.\n\nSandburg Software Solutions is suing a former employee, Dickinson, for alleged\nmisappropriation of trade secrets. Sandburg has been developing an adaptive\nsoftware program called NeverTest, which is intended to take examinations in\nplace of students, and make the errors it predicts the students would make.\nDickinson, who once worked on this project, has founded her own company that\n\nis making a similar product called AlwaysRest.\nSandburg lacks direct evidence that Dickinson copied NeverTest and therefore\nmust show both that she had access to its software and that her own product is\nsufficiently similar that the jury can infer copying. Sandburg offers Angelou, who\nholds an endowed chair in computer science at Pale University. The focus of\nAngelou’s work is adaptive educational software. The court qualifies Angelou as\nan expert. She testifies that she has examined the programs created by both\nSandburg and Dickinson. On the basis of her examination, Angelou is prepared\nto offer the opinion that the two are sufficiently similar that the only way to\nexplain the similarities is that defendants copied the plaintiff’s trade secrets.\nDefense objects to allowing Angelou to offer this opinion. How should the court\nrule and why?", "options": [], "answerType": "essay", "modelAnswer": "Likely overrule the objection, though the court may police phrasing.", "explanation": "A qualified expert may compare complex software systems and explain why their similarities are unlikely to be innocent. The court may require the expert to avoid bare legal conclusions, but technical similarity analysis is proper expert territory.", "closeCall": true, "correctIndices": null}, {"number": 27, "stem": "Lorde is injured one night when she is struck by a bus on Easy Street. The city\nin which the accident takes place has only two bus companies, Gold Bus and\nSilver Bus. Lorde sues Gold Bus. She takes the stand and describes the\naccident. She admits on cross-examination that she does not know the color of\nthe bus that hit her. She then introduces evidence that Gold Bus runs 90\npercent of the buses on Easy Street; Silver Bus runs 10 percent. At that point\nthe plaintiff rests her case. Gold Bus, the defendant, moves for a directed\nverdict. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Deny the directed-verdict motion.", "explanation": "Evidence that Gold Bus runs ninety percent of the buses on that street is enough for a reasonable jury to conclude that it is more likely than not that a Gold Bus struck Lorde.", "closeCall": false, "correctIndices": null}, {"number": 28, "stem": "This question is taken verbatim from the final examination in Professor Thayer’s\n1913 course on Evidence at Harvard Law School (the final prompt has been\nadded):\nD, who is on trial for assault with intent to rob A, testifies on his own behalf that\nhis purpose in attacking A was not robbery but chastisement for insult’s to D’s\nwife, and he proposes to testify that he made declarations to this effect while\nattacking A. Is the testimony admissible? Why or why not?", "options": [], "answerType": "essay", "modelAnswer": "Exclude the testimony about D’s own prior declarations.", "explanation": "D can testify directly about his intent. But his out-of-court declarations made during the assault are self-serving hearsay if offered to prove that same intent.", "closeCall": false, "correctIndices": null}, {"number": 29, "stem": "Samuel Dockwrath, a tenant farmer turned out of possession of his plot of land\nat Orley Farm, brings a civil suit in which he claims that the will leaving the farm\nto Lady Mason (the First Will), which has already been admitted to probate, was\nactually fraudulent. As part of his case, Dockwrath offers what he says is the\ncorrect will (the Second Will). Lady Mason objects to the introduction of the\nSecond Will on the ground that its contents are hearsay. Which one of the\nfollowing would represent the strongest ground for overruling the objection?", "options": ["The Second Will is a verbal act.", "The Second Will is a dying declaration.", "The Second Will is res gestae.", "The Second Will is modus operandi evidence."], "answerType": "mc", "modelAnswer": "a", "explanation": "A will is a legally operative instrument. When offered to prove its legal effect, it is a verbal act rather than hearsay.", "closeCall": false, "correctIndices": [0]}, {"number": 30, "stem": "Same case. Dockwrath offers Whitman, whose signature appears on both Will A\nand Will B. Whitman testifies that he remembers signing Will B and never signed\nWill A. On cross-examination, defense counsel asks Whitman whether he has\nbeen having memory problems of late. Whitman says he has not. Defense\ncounsel then offers the records of Whitman’s neurologist, Dr. Angelou, which\nindicate that Angelou has been treating Whitman for memory loss. Plaintiff’s\ncounsel objects. The court should:", "options": ["Sustain the objection because the testimony of Dr. Angelou herself is the\nbest evidence of what she has been treating Whitman for.", "Sustain the objection because of the extrinsic evidence rule.", "Overrule the objection because the evidence goes to Whitman’s character\nfor truthfulness.", "Overrule the objection because the evidence goes to Whitman’s\ntestimonial capacity."], "answerType": "mc", "modelAnswer": "d", "explanation": "The neurologist’s records go to Whitman’s testimonial capacity—his ability to perceive, remember, and recount—not merely to his character for truthfulness.", "closeCall": false, "correctIndices": [3]}, {"number": 31, "stem": "Larkin is on trial for bank robbery. On the way out of the bank, the masked\nrobber tore his shirt cuff on a loose door hinge. A detective testifies that he\nexamined the piece of cloth torn from the shirt and saw a monogram: S-C-L.\nThe evidence is relevant because Larkin’s full name is Stephen Carter Larkin.\nDefense objects under the best evidence rule. How should the court rule and\nwhy?", "options": ["The cloth need not be produced because the monogram carries too great\na danger of unfair prejudice.", "The cloth must be produced because the best evidence of the monogram\nis the monogrammed cuff itself.", "The cloth need not be produced because it is an inscribed chattel.", "The cloth must be produced because there is no modus operandi\nexception to the best evidence rule."], "answerType": "mc", "modelAnswer": "c", "explanation": "The best-evidence rule ordinarily does not require production of an inscribed chattel such as a monogrammed shirt cuff.", "closeCall": false, "correctIndices": [2]}, {"number": 32, "stem": "Back to Carter’s lawsuit against Yale for the injury he suffered when he tumbled\n\ndown the staircase. Carter offers to prove that Yale Law School’s liability insurer,\nSexton & Co., offered him $100,000 to settle his claim. The court refuses to\nallow the evidence. The defense than offers an expert, Lorde, who testifies that\nshe believes Carter’s injuries to be less extensive than he has indicated. On\ncross-examination, Carter’s counsel asks Lorde whether she is being paid by\nYale’s insurance company. Defense objects. How should the court rule and\nwhy?", "options": ["The objection is overruled. Carter is allowed to ask who is paying Lorde\nand may now also introduce both the fact and amount of the settlement\noffer.", "The objection is overruled. Carter is allowed to ask who is paying Lorde\nand may now also introduce the fact but not the amount of the settlement\noffer.", "The objection is overruled. Carter is allowed to ask who is paying Lorde\nbut may introduce neither the fact or the amount of the settlement offer.", "The objection is sustained."], "answerType": "mc", "modelAnswer": "c", "explanation": "Bias may be shown by asking who is paying the expert. But the earlier settlement offer remains barred; the bias point does not open the door to the fact or amount of that offer.", "closeCall": false, "correctIndices": [2]}, {"number": 33, "stem": "As it happens, Carter’s trial for murder also continues. Dickinson, a prosecution\nwitness, fails to appear. Dickinson, who was Rich Uncle’s executive assistant,\npreviously gave detectives a statement in which she said that she was present at\nRich Uncle’s home on the night of the murder, that she saw Carter go into the\nstudy where Rich Uncle was, that she later heard voices arguing, that she then\nheard what she took to be Rich Uncle’s voice shouting “Put down that knife!” A\nfew moments later, according to the statement, Carter ran out of the study and\nrushed past her without saying a word.\nWhen Dickinson does not appear, the prosecution offers her statement. The\ndefense objects on both hearsay and Confrontation Clause grounds. Before the\njudge rules on the objection, the prosecution requests a conference outside the\nhearing of the jury. At the conference, the prosecution says that it has evidence\nthat subsequent to Dickinson’s statement to detectives, Carter promised to pay\nher $100,000 if she refused to testify. How should the trial judge proceed and\nwhy?", "options": [], "answerType": "essay", "modelAnswer": "The judge should hold a preliminary hearing on forfeiture by wrongdoing.", "explanation": "If the prosecution proves by a preponderance that Carter procured Dickinson’s absence with the purpose of preventing her testimony, he forfeits both hearsay and Confrontation objections to her prior statement.", "closeCall": false, "correctIndices": null}, {"number": 34, "stem": "Turn to Problem 7.15 (page 419). Suppose the management company denies\nthat the telephone number on the refrigerator was in fact its number. State two\nways (which must not involve information from telephone company or other\nofficial records) through which the plaintiff might successfully authenticate the\ncall. Use only the facts stated in the problem in the book, or reasonable\n\ninferences from those facts.", "options": [], "answerType": "essay", "modelAnswer": "Two standard ways are self-identification plus corroborating circumstances, and responsive conduct consistent with the call’s authenticity.", "explanation": "For example, the witness can testify that the number called was the one publicly displayed as the management company’s number, that the person answering identified the company, and that the caller or company then took action matching the conversation.", "closeCall": true, "correctIndices": null}, {"number": 35, "stem": "The following four questions are based on this fact pattern:\nWhitman is suing to rescind a written contract with Angelou, on grounds of both a lack\nof contractual capacity and changed circumstances. Under the contract, Whitman is\nobliged to deliver to Angelou 1000 widgets for $100,000 – that is, $100 per widget – on\nJune 1. A year ago, at the time the contract was entered into, the market price was\n$8.50 per widget. Now that the time for delivery has arrived, widgets are selling for\n$16 each. The principal reason for the price rise is that a rare element necessary for\nwidgets is mined only in the country of Nordo, which has recently collapsed into civil\nwar. Angelou’s defenses are, first, that she had no reason to know of any incapacity on\nWhitman’s part, and, second, that the risk of war was priced into the contract.\n\nWhitman claims that he was obviously drunk at the time of the negotiations,\nwhich were conducted face-to-face. He testifies that he was arrested later the\nsame day for driving while impaired, and offers the signed certificate from the\ntechnician who found Whitman’s blood alcohol limit to be above the legal limit.\nAngelou objects to the certificate on Confrontation Clause grounds. How should\nthe court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the Confrontation Clause objection.", "explanation": "This is a civil contract case, not a criminal prosecution. The Confrontation Clause does not apply.", "closeCall": false, "correctIndices": null}, {"number": 36, "stem": "Angelou testifies that during the negotiations, which lasted an hour, she did not\nsee Whitman take a drink and Whitman did not show any signs of intoxication.\nWhitman objects that Angelou is not a qualified expert on whether an individual\nis intoxicated or not. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "A lay witness may describe perceived signs of intoxication. No expert qualification is needed for testimony that someone did not appear drunk.", "closeCall": false, "correctIndices": null}, {"number": 37, "stem": "Angelou further testifies that while she was waiting for Whitman to arrive at the\nvenue where they had agreed to negotiate, she had a conversation with Larkin,\nWhitman’s business partner, who had arrived early. Larkin, she testifies, told her\nthat the purpose of the negotiations was to see whether she wanted to join\nWhitman and himself in a venture to buy up widgets “dirt cheap” because the\nmarket had not realized that the government of Nordo was soon going to fall, an\nevent that would push the price “through the roof.” Whitman objects to this\ntestimony on hearsay grounds. How should the court rule and why?", "options": ["Objection sustained, because state-of-mind evidence will not be admitted\nwhen the declarant is speaking of a memory.", "Objection overruled, because Larkin’s statements about the purpose of\nthe negotiations constitute a record of a regularly conducted activity.", "Objection overruled, because Larkin was Whitman’s business partner.", "Objection sustained, because Larkin turned out to be wrong about the\npurpose of the negotiations."], "answerType": "mc", "modelAnswer": "c", "explanation": "Larkin spoke as Whitman’s business partner about the very negotiations at issue. That makes the party-opponent/agent theory the strongest of the listed choices.", "closeCall": false, "correctIndices": [2]}, {"number": 38, "stem": "Whitman calls Larkin as a rebuttal witness. Larkin testifies that he no longer\nrecalls the conversation with Angelou. Whitman’s counsel then shows Larkin an\naffidavit he signed several months ago that sets out an account of the\nconversation quite different from Angelou’s. Whitman’s counsel asks Larkin\nwhether he now remembers. Larkin says he does not. Whitman’s counsel asks\nhim whether the matter was fresher in his mind when he made the affidavit.\nLarkin says he does not remember. Whitman then offers the affidavit itself into\nevidence. Angelou objects on hearsay grounds. The objection should be:", "options": ["Sustained.", "Overruled, because the purpose of offering the prior statement is to\nrefresh Larkin’s memory.", "Overruled, because the prior statement constitutes a past recollection\nrecorded.", "Overruled, because an affidavit cannot constitute hearsay."], "answerType": "mc", "modelAnswer": "a", "explanation": "The affidavit does not qualify as recorded recollection because Larkin cannot now verify that he once knew the facts and adopted the record as accurate when the matter was fresh.", "closeCall": false, "correctIndices": [0]}, {"number": 39, "stem": "The following four questions test your general knowledge of evidence law.\n\nSexton faces trial for perjury. The prosecution claims that she lied during a\ncongressional hearing. To prove Sexton’s statements during the hearing, the\nprosecution offers Frost, who was present. Frost testifies to what he heard\nSexton say. The defense objects on both hearsay and best evidence grounds.\nNow consider the following two propositions:\n(1) The hearsay objection should be overruled because Frost’s\nrecounting of Sexton’s statements at the hearing does not involve\nhearsay.\n(2) The best evidence objection should be sustained if a transcript or\nrecording of Sexton’s testimony is available, because the best\nevidence rule would require that the prosecution offer one or both\nrather than Frost’s testimony about what he remembers.\nWhich one of the following most accurately characterizes them?", "options": ["(1) and (2) are both true", "(1) and (2) are both false", "(1) is true and (2) is false", "(2) is true and (1) is false"], "answerType": "mc", "modelAnswer": "c", "explanation": "Frost’s testimony about Sexton’s own statements is not hearsay when offered against Sexton. And the best-evidence rule does not require a transcript or recording to prove the content of oral testimony at the hearing.", "closeCall": false, "correctIndices": [2]}, {"number": 40, "stem": "More on Carter’s murder trial. The defense is now arguing that if Carter killed\nRich Uncle, he acted in self-defense. Carter testifies that on the night of the\ncrime, Rich Uncle shouted a threat to kill him, then advanced on him angrily,\nbrandishing what Carter thought was a gun. Carter further testifies that at that\npoint he drew his knife and warned Rich Uncle to come no closer. Only when\nRich Uncle continued moving toward him and shouting threats (says Carter) did\nCarter stab him, meaning only to wound.\nOn cross-examination, the prosecutor asks Carter whether he was suspended\nfrom college for cheating on an examination. Carter says no. The prosecutor\nthen offers evidence that Carter was suspended for cheating. Defense objects.\nHow should the court rule?", "options": ["The evidence is inadmissible unless the college held a hearing prior to\nsuspending Carter.", "The evidence is inadmissible because of the extrinsic evidence rule.", "The evidence is admissible if the court finds from a preponderance of the\nevidence that Carter was in fact suspended for cheating.", "The evidence is admissible if the prosecutor is able to show at least one\nother instance in which Carter cheated."], "answerType": "mc", "modelAnswer": "b", "explanation": "The prosecutor may ask about the cheating on cross as a specific act probative of truthfulness, but once Carter denies it, extrinsic evidence is barred by Rule 608(b).", "closeCall": false, "correctIndices": [1]}, {"number": 41, "stem": "Same facts. In response to Carter’s testimony related in the previous question,\nthe prosecution offers Neruda, a detective, who is prepared to testify that no gun\nwas found at the scene and that the only object near Rich Uncle’s hand as he lay\non the floor was his cell phone. Defense objects that the evidence is irrelevant.\nConstruct an inferential chain of no more than four steps to show the relevance\nof the evidence. (Be sure to use the format discussed in class!)", "options": [], "answerType": "essay", "modelAnswer": "A short chain is: no gun was found; the only object near Rich Uncle’s hand was a phone; that makes it less likely he was brandishing a gun; that in turn makes Carter’s self-defense story less likely.", "explanation": "The evidence matters because it undermines Carter’s claim that he reasonably believed Rich Uncle was threatening him with a gun.", "closeCall": false, "correctIndices": null}, {"number": 42, "stem": "Sandburg is facing an involuntary commitment proceeding. The state calls\nDickinson, a psychiatrist who has interviewed Sandburg and his family. The\ncourt qualifies Dickinson as an expert. Dickinson expresses her opinion that\nSandburg is dangerous to himself and others. The state asks Dickinson for the\nbasis of that opinion. Dickinson says that she bases her opinion on her own\ninterview with Sandburg and also on her interview with Sandburg’s sister,\n\nAngelou, who told her that Sandburg was an extremely violent man who often\nphysically attacked members of the family and neighbors. Angelou does not\ntestify. The defense objects on hearsay grounds to the testimony about what\nAngelou told Dickinson. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule in part, with the usual Rule 703 caution.", "explanation": "A psychiatric expert may rely on family reports of violent behavior if experts in the field reasonably do so. The court may permit limited disclosure of Angelou’s statements to explain Dickinson’s opinion, especially in a nonjury or carefully instructed setting.", "closeCall": false, "correctIndices": null}, {"number": 43, "stem": "The following four questions are based on Problem 7.39 (page 555).\n\nAnswer prompt (1) at the end of the problem.", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I left this as an open study prompt.", "closeCall": true, "correctIndices": null}, {"number": 44, "stem": "Answer prompt (2) at the end of the problem.", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I left this as an open study prompt.", "closeCall": true, "correctIndices": null}, {"number": 45, "stem": "Suppose that the manufacturer of the lawn mower involved in the case is the\nCarter Company. Last year a federal agency empaneled a group of experts to\nlook into reports that the cords of Carter mowers frequently come loose when\npulled and cause injuries. Among the panel’s several factual conclusions was a\nfinding that the cords of Carter mowers come loose at three times the industry\naverage. The panel also offered several opinions, including that the reason for\nthe problems with Carter mowers is that the design was “fundamentally flawed.”\nDonohue offers the federal report. The defense objects on hearsay grounds.\nHow should the court rule?", "options": ["Neither the panel’s factual conclusions nor the panel’s opinions are\nadmissible.", "The panel’s factual conclusions are admissible but the panel’s opinions are\ninadmissible.", "The panel’s opinions are admissible but the panel’s factual conclusions are\ninadmissible.", "Both the panel’s factual conclusions and the panel’s opinions are\nadmissible."], "answerType": "mc", "modelAnswer": "d", "explanation": "Under the public-records exception as interpreted in Beech Aircraft, factual findings and evaluative conclusions from a legally authorized investigation are both admissible unless shown untrustworthy.", "closeCall": false, "correctIndices": [3]}, {"number": 46, "stem": "The defense offers Neruda, vice president of a consumer product testing firm,\nwho has a degree in engineering, and who has spent a decade supervising the\nprocess of evaluating and rating the safety of various products. The court\nagrees to qualify Neruda as an expert. Neruda testifies that in his opinion, the\naccident experienced by the plaintiff was not caused by a defect in the Carter\nmower. The reason, says Neruda, is that in his tests, the amount of force that\nwould be applied to the pull-cord during ordinary operation would not cause a\nsufficient torque to cause the cord to detach.\n\nOn cross-examination, Neruda admits that his testing methodology has yet to\ngain general acceptance among other engineers in the field. On redirect, he\npoints out that his team has published three articles about their work in peer-\nreviewed journals and three articles elsewhere, and that others have been able\nto replicate their studies.\nPlaintiff moves to strike Neruda’s testimony as outside the proper scope of expert\nopinion. The motion will most likely be:", "options": ["Granted, if we are in a Frye state.", "Granted, if we are in a Daubert state.", "Granted, whether we are in a Frye state or a Daubert state", "Rejected, whether we are in a Frye state or a Daubert state."], "answerType": "mc", "modelAnswer": "a", "explanation": "A lack of general acceptance is a bigger problem in a Frye jurisdiction. Under Daubert, peer review, testing, and replication can support admissibility even without universal acceptance.", "closeCall": false, "correctIndices": [0]}, {"number": 47, "stem": "The following three questions test your general knowledge of evidence law:\n\nAs mentioned above, Carter’s defense in his trial for killing Rich Uncle is that he\nacted in self-defense after Rich Uncle threatened to kill him. Suppose that the\nprosecution objects to Carter’s testimony about what Rich Uncle said to him on\nthe ground of hearsay. How should the court rule and why?", "options": ["Objection sustained.", "Objection overruled, because the threat is offered only to show Carter’s\nstate of mind.", "Objection overruled, because the threat is the statement of a party\nopponent.", "Objection overruled, because the threat is a dying declaration."], "answerType": "mc", "modelAnswer": "b", "explanation": "The threat is admissible as nonhearsay when offered to show its effect on Carter and why he says he feared imminent harm.", "closeCall": false, "correctIndices": [1]}, {"number": 48, "stem": "Sandburg is being tried for alleged involvement in a Ponzi scheme in which\nhundreds of investors were defrauded out of millions of dollars. The particular\ncharge against Sandburg is that a key order was placed from his computer at\nScondell Bloom on the night of August 1 three years ago. Sandburg’s main\ndefense is that he was not at the office that night, but was vacationing at a\nremote cabin with his husband, who has since died. The the trading system at\nScondell Bloom could not have been accessed remotely. Therefore, if Sandburg\nwas absent, someone else must have signed on with his credentials.\n\nIn support of his claim to have been away at the cabin, Sandburg offers his late\nhusband’s diary, which includes under the date of August 1 several statements\nthat tend to support Sandburg’s account. The prosecution objects that the diary\nis hearsay. Which one of the following would present the strongest ground for\noverruling the objection and admitting the diary?", "options": ["The diary is consistent with Sandburg’s testimony.", "Others who knew Sandburg’s husband testify that they were aware of the\ndiary.", "Sandburg often discussed the diary with his husband and occasionally\nread parts of it.", "Sandburg did not know about the diary until well after his husband’s\ndeath and found it hidden in a safe that had to be drilled open because\nSandburg’s husband had never given him the combination."], "answerType": "mc", "modelAnswer": "d", "explanation": "The hidden, unknown diary is harder for Sandburg to have fabricated or shaped. That circumstance gives the strongest basis among the choices for trusting the diary enough to admit it.", "closeCall": true, "correctIndices": [3]}, {"number": 49, "stem": "In addition to being charged with murder, Carter has also been charged with\nbeing a felon in possession of a deadly weapon – to wit, the butcher knife. In\norder to prove that Carter is a felon, the prosecution offers a certified copy of the\njudgment of conviction of the earlier offense, passing false checks, to which\nCarter pled guilty nine years ago. Defense objects on Rule 403 grounds. What\nresult and why? (You may assume for the purposes of this question that the\nbutcher knife, under these circumstances, satisfied the statutory definition of a\ndeadly weapon.)", "options": [], "answerType": "essay", "modelAnswer": "Overrule the Rule 403 objection on these facts.", "explanation": "The prior judgment is directly relevant to the felon-status element. Because the prior offense is a nonviolent false-check offense and no stipulation is mentioned, its probative value is not substantially outweighed by unfair prejudice.", "closeCall": true, "correctIndices": null}, {"number": 50, "stem": "The following two questions are based on Problem 10.3 (page 903):\n\nYou will recall that in class we decided that the note was properly authenticated\nas being what it purported to be. Suppose now that there turns out to be no\nlight green car with the license plate ZPJ-254. Anita Young owns a light green\n1978 Buick with the license plate PJZ-542. All the other facts in the problem are\nthe same. Should the result change? Why or why not?", "options": [], "answerType": "essay", "modelAnswer": "Probably not.", "explanation": "A transposed plate number in an otherwise strongly matching note usually creates a weight problem rather than an admissibility problem. The circumstantial match to Anita Young’s car is still substantial.", "closeCall": true, "correctIndices": null}, {"number": 51, "stem": "Now assume the facts as stated in the problem, not in the previous prompt. The\nnote is still held to be properly authenticated. Now the defense interposes a\nhearsay objection to admitting the note or any testimony about it. How should\nthe court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I did not invent a specific hearsay analysis for it.", "closeCall": true, "correctIndices": null}, {"number": 52, "stem": "The following nine questions test your general knowledge of evidence law.\n\nBack to Carter’s criminal trial for killing Rich Uncle. Remember that Carter’s\n\ndefense is that he killed Rich Uncle in self-defense after being threatened with\nwhat he thought was a gun, although no gun was found at the crime scene.\nProsecutors offer evidence that four years ago, Carter was accused of killing\nanother relative with a knife, and claimed that he stabbed in self-defense after\nbeing threatened with what he thought was a gun. No gun was found but in the\nend no charges were brought. Prosecutors also offer evidence that three years\nbefore that, Carter was accused of killing yet another relative with a knife, and\nclaimed that he stabbed in self-defense after being threatened with a what he\nthought was a gun. No gun was found but no charges were brought. Defense\nobjects to this evidence on the ground that it will lead the jury straight through\nthe propensity box. What result and why?", "options": [], "answerType": "essay", "modelAnswer": "The evidence is likely admissible for a nonpropensity purpose, subject to Rule 403.", "explanation": "The repeated, highly distinctive claim that Carter stabbed a relative in self-defense after mistaking some object for a gun tends to rebut accident or innocent mistake and to undermine the plausibility of the current self-defense account.", "closeCall": false, "correctIndices": null}, {"number": 53, "stem": "Defendant is on trial for allegedly swindling Victim into giving him a number of\nvaluables. Victim testifies to the events surrounding the supposed swindle. She\nis asked which valuables she gave Defendant. She says there were so many that\nshe cannot remember them all. The prosecution hands Victim a list prepared by\nthe police. The list contains fifty items. The prosecutor asks Victim whether her\nmemory is refreshed. Victim says yes. At this point, which one of the following\nwould the court allow?", "options": ["The prosecutor may have Victim read from the document but cannot\nintroduce the document into evidence.", "The prosecutor may introduce the document into evidence but cannot\nhave Victim read from it.", "The Victim may keep the list with her as she tells the jury from memory\nwhich valuables she gave Defendant.", "The Victim may tell the jury from memory which valuables she gave\nDefendant but may not keep the list with her."], "answerType": "mc", "modelAnswer": "d", "explanation": "Once the list refreshes her memory, Victim must testify from present memory rather than read the list to the jury. The writing itself does not come in through ordinary refreshed recollection.", "closeCall": false, "correctIndices": [3]}, {"number": 54, "stem": "Mr. Justice Scrutton’s famous example involved:", "options": ["The pound sterling", "An unloaded shotgun", "Buckingham Palace", "The ace of trumps"], "answerType": "mc", "modelAnswer": "d", "explanation": "This is the classic Scrutton example.", "closeCall": false, "correctIndices": [3]}, {"number": 55, "stem": "Carter is still on trial for that knife murder. He offers the affidavit of Sandburg,\n\nan independent forensic pathologist, who was asked by the defense to examine\nthe body of Rich Uncle. In the affidavit, Sandburg states his opinion that the\nstab wounds were post-mortem, meaning that Rich Uncle died of another cause.\nThe prosecution objects to the affidavit on Confrontation Clause grounds. How\nshould the court rule and why?", "options": ["The objection should be overruled.", "The objection should be sustained unless the defense offers Sandburg.", "The objection should be sustained unless the defense offers Sandburg or\nSandburg’s supervisor.", "The objection should be sustained unless the defense offers Sandburg or\nSandburg’s supervisor or another pathologist from the same laboratory\nwho is capable of explaining Sandburg’s methodology."], "answerType": "mc", "modelAnswer": "a", "explanation": "The Confrontation Clause protects criminal defendants from testimonial evidence offered against them. It does not bar a defendant from offering an affidavit in his own favor.", "closeCall": false, "correctIndices": [0]}, {"number": 56, "stem": "Defendant is on trial for selling firearms without a license. The prosecution\noffers Detective, who describes how she installed a camera in the lapel of\nInformant and sent him to try to purchase a firearm from Defendant. The\ncamera recorded a video of what Detective says was a transaction between\nDefendant and Informant. The video did not record sound. Detective did not\nwitness the transaction, but recovered the camera from Informant shortly after\nthe purchase and subsequently downloaded the video. Informant does not\ntestify. Prosecution offers the video through Detective. Defendant objects that\nthe video has not been properly authenticated. How should the court rule and\nwhy?", "options": ["Sustained, because Informant does not testify.", "Overruled, only if the trial judge finds the video to be reliable.", "Sustained, because Detective did not witness the transaction.", "Overruled, provided that Informant also gave Detective a verbal account\nof the transaction."], "answerType": "mc", "modelAnswer": "b", "explanation": "This is a classic silent-witness foundation. The judge may admit the video if the prosecution establishes that the recording process is reliable and that the video fairly depicts what it claims to show.", "closeCall": false, "correctIndices": [1]}, {"number": 57, "stem": "Back to Carter’s civil suit against Yale Law School. Carter offers a document\nfound in the school’s archives. The document is a handwritten memorandum\ndated September 1, 1975, signed by Professor Erstwhile Growler. The note,\nwhich is not addressed to anyone, says that earlier that day Professor Growler\nencountered in the corridor a fellow faculty member, Professor Constant Reader,\nwho was disheveled and panting. Growler asked what was wrong. “I just fell\n\ndown that central staircase!” Reader cried. “Those stairs are so slippery and\nunsafe! I’ve complained to the dean a dozen times!”\nGrowler is long dead. Reader is still alive but well on in years and has no\nmemory of the conversation or of falling on the stairs. Reader is in any case\nunable to come to Quinnipiac for the trial.\nYale objects to Growler’s memorandum on hearsay grounds. How should the\ncourt rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Admit the memorandum only in part.", "explanation": "Growler’s 1975 memorandum can plausibly come in as an ancient document if properly authenticated. Reader’s spontaneous statement about just falling and the slippery stairs is likely an excited utterance, but the claim that he had complained to the dean a dozen times is a separate hearsay layer and is harder to admit.", "closeCall": false, "correctIndices": null}, {"number": 58, "stem": "Frost faces trial for murdering Neruda, who was shot and killed just past\nmidnight on April 10. At Frost’s trial, the prosecution calls Dickinson, an operator\nat the city’s emergency call center, who offers to testify that at 11:59 pm on the\nnight of April 9, she took a 911 call from an individual whose voice she did not\nrecognize but who called himself Neruda. She offers to testify that the caller\nsaid, “Frost is chasing me! He has a gun, l think he’s going to kill me!” She then\nheard a gunshot, and the call terminated. Dickinson further testifies that she\nnow recognizes the caller as Neruda, having subsequently heard other recordings\nof his voice. The reason the prosecution offers Dickinson’s testimony is that the\nrecording of the 911 call no longer exists. Larkin, a supervisor at the emergency\ncall center, is prepared to testify that he deleted the recording and both backups,\nbecause he was being blackmailed by an unknown individual. He admits to\nhaving no knowledge of the blackmailer’s motive.\nFrost’s counsel objects to Dickinson’s testimony on both authentication and best\nevidence grounds. How should the court rule on each objection and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule both objections.", "explanation": "Dickinson’s later voice-recognition testimony supplies enough authentication, and the best-evidence rule does not bar secondary proof of the call because the recording is gone and the loss is not shown to be the prosecution’s bad-faith doing.", "closeCall": false, "correctIndices": null}, {"number": 59, "stem": "Same facts. Frost’s counsel objects to Dickinson’s testimony on both hearsay\nand Confrontation Clause grounds. How should the court rule on each objection\nand why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule both objections.", "explanation": "The statement is admissible as an excited utterance, and a 911 plea made during an ongoing emergency is ordinarily nontestimonial under the Confrontation Clause.", "closeCall": false, "correctIndices": null}, {"number": 60, "stem": "What are the four types of evidence?", "options": [], "answerType": "essay", "modelAnswer": "The four basic types are testimonial evidence, documentary evidence, real or physical evidence, and demonstrative evidence.", "explanation": "That is the standard introductory classification.", "closeCall": true, "correctIndices": null}, {"number": 61, "stem": "The following nine questions are a revised and simplified version of a prompt from the\nfinal examination in Professor Chadbourn’s spring 1965 course on Evidence at Harvard\nLaw School:\nWhitman is on trial for the murder of Frost, who died of stab wounds suffered in an\nattack on the lower platform at the City Outskirts subway stop. The attack took place\non April 1 at about 9 p.m. Whitman’s principal defense is that a different man, Neruda,\ncommitted the crime.\n\nThe prosecution offers Sexton, who tells the following story: On April 1, a little\n\nbefore 9 p.m., she was on the subway, on her way home from her office, when\nshe noticed a young man hassling passengers for money and displaying a knife.\nSexton hastily moved to the other end of the car. She got off at City Outskirts,\nwhich is her usual stop. She was on the escalator leading to the upper platform\nwhen she heard a commotion down below. She looked back and saw an older\nman lying on the floor of the lower platform, being stabbed repeatedly by a\nyounger man. The escalator then took her out of sight of the lower platform.\nUpon reaching the upper platform, Sexton spotted a police officer, Angelou. She\ntold Angelou what she had seen and Angelou rushed down the escalator.\nThe prosecutor asks Sexton whether she is able to identify the man she saw\nstabbing the victim. She answers that she did not see his face. She is then\nasked whether she sees anyone in the courtroom whom she recognizes. She\npoints to Whitman, the defendant, and says that she recognizes him as the\nindividual who was hassling passengers on the subway.\nDefense objects to this identification. Prosecutors have not shown, the defense\nargues, that the man with the knife on the subway was the same man who killed\nFrost. The judge overrules the objection, subject to the prosecution’s ability to\nmake the connection.\nThe prosecutor then asks Sexton how the man she saw hassling passengers on\nthe subway was dressed. She says he was wearing blue jeans and a black-and-\nwhite striped sports jersey. The prosecutor asks how the man she saw stabbing\nthe victim on the platform was dressed. She says he was wearing blue jeans\nand a black-and-white striped sports jersey.\nDefense objects to this testimony on the ground that Sexton has not been shown\nto possess any relevant expertise in identifying clothing. The objection should\nbe:", "options": ["Overruled, because a lay witness may offer an opinion about what the\naccuracy of her own memory.", "Sustained, because Sexton has not been qualified as an expert.", "Overruled, because the question does not call upon any expertise.", "Sustained, because the witness’s memory has not been refreshed."], "answerType": "mc", "modelAnswer": "c", "explanation": "Describing whether two observed people wore the same kind of clothing does not require expert knowledge. It is ordinary lay observation.", "closeCall": false, "correctIndices": [2]}, {"number": 62, "stem": "On cross-examination, the defense asks Sexton whether she had more than a\nsecond or two to view the man stabbing Frost before the escalator carried her\nout of sight of the lower platform at City Outskirts. The prosecution objects on\n\nrelevance grounds. The objection should be:", "options": ["Overruled, because it goes to the witness’s perception.", "Overruled, because it goes to the witness’s motives.", "Overruled, because it goes to the witness’s character for truthfulness.", "Sustained."], "answerType": "mc", "modelAnswer": "a", "explanation": "The brief viewing opportunity bears directly on Sexton’s ability to perceive what she claims to have seen.", "closeCall": false, "correctIndices": [0]}, {"number": 63, "stem": "The prosecution offers a video edited from several camera feeds showing the\nsubway platform where the crime occurred. None show the murder itself, but\nseveral show images of a man running away, dressed as Sexton described. In\nsome of the feeds his face is visible, and he appears to be the defendant. In\nothers his face cannot be seen. To authenticate the video, the prosecution\noffers the testimony of both the supervisor of the system and of the technician\nwho prepared the edited version.\nDefense objects to this evidence on grounds of improper authentication. The\ndefense contends that the full unedited footage would contain images that are\nexculpatory to Whitman because they show other individuals leaving the scene\nwearing jerseys similar to the one Sexton described. The objection should be:", "options": ["Overruled, because the defense is free to offer its own video containing\nthe scenes it claims were omitted.", "Sustained, because the offering party carries the burden of showing that\nthe video is accurate.", "Overruled, because the question of authentication is always reserved to\nthe jury alone.", "Sustained, because of the bad faith of the offering party."], "answerType": "mc", "modelAnswer": "b", "explanation": "The proponent must authenticate the edited video as a fair and accurate representation of what it claims to show. If the edit omits materially relevant scenes, that can defeat the foundation.", "closeCall": true, "correctIndices": [1]}, {"number": 64, "stem": "The prosecution calls Angelou, the officer to whom Sexton spoke on the upper\nplatform. Angelou first recounts what Sexton told her. Defense objects to the\nout-of-court statements as hearsay. If the objection is overruled, which of the\nfollowing would provide the strongest ground?", "options": ["Rule 801(d)(2)(B)", "Rule 803(2)", "Rule 803(3)", "Rule 804(b)(3)(A)"], "answerType": "mc", "modelAnswer": "b", "explanation": "Sexton spoke immediately after witnessing the stabbing, so the excited-utterance exception is the strongest listed route.", "closeCall": false, "correctIndices": [1]}, {"number": 65, "stem": "Angelou testifies that when she reached the lower platform, she saw Frost lying\non the floor but no one else was present. Frost was bleeding and she told him\nthat an ambulance was on the way. She further testifies that Frost told her he\nknew that he was dying and that his killer was Whitman, to whom he owed\nmoney. Defense objects to this statement on both hearsay and Confrontation\nClause grounds. What result and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule both objections.", "explanation": "Frost’s statement fits the dying-declaration exception in a homicide prosecution because he said he knew he was dying and identified the cause or circumstances of the attack. Dying declarations remain admissible notwithstanding the Confrontation Clause.", "closeCall": false, "correctIndices": null}, {"number": 66, "stem": "Now suppose that the trial judge, whether erroneously or not, overrules the\nobjection. On cross-examination, counsel defense asks Angelou to relate the\nconversation before Frost’s statement about Whitman. Angelou testifies that\nFrost first said, “I don’t need an ambulance. I’m not seriously hurt. But you\nhave to get Neruda. He’s the one who stabbed me!” A few minutes later, as he\ncontinued to lose blood, Frost made the statement implicating Whitman. The\nprosecution objects to the testimony about Neruda on hearsay grounds. What\nresult and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "The earlier statement identifying Neruda was made moments after the stabbing while Frost was still under extreme stress, so it fits the excited-utterance exception. It also helps prevent the jury from receiving a distorted partial account of the conversation.", "closeCall": false, "correctIndices": null}, {"number": 67, "stem": "Defense offers the testimony of Dickinson, who lives in the apartment next to\nNeruda’s. Dickinson testifies that on the morning of April 2, she saw Neruda\nleaving home with a suitcase. She asked him where he was going. He said, “I\nhave to leave town for a while. Things are getting a little hot. Look. Don’t tell\nanybody you saw me, okay?”\nDefense also offers an article from the local morning newspaper, the Quinnipiac\nCity Journal , dated April 2. The article quotes an unnamed police source as\nsaying that the leading suspect in Frost’s murder is Neruda.\nThe prosecution objects to both Dickinson’s testimony and the newspaper on\nhearsay grounds. What result and why? (Treat each objection separately.)", "options": [], "answerType": "essay", "modelAnswer": "Admit Neruda’s statement to Dickinson, but exclude the newspaper article.", "explanation": "Neruda’s statement is admissible at least to show his then-existing plan to leave town and his consciousness of trouble. The newspaper article is hearsay, and it also contains an extra hearsay layer from the unnamed police source.", "closeCall": false, "correctIndices": null}, {"number": 68, "stem": "On cross-examination, the prosecutor asks Dickinson whether it is true that six\nyears ago, while serving as an aide to the former governor, she pled guilty to a\nsingle count of perjury in connection with her grand jury testimony during an\ninvestigation of corruption in which her boss was involved. Defense objects. At\na conference in limine , the defense points out that Dickinson never served any\ntime in prison and was pardoned three years ago by the new governor, who\nissued a general pardon for all those involved in the scandal in order to “bind up\nthe wounds” of the investigation. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule the objection.", "explanation": "Perjury is a crimen falsi offense, so it is admissible for impeachment under Rule 609(a)(2). The later pardon does not bar use of the conviction because it was not based on innocence or rehabilitation findings of the type recognized by the rule.", "closeCall": false, "correctIndices": null}, {"number": 69, "stem": "The prosecutor asks Dickinson several more questions aimed at damaging her\n\ncredibility. On redirect, the defense offers two witnesses who are prepared to\ntestify to their opinions that Dickinson is an honest person who would not lie\nunder oath. The prosecution objects to these witnesses. How should the court\nrule and why?", "options": ["Objection sustained, because testimony that a witness has a generally\ntruthful character must be in the form of specific instances, not opinion or\nreputation.", "Objection overruled, because testimony that a witness has a generally\ntruthful character is always admissible.", "Objection sustained, as long as the cross-examination was entirely about\nmatters outside the scope of the witness’s direct testimony.", "Objection overruled, because the cross-examination attacked Dickinson’s\ncharacter for truthfulness."], "answerType": "mc", "modelAnswer": "d", "explanation": "Once the cross-examination attacked Dickinson’s character for truthfulness, the defense could rehabilitate her with opinion or reputation testimony for truthfulness.", "closeCall": false, "correctIndices": [3]}, {"number": 70, "stem": "The following five questions test your general knowledge of evidence law.\n\nLarkin, formerly a trader at the investment bank Scondell Bloom, is charged with\nsecurities fraud. At trial, the prosecution offers a memorandum from Angelou,\nwho worked directly for Larkin at Scondell Bloom, addressed to Sexton, who was\nLarkin’s boss at the firm. In the memorandum, Angelou says that Larkin had\nsecretly directed other employees, but not Angelou herself, to commit certain\nfraudulent acts. The defense raises a hearsay objection, arguing that if Larkin’s\ninstructions were secret, Angelou could not have had actual knowledge of them.\nWhich of the following is the prosecution’s strongest response? (Assume that\nAngelou does not testify.)", "options": ["The actual knowledge requirement does not apply to hearsay declarants.", "The actual knowledge requirement does not apply to a statement offered\nagainst a party if made by the party’s employee within the scope of the\nemployment.", "The actual knowledge requirement does not apply to a statement against\nthe declarant’s penal or pecuniary interest.", "The actual knowledge requirement does not apply to a statement offerfed\nagainst a party if the party adopted it as true."], "answerType": "mc", "modelAnswer": "b", "explanation": "Party-opponent admissions, including qualifying employee admissions, are not screened by the ordinary personal-knowledge requirement in the same way as other hearsay declarants.", "closeCall": false, "correctIndices": [1]}, {"number": 71, "stem": "Turn to United States v. Gray (p 505) and consider the following two\n\npropositions:\n(1) For Robert Gray’s statements to be admissible against Josephine\nGray, the court must have concluded that there was sufficient\nadmissible evidence from which a jury could find that she killed him\nto prevent his testimony against her on some charge even if not\nthe particular charges on which she was tried and convicted.\n(2) For Robert Gray’s statements to be admissible against Josephine\nGray, the court must have concluded by a preponderance of the\nevidence that she killed him to prevent his testimony against her on\nthe charges on which she was tried and convicted.\nWhich one of the following most accurately characterizes them?", "options": ["(1) and (2) are both true", "(1) and (2) are both false", "(1) is true and (2) is false", "(2) is true and (1) is false"], "answerType": "mc", "modelAnswer": "b", "explanation": "Forfeiture by wrongdoing is a Rule 104(a) question for the judge, not the jury, and the doctrine does not require that the silencing be aimed at the exact charges later tried.", "closeCall": false, "correctIndices": [1]}, {"number": 72, "stem": "If the trustworthiness of a record of a regularly conducted activity is contested,\nwhich party carries the burden?", "options": ["The proponent carries the burden of showing that the record is\ntrustworthy.", "The opponent carries the burden of showing that the record is not\ntrustworthy.", "The burden is shared equally between the parties.", "The trustworthiness of a properly authenticated record of a regularly\nconducted activity cannot be contested."], "answerType": "mc", "modelAnswer": "b", "explanation": "Under Rule 803(6), the opponent bears the burden of showing a lack of trustworthiness.", "closeCall": false, "correctIndices": [1]}, {"number": 73, "stem": "In Carter’s civil suit against Yale Law School for the injury he suffered when he\nfell down the stair, Yale’s defense is that Carter was contributorily negligent. In\nsupport of this defense, Yale offers evidence that Carter frequently ran rather\nthan walked down the stairs. Carter objects that this evidence will lead the jury\nthrough the propensity box. Yale responds that it is trying to show habit, not\npropensity. Under what circumstances should the evidence be admitted? Be\n\nprecise.", "options": [], "answerType": "essay", "modelAnswer": "Admit the evidence only if Yale can show a true habit.", "explanation": "That means a sufficiently regular, specific, and semi-automatic practice of running down those same stairs in comparable circumstances. Mere evidence that Carter was generally careless or often in a hurry is not enough.", "closeCall": false, "correctIndices": null}, {"number": 74, "stem": "In Carter’s criminal trial for allegedly murdering Rich Uncle, the prosecution\noffers a photograph of a knife that matches the description of the murder\nweapon and was found during a search of Carter’s home. The photograph is\nauthenticated by the testimony of the detective who discovered the knife. Also\nvisible in the photograph are ten other knives, several of them much larger than\nthe one matching the description of the murder weapon. All were found during\nthe search. Carter objects to the photograph under Rule 403. How should the\ncourt rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Sustain the objection to the photograph in its current form, but allow a narrowed version.", "explanation": "The relevant knife is probative, but the inclusion of ten other knives creates a real danger that the jury will see Carter as generally dangerous or knife-obsessed. A cropped or otherwise sanitized image would solve most of the Rule 403 problem.", "closeCall": false, "correctIndices": null}, {"number": 75, "stem": "The following three questions are based on Problem 3.1 (page 165):\n\nIn no more than two trenchant sentences, answer the prompt at the end of the\nproblem.", "options": [], "answerType": "essay", "modelAnswer": "No model answer included.", "explanation": "The underlying textbook problem is not reproduced in the uploaded exam text, so I left this as an open study prompt.", "closeCall": true, "correctIndices": null}, {"number": 76, "stem": "The prosecution offers Lorde, a friend of the defendant. Lorde earlier provided a\nstatement to the prosecution in which she said that she witnessed both of the\ndefendant’s alleged hacks. Since that time, Lorde has suffered an injury (not\nrelated to the case) that makes her unable to remember the hacks. She testifies\nthat she remembers giving the statement to the prosecutors and is sure that it\nwas correct at the time that she made it, but that she still does not remember\nthe hacks. The prosecution then offers the statement. The defense objects on\nboth hearsay and Confrontation Clause How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "Overrule both objections, but use the recorded-recollection format.", "explanation": "Because Lorde is on the stand and subject to cross-examination, there is no Confrontation Clause problem despite her memory loss. Her earlier statement may be read into evidence as recorded recollection if the foundation is established, though it ordinarily is not received as an exhibit unless the defense offers it.", "closeCall": false, "correctIndices": null}, {"number": 77, "stem": "The defense offers Frost, a friend of Lorde, who testifies that Lorde has long held\na grudge against the defendant for beating her in a coding competition several\nyears ago. On cross-examination, the prosecution asks Frost whether he was\nconvicted thirteen years ago of a violation of a section of the Computer Fraud\nand Abuse Act that carries a penalty of up to ten years in prision. The defense\nobjects. Under which of the following scenarios should the objection be\nsustained? (Choose as many as apply.)", "options": ["Frost was sentenced to one year in prison and was released twelve years\nago. He has not committed another crime since then, has since received\na college degree, and is gainfully employed.", "Frost was sentenced to five years in prison, but was released three years\nearly based on a finding of rehabilitation. Six years later he pled guilty to\nanother hacking-related offense under the CFAA, a crime punishable by up\nto five years in prison, but received only a fine, not a prison sentence,\nafter cooperating with authorities.", "Frost was sentenced to five years in prison, but after his release, this\nconviction was later annulled on grounds of innocence. Three years later\nhe was convicted of another violation of the CFAA, an offense that once\nagain carried a maximum sentence of five years in prison. He received\nprobation.", "Frost was sentenced to a suspended sentence of five years. Two years\nlater he violated the conditions of his release and was sent to prison to\nserve the full five years."], "answerType": "mc", "modelAnswer": "abc", "explanation": "The objection should be sustained for the old conviction in (a) and (b) because the conviction or release is more than ten years old, and in (c) because the conviction was annulled on grounds of innocence. In (d), the release from confinement is recent enough that the ten-year bar does not apply.", "closeCall": true, "correctIndices": [0, 1, 2]}, {"number": 78, "stem": "The following three questions test your general knowledge of evidence law.\n\nMeanwhile, the unfortunate Carter is still on trial for killing Rich Uncle. The\nprosecution offers the confession of Sexton, who is being tried separately and\ndoes not testify at Carter’s trial. Sexton’s confession suggests that she and\nCarter planned the crime together. The defense objects on Confrontation Clause\ngrounds. In order to admit the conversation over this objection, the prosecution\nmust:", "options": ["Redact the confession by removing all references that might direct the\njury’s attention to Carter.", "Read the transcript of the confession to the jury but not offer the actual\ndocument.", "Offer Sexton as a witness, available for cross-examination.", "None of the above would be sufficient. The confession is inadmissible."], "answerType": "mc", "modelAnswer": "c", "explanation": "The clean constitutional cure is to put Sexton on the stand so Carter can cross-examine her. Mere redaction or reading the confession aloud is not enough for the joint-planning confession described here.", "closeCall": false, "correctIndices": [2]}, {"number": 79, "stem": "Needless to add, Carter’s civil suit against Yale Law School also has not yet\nended. The defense offers Sandburg, a student who witnessed the accident.\nSandburg testifies that he saw Carter descending the stairs that day and was\nimpressed by how slowly and carefully he moved. On cross-examination, the\ndefense asks whether Carter recently changed Sandburg’s grade on last year’s\nEvidence final examination from Pass to Honors. Sandburg denies this. The\ndefense then offers an email from Carter to the registrar, dated just one week\nbefore the start of trial, changing Sandburg’s grade. Carter objects to this\nevidence. The objection should be:", "options": ["Sustained, under the extrinsic evidence rule.", "Sustained, under the rule against perpetuities.", "Overruled, because the evidence presents a danger of unfair prejudice.", "Overruled, because the evidence goes to bias."], "answerType": "mc", "modelAnswer": "d", "explanation": "Extrinsic evidence is admissible to show bias. The recent grade change tends to show that Sandburg may favor Carter.", "closeCall": false, "correctIndices": [3]}, {"number": 80, "stem": "Defendant is charged with abusing X, a young minor. At trial, the prosecution\noffers X’s statements inculpating Defendant through Neruda, who teaches at X’s\npre-school. Neruda says he noticed bruises on X’s arms and asked about them,\nleading to X’s statements accusing Defendant.\nDefendant objects on Confrontation Clause grounds. He argues that because\nstate law requires teachers to report to law enforcement all allegations of abuse,\nNeruda’s motives in questioning X are testimonial. How should the court rule\nand why?", "options": ["The objection is sustained, because the reporting requirement means that\nNeruda’s questioning of X is testimonial.", "The objection is sustained, because even in the absence of the reporting\nrequirement, X’s statements to the teacher are testimonial.", "The objection is overruled, because under these circumstances neither X’s\nstatements to Neruda nor Neruda’s questioning of X is testimonial.", "The objection is overruled, because the Confrontation Clause does not\napply to any testimony in cases involving child abuse.\nEND OF EXAMINATION"], "answerType": "mc", "modelAnswer": "c", "explanation": "Under Ohio v. Clark, statements by a child to a teacher in these circumstances are ordinarily nontestimonial. The teacher’s mandatory-reporting duty does not by itself transform the exchange into a police-style interrogation.", "closeCall": false, "correctIndices": [2]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {
+      questions.forEach(q => {
+        q.stem = (q.stem || "")
+          .replace(/^\s*-\d+-\s*$/gm, "")
+          .replace(/\s+-\d+-\s+/g, " ")
+          .trim();
+
+        if (Array.isArray(q.options)) {
+          q.options = q.options.map(opt => (opt || "")
+            .replace(/^\s*-\d+-\s*$/gm, "")
+            .replace(/\s+-\d+-\s+/g, " ")
+            .trim()
+          );
+        }
+      });
+    }
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 7 – Privileges Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 7 – Privileges</h1>
+        <div class="subhead">Tricky practice questions on Rules 501 and 502, proposed Rules 503, 504, 505, 506, 511, plus Jaffee, Morales, Gionis, Zolin, Rowland, Judith Miller, Swidler, Trammel, and the Unit 7 problems.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 7 privileges notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on separating privilege from hearsay, identifying who actually holds the privilege, and spotting when confidentiality, an exception, or waiver defeats what first looks protected.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit7_privileges_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "In a federal criminal case, a party raises attorney-client privilege. Under Rule 501, the court generally looks first to:", "options": ["Federal common-law privilege principles shaped by reason and experience", "State privilege law because the case is in federal court", "The hearsay rules", "Rule 403 only"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 501 generally uses federal common-law privilege principles in federal criminal cases unless some Constitution, statute, or Supreme Court rule controls otherwise.", "closeCall": false, "correctIndices": [0]}, {"number": 2, "stem": "In a diversity civil case based entirely on state tort law, a privilege issue arises. Under Rule 501, the best answer is:", "options": ["Federal privilege law always controls because the case is in federal court.", "State privilege law generally controls because state law supplies the rule of decision.", "No privilege law applies in diversity cases.", "The court chooses whichever privilege rule is broader."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 501 says that in a civil case, state law governs privilege regarding a claim or defense for which state law supplies the rule of decision.", "closeCall": false, "correctIndices": [1]}, {"number": 3, "stem": "Which statement best captures Rule 502(b) on inadvertent disclosure in a federal proceeding or to a federal office or agency?", "options": ["Any accidental disclosure automatically waives privilege.", "Inadvertent disclosure does not waive if it was inadvertent, reasonable steps were taken to prevent disclosure, and reasonable prompt steps were taken to rectify the error.", "Inadvertent disclosure never matters if the document was important.", "Inadvertent disclosure is protected only by private agreement."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 502(b) requires all three: inadvertence, reasonable precautions, and prompt reasonable steps to fix the mistake.", "closeCall": false, "correctIndices": [1]}, {"number": 4, "stem": "Under Rule 502(a), an intentional disclosure causes subject-matter waiver of undisclosed communications only if:", "options": ["The disclosure was intentional, the materials concern the same subject matter, and fairness requires they be considered together.", "The disclosure was intentional, period.", "The disclosure happened in any case involving a lawyer.", "The opposing party says broader waiver would be helpful."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 502(a) sharply limits subject-matter waiver to intentional disclosure plus same subject matter plus fairness.", "closeCall": false, "correctIndices": [0]}, {"number": 5, "stem": "A federal court enters a Rule 502(d) order stating that disclosure in the litigation will not waive attorney-client privilege or work product. The strongest answer is:", "options": ["The order affects only the current case.", "The order can prevent waiver in other federal and state proceedings as well.", "The order binds only parties who separately sign an agreement.", "The order works only for work product, not privilege."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 502(d) is powerful because a federal court order can provide non-waiver effect beyond the current litigation.", "closeCall": false, "correctIndices": [1]}, {"number": 6, "stem": "Under Rule 502(e), a party agreement on the effect of disclosure in a federal proceeding is binding:", "options": ["On everyone automatically", "Only on the parties to the agreement unless incorporated into a court order", "Only on federal agencies", "Only on the producing party"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 502(e) gives private agreements limited force unless they are incorporated into a court order.", "closeCall": false, "correctIndices": [1]}, {"number": 7, "stem": "Which of the following is the core of the lawyer-client privilege under Proposed Rule 503?", "options": ["Any communication with any lawyer about anything", "Confidential communications made for the purpose of facilitating professional legal services", "All facts known by the client", "Any statement made during litigation"], "answerType": "mc", "modelAnswer": "b", "explanation": "The privilege protects confidential communications made for the purpose of obtaining or facilitating legal services.", "closeCall": false, "correctIndices": [1]}, {"number": 8, "stem": "Under Proposed Rule 503, a “lawyer” includes:", "options": ["Only a person actually licensed in the forum state", "A person authorized to practice in any state or nation, or reasonably believed by the client to be so authorized", "Only an attorney of record in pending litigation", "Any friend who once attended law school"], "answerType": "mc", "modelAnswer": "b", "explanation": "The proposed rule protects clients who reasonably believe they are consulting an authorized lawyer.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "A client emails a lawyer for legal advice but copies an unrelated friend who is not needed to help provide or transmit the advice. The strongest privilege answer is:", "options": ["Still privileged because copying friends never matters.", "Likely not privileged because confidentiality may be destroyed by including an unnecessary third party.", "Automatically work product.", "Protected only if the friend agrees not to talk."], "answerType": "mc", "modelAnswer": "b", "explanation": "Privilege depends on confidentiality. Including unnecessary third parties can destroy confidentiality.", "closeCall": false, "correctIndices": [1]}, {"number": 10, "stem": "A client tells the lawyer’s paralegal facts needed so the lawyer can advise the client. The strongest answer is:", "options": ["Not privileged because the communication was not directly to the lawyer.", "Potentially privileged because the paralegal is a representative of the lawyer assisting in legal services.", "Privileged only if under oath.", "Never privileged if made by email."], "answerType": "mc", "modelAnswer": "b", "explanation": "Communications with representatives of the lawyer assisting in the provision of legal services are generally covered by the privilege.", "closeCall": false, "correctIndices": [1]}, {"number": 11, "stem": "Which statement best captures the crime-fraud exception to attorney-client privilege?", "options": ["It destroys privilege whenever a client committed a crime in the past.", "It applies when the client sought or obtained the lawyer’s services to enable or aid a crime or fraud the client knew or reasonably should have known was a crime or fraud.", "It applies only after conviction.", "It applies only to violent crimes."], "answerType": "mc", "modelAnswer": "b", "explanation": "The key is use of legal services to further future or ongoing crime or fraud, not merely discussion of completed misconduct.", "closeCall": false, "correctIndices": [1]}, {"number": 12, "stem": "Under Gionis, incriminating statements made to an attorney were not privileged chiefly because:", "options": ["The client was not under oath.", "The attorney had clearly said he would not act as a lawyer in the matter, so the client was not consulting him in his professional legal capacity.", "The conversation touched on violence.", "The statements were made at home."], "answerType": "mc", "modelAnswer": "b", "explanation": "Privilege depends on seeking legal advice from the attorney acting as counsel. If the attorney plainly refuses that role, later statements may be unprotected.", "closeCall": false, "correctIndices": [1]}, {"number": 13, "stem": "Under Zolin, before a court may engage in in camera review of allegedly privileged material to test the crime-fraud exception, the challenger must show:", "options": ["Proof beyond a reasonable doubt of crime-fraud", "A factual basis adequate to support a good-faith belief by a reasonable person that in camera review may reveal evidence establishing crime-fraud", "A confession from the client", "A written waiver by the holder of the privilege"], "answerType": "mc", "modelAnswer": "b", "explanation": "Zolin rejects a rigid independent-evidence-only rule, but it also bars fishing expeditions by requiring a threshold good-faith factual basis.", "closeCall": false, "correctIndices": [1]}, {"number": 14, "stem": "When two joint clients later sue each other over the common matter for which they shared a lawyer, the strongest privilege answer is:", "options": ["Their communications with that lawyer remain fully privileged between them.", "The joint-client exception may defeat privilege between them as to those communications.", "The communications are never privileged against outsiders.", "Only the lawyer decides whether to disclose."], "answerType": "mc", "modelAnswer": "b", "explanation": "Communications may remain privileged against outsiders but not in later litigation between joint clients over the common matter.", "closeCall": false, "correctIndices": [1]}, {"number": 15, "stem": "A client sues a lawyer for malpractice, and the lawyer seeks to disclose otherwise confidential communications relevant to the alleged breach. The strongest answer is:", "options": ["Privilege always survives malpractice claims.", "The breach-of-duty exception may apply to communications relevant to the dispute between lawyer and client.", "Only courts may discuss such communications, not the lawyer.", "The communications become public for all purposes."], "answerType": "mc", "modelAnswer": "b", "explanation": "Proposed Rule 503 includes a breach-of-duty exception for communications relevant to disputes between lawyer and client.", "closeCall": false, "correctIndices": [1]}, {"number": 16, "stem": "Under Swidler & Berlin, attorney-client privilege generally:", "options": ["Ends automatically when the client dies", "Survives the client’s death", "Survives death only in civil cases", "Ends if prosecutors think the information is important enough"], "answerType": "mc", "modelAnswer": "b", "explanation": "Swidler rejects a posthumous balancing test and holds that attorney-client privilege generally survives the client’s death.", "closeCall": false, "correctIndices": [1]}, {"number": 17, "stem": "Under Rowland, confidential legal-advice communications between government officials and government counsel:", "options": ["Automatically yield to a federal grand jury investigation", "Are generally protected by attorney-client privilege absent some traditional exception like crime-fraud", "Can never be privileged because the public is the real client", "Are privileged only if the successor governor waives them"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rowland rejected a special grand-jury override and recognized government attorney-client privilege in that setting.", "closeCall": false, "correctIndices": [1]}, {"number": 18, "stem": "Under the Judith Miller grand-jury case, the strongest answer about a reporter’s attempt to resist a federal grand jury subpoena for confidential-source information is:", "options": ["The First Amendment automatically creates a reporter shield.", "There is no broad First Amendment reporter shield against a federal grand jury subpoena investigating crime, and any common-law protection was overcome there.", "Reporters can refuse all grand jury subpoenas if a source asked for confidentiality.", "Privilege turns entirely on the reporter’s ethics code."], "answerType": "mc", "modelAnswer": "b", "explanation": "The D.C. Circuit treated Branzburg as controlling and rejected a First Amendment exemption from grand jury subpoenas in that setting.", "closeCall": false, "correctIndices": [1]}, {"number": 19, "stem": "The Third Circuit parent-child privilege case is best summarized as:", "options": ["Federal common law clearly recognizes a broad parent-child privilege.", "No federal parent-child privilege was recognized under Rule 501; if one is to exist, Congress should create it.", "Parent-child privilege exists only in criminal cases.", "Parent-child privilege exists whenever family harmony would be improved."], "answerType": "mc", "modelAnswer": "b", "explanation": "The court refused to recognize a new federal parent-child privilege under Rule 501.", "closeCall": false, "correctIndices": [1]}, {"number": 20, "stem": "Under Jaffee, federal law recognizes a psychotherapist-patient privilege that extends to:", "options": ["Psychiatrists only", "Psychiatrists, psychologists, and licensed social workers providing psychotherapy", "Only court-appointed therapists", "Only psychologists with Ph.D.s"], "answerType": "mc", "modelAnswer": "b", "explanation": "Jaffee recognizes the privilege and extends it to licensed social workers providing psychotherapy.", "closeCall": false, "correctIndices": [1]}, {"number": 21, "stem": "Which statement best captures Jaffee’s treatment of balancing?", "options": ["Courts should weigh privacy against evidentiary need case by case in every therapy dispute.", "The Court rejected a case-by-case balancing approach because unpredictability would undermine candid therapy communications.", "Balancing is required only when police officers are the patients.", "Balancing disappears only in criminal cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Jaffee rejected a free-floating balancing test for psychotherapist privilege because uncertainty would chill treatment communications.", "closeCall": false, "correctIndices": [1]}, {"number": 22, "stem": "A plaintiff sues for emotional-distress damages and affirmatively relies on mental condition as an element of the claim. Under Proposed Rule 504, the strongest answer is:", "options": ["The psychotherapist privilege always remains absolute.", "Relevant communications may fall within the condition-as-an-element exception.", "The privilege disappears for every mental-health communication the patient ever made.", "Only criminal defendants can waive this privilege."], "answerType": "mc", "modelAnswer": "b", "explanation": "When the patient makes mental condition an element of a claim or defense, the privilege does not protect relevant communications on that issue.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "A patient speaks to a therapist about violent plans, knowing the therapist will relay the threats to the targets under a duty-to-warn regime. The strongest privilege answer is:", "options": ["The threats are clearly confidential because therapy is always private.", "The threats are likely not privileged because the patient knew they would be communicated, undermining confidentiality.", "The threats are privileged unless the patient signs a waiver.", "The threats become work product."], "answerType": "mc", "modelAnswer": "b", "explanation": "Auster turns on confidentiality. If the patient knows the threats will be relayed, the communication is not truly confidential in the relevant sense.", "closeCall": true, "correctIndices": [1]}, {"number": 24, "stem": "Under Proposed Rule 505, the spousal testimonial privilege as written would allow:", "options": ["Either spouse in any case to block any testimony", "An accused in a criminal proceeding to prevent the spouse from testifying against the accused, subject to listed exceptions", "Only the witness-spouse to decide in all cases", "A privilege limited to confidential marital communications"], "answerType": "mc", "modelAnswer": "b", "explanation": "Proposed Rule 505 is framed as an accused’s privilege to prevent spousal testimony in a criminal case, subject to exceptions.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "Which is an express exception under Proposed Rule 505?", "options": ["Any tax offense", "A crime by one spouse against the other spouse or a child of either", "Any felony", "Any act occurring during marriage"], "answerType": "mc", "modelAnswer": "b", "explanation": "The proposed spousal testimonial privilege does not apply in proceedings involving crimes against the spouse or child, among other listed exceptions.", "closeCall": false, "correctIndices": [1]}, {"number": 26, "stem": "Under Trammel, in actual federal criminal law the choice whether to testify as an adverse spouse generally belongs to:", "options": ["The accused spouse alone", "The witness-spouse alone", "The trial judge", "The prosecutor"], "answerType": "mc", "modelAnswer": "b", "explanation": "Trammel took the power to block adverse spousal testimony away from the defendant and placed it with the witness-spouse.", "closeCall": false, "correctIndices": [1]}, {"number": 27, "stem": "A person privately seeks spiritual guidance from a priest about wrongdoing and intends the conversation to remain private. Under Proposed Rule 506, the strongest answer is:", "options": ["The communication is usually privileged.", "The communication is never privileged because priests are not lawyers.", "The communication is privileged only if written down.", "The communication is privileged only in criminal cases."], "answerType": "mc", "modelAnswer": "a", "explanation": "Confidential communications made to a clergyman acting as a spiritual adviser are generally protected.", "closeCall": false, "correctIndices": [0]}, {"number": 28, "stem": "Which situation most clearly falls outside the clergy privilege?", "options": ["A private confession to a rabbi for spiritual guidance", "A casual social conversation with a minister for business advice rather than spiritual counseling", "A private pastoral counseling session with a priest", "A confidential request for spiritual advice made to someone reasonably believed to be clergy"], "answerType": "mc", "modelAnswer": "b", "explanation": "The privilege requires the clergyman to be acting in a professional spiritual-adviser role, not merely as a social or business acquaintance.", "closeCall": false, "correctIndices": [1]}, {"number": 29, "stem": "Under Proposed Rule 511(a)(1), a person generally waives a privilege by:", "options": ["Any disclosure of any kind, even involuntary", "Voluntarily disclosing or consenting to disclosure of a significant part of the privileged matter", "Mentioning the existence of a lawyer", "Receiving a privilege warning"], "answerType": "mc", "modelAnswer": "b", "explanation": "Voluntary disclosure of a significant part of the privileged matter generally waives the privilege, unless the disclosure itself remains privileged.", "closeCall": false, "correctIndices": [1]}, {"number": 30, "stem": "Which statement best captures broader subject-matter waiver for attorney-client privilege or work product under Proposed Rule 511(b)(1) / Rule 502(a)-style logic?", "options": ["Any intentional disclosure opens everything on every related issue.", "Broader waiver requires intentional disclosure, same subject matter, and fairness requiring the materials to be considered together.", "Inadvertent disclosure always creates broader waiver.", "Subject-matter waiver never exists."], "answerType": "mc", "modelAnswer": "b", "explanation": "Subject-matter waiver is a limited fairness doctrine, not an automatic consequence of any disclosure.", "closeCall": false, "correctIndices": [1]}, {"number": 31, "stem": "Which form of protection is strongest against later waiver in other proceedings?", "options": ["A private clawback agreement not approved by a court", "A court order providing non-waiver effect", "A verbal understanding between counsel", "A party’s unilateral statement that nothing is waived"], "answerType": "mc", "modelAnswer": "b", "explanation": "Court orders—especially under Rule 502(d)-style provisions—carry the strongest non-waiver effect across proceedings.", "closeCall": false, "correctIndices": [1]}, {"number": 32, "stem": "Justice Alito’s Peña-Rodriguez hypothetical imagines a prosecution witness privately admitting racially motivated lying to the witness’s attorney, spouse, clergy member, or psychotherapist. If a criminal defendant seeks to compel those witnesses to testify, what is the best overall answer under ordinary federal privilege principles, and what constitutional arguments might the defendant still raise?", "options": [], "answerType": "essay", "modelAnswer": "Ordinarily, the defendant would usually lose against valid privileges, but the defendant could still invoke due process, the Compulsory Process Clause, and the right to present a meaningful defense in arguing for access to exceptionally important, reliable exculpatory evidence.", "explanation": "The hard point is that privileges normally block disclosure even of important evidence. But Morales shows that in extraordinary innocence-centered circumstances, due process may outweigh ordinary evidentiary barriers. The defendant’s best constitutional theories would be due process and the right to present a defense, with compulsory process as a related support. Confrontation arguments are weaker because the privileged speakers are not necessarily “witnesses against” the defendant in the Crawford sense.", "closeCall": true, "correctIndices": null}, {"number": 33, "stem": "Under Morales v. Portuondo, reliable third-party confessions that strongly show the defendant’s innocence may, in extraordinary circumstances, outweigh ordinary evidentiary barriers because:", "options": ["Privileges and hearsay rules never matter in criminal cases.", "Due process protects a meaningful opportunity to present a complete defense when exclusion of vital, trustworthy innocence evidence would make the trial fundamentally unfair.", "Attorney-client privilege is always waived at death.", "Priests and lawyers are state actors."], "answerType": "mc", "modelAnswer": "b", "explanation": "Morales is an extraordinary due-process case emphasizing the right to present highly reliable, vital innocence evidence.", "closeCall": true, "correctIndices": [1]}, {"number": 34, "stem": "A lawyer’s draft memo about a sexual-harassment claim is faxed to a bank HR director, read, revised, and then thrown into a trash can, later ending up torn into pieces in a bank dumpster on bank property marked for employees only. A private investigator hired by the opposing party retrieves it from the dumpster. The strongest privilege answer is:", "options": ["Privilege is clearly waived because any discard into trash always destroys confidentiality.", "A strong argument exists that privilege was not waived because the bank took meaningful steps consistent with confidentiality and did not intend disclosure.", "Privilege never applies to draft legal memoranda.", "Privilege is waived only if the memo was torn up."], "answerType": "mc", "modelAnswer": "b", "explanation": "The best argument against waiver is that the privileged draft was not voluntarily exposed to the public in a way inconsistent with confidentiality, especially given the secured setting and torn-up condition.", "closeCall": true, "correctIndices": [1]}, {"number": 35, "stem": "A client’s four-paragraph letter to a lawyer is accidentally produced in initial disclosures. The first three paragraphs narrate underlying events; the fourth discusses getting legal representation and asks the lawyer to communicate “this information” to opposing counsel. Production occurred in a tiny ten-page disclosure set, and counsel did not seek clawback for months. How should the court think about privilege and waiver?", "options": [], "answerType": "essay", "modelAnswer": "The court should first separate what is actually privileged from what is not. A client’s mere factual narrative may be privileged if communicated for legal advice, but the request to pass information onward may cut against confidentiality; and even if some or all of the letter is privileged, the long delay and minimal precautions may defeat inadvertent-disclosure protection.", "explanation": "The strongest analysis is document-by-document and paragraph-by-paragraph. Rule 502(b) requires inadvertence plus reasonable prevention and prompt reasonable rectification. A very small production and a long corrective delay make the anti-waiver argument weaker.", "closeCall": true, "correctIndices": null}, {"number": 36, "stem": "Which statement best captures attorney-client privilege and client identity?", "options": ["A client’s identity is always privileged.", "A client’s identity is usually not privileged, though special circumstances can make disclosure tantamount to revealing a confidential communication or supplying the final incriminating link.", "Client identity is privileged only in civil cases.", "Client identity is privileged only when the lawyer is subpoenaed by a grand jury."], "answerType": "mc", "modelAnswer": "b", "explanation": "As a general rule, identity is not privileged, but some cases recognize narrow exceptional situations where revealing identity effectively discloses the confidential substance itself.", "closeCall": true, "correctIndices": [1]}, {"number": 37, "stem": "A secret caller hires a lawyer only to arrange return of a stolen typewriter left on the lawyer’s porch for police pickup. The prosecution asks the lawyer to name the caller. The best privilege answer is:", "options": ["Clearly privileged because any client identity is privileged.", "Likely not privileged because the caller’s identity is ordinarily not protected and the contact appears more like arranging delivery than seeking legal advice.", "Privileged only because the lawyer practices criminal law.", "Privileged because the lawyer was paid."], "answerType": "mc", "modelAnswer": "b", "explanation": "The strongest objection to privilege is that the lawyer was used mainly as a conduit for returning property, and client identity is usually not protected.", "closeCall": true, "correctIndices": [1]}, {"number": 38, "stem": "An attorney deposits a counterfeit $100 bill into the law firm account and later refuses to identify the client who paid it. A grand jury subpoenas documents identifying the client. The strongest answer is:", "options": ["The subpoena should likely be enforced because client identity is usually not privileged on these facts.", "The identity is always privileged because it came from the attorney’s representation.", "The attorney may refuse because any payment source is privileged.", "The subpoena fails because grand juries cannot seek documents from lawyers."], "answerType": "mc", "modelAnswer": "a", "explanation": "Alexiou reflects the general rule that client identity is not privileged absent unusual circumstances making disclosure equivalent to revealing a privileged communication.", "closeCall": false, "correctIndices": [0]}, {"number": 39, "stem": "An attorney learned a client’s handwriting only by receiving the client’s confidential letters during representation. Later, in an unrelated prosecution, the government asks the attorney whether a separate document is in the client’s handwriting. The strongest privilege answer is:", "options": ["The attorney may refuse because all knowledge derived from representation is privileged.", "The attorney generally may not refuse on privilege grounds because handwriting is a physical characteristic, not the content of a confidential communication.", "The attorney may refuse only if the client is on trial.", "The attorney may answer only if the client consents in writing."], "answerType": "mc", "modelAnswer": "b", "explanation": "The privilege protects confidential communications, not underlying physical characteristics such as handwriting identity.", "closeCall": false, "correctIndices": [1]}, {"number": 40, "stem": "A mother privately tells her custody lawyer that she only needs to kill one child, frame the father, and thereby get what he deserves. The state later seeks to compel the lawyer to testify in a prosecution for conspiracy to murder. The strongest answer is:", "options": [], "answerType": "essay", "modelAnswer": "The court should reject the privilege claim under the crime-fraud / future-crime exception, and the lawyer’s earlier ethics-based disclosure to prevent harm would not itself create the privilege or necessarily constitute a broad waiver of everything else.", "explanation": "The key point is that the statement sought legal consultation in connection with future violent wrongdoing, which defeats ordinary attorney-client protection. The separate waiver argument is weaker than the crime-fraud argument; the cleaner basis for admission is that no privilege attached to the statement in the first place because of the future-crime exception.", "closeCall": true, "correctIndices": null}, {"number": 41, "stem": "If a successor governor waives governmental attorney-client privilege over official communications between the former governor and official counsel made during the former governor’s term, the former governor as a private citizen can most persuasively argue:", "options": ["He personally owns the official privilege forever.", "The privilege belonged to him individually, not to the office.", "He should still control because he was the speaker.", "His claim is weak if the privilege belongs to the office rather than to him personally."], "answerType": "mc", "modelAnswer": "d", "explanation": "The best modern view is that privilege over official government legal advice belongs to the office or entity, not indefinitely to the former officeholder as a private person.", "closeCall": true, "correctIndices": [3]}, {"number": 42, "stem": "A foreign national allegedly enters a sham marriage to gain immigration benefits. The government offers recordings and testimony from the spouse about conversations during the marriage. The defendant invokes marital communications privilege. The government’s strongest argument is:", "options": [], "answerType": "essay", "modelAnswer": "The government’s strongest argument is that a sham marriage may not deserve the normal protection of marital communications privilege because the policy of fostering marital harmony is missing or because the communications were made in furtherance of immigration fraud.", "explanation": "The defendant’s best response is that a legally valid marriage existed and marital communications are ordinarily protected if confidential. The issue is difficult because it mixes validity, policy, and possible crime-fraud-like concerns. The better answer is that the government has a serious argument against privilege where the marriage itself is the fraudulent instrument.", "closeCall": true, "correctIndices": null}, {"number": 43, "stem": "A police investigator emails his wife from a workplace computer subject to an explicit monitoring warning stating users have no legitimate expectation of privacy in the system or data on it. The email allegedly shows criminal intent. The strongest marital-communications answer is:", "options": ["The email is likely not privileged because confidentiality was undermined by the workplace monitoring notice and lack of reasonable expectation of privacy.", "The email is automatically privileged because spouses were involved.", "The email is privileged unless the employer actually monitored that exact message.", "The email is privileged only if the wife objects."], "answerType": "mc", "modelAnswer": "a", "explanation": "Marital communications privilege depends on confidentiality. A clear workplace monitoring warning strongly undercuts any expectation that the message remained confidential.", "closeCall": false, "correctIndices": [0]}, {"number": 44, "stem": "If that same draft email to the spouse was found only in the sender’s outbox and was never actually sent, the strongest answer is:", "options": ["It is still a completed marital communication.", "It may fail as a marital communication because it was never actually communicated to the spouse.", "It becomes automatically privileged as work product.", "It is admissible only if the spouse consents."], "answerType": "mc", "modelAnswer": "b", "explanation": "A draft or unsent outbox message is a weaker candidate for a marital communication because communication itself never occurred.", "closeCall": true, "correctIndices": [1]}, {"number": 45, "stem": "A wife leaves a handwritten note beginning “Dear Jimmy” and ending “Love, Louise” on the kitchen counter of the marital home, warning her husband that his sister is stealing and that she will not participate in the scheme. The note is later seized from the couple’s bedroom in a search. The husband objects on marital-communications grounds. The strongest answer is:", "options": ["The note is likely a privileged marital communication if intended as a confidential communication between spouses.", "The note can never be privileged because it was handwritten.", "The note is not privileged because it was later found by police.", "The note is privileged only if the wife refuses to testify."], "answerType": "mc", "modelAnswer": "a", "explanation": "A private communication between spouses intended to remain within the marriage is a classic candidate for marital communications privilege.", "closeCall": false, "correctIndices": [0]}, {"number": 46, "stem": "A wife repeats her husband’s privileged confession to a friend immediately after hearing it. At trial, the wife waives her testimonial privilege but the husband invokes marital confidences privilege. The prosecution calls the friend to repeat what the wife said. The strongest answer is:", "options": ["The friend may testify because the privilege protects only the wife, not the friend.", "The friend’s testimony should be excluded because admitting it would circumvent the husband’s marital confidences privilege.", "The friend’s testimony always comes in as an excited utterance.", "The friend’s testimony is barred only if the wife objects."], "answerType": "mc", "modelAnswer": "b", "explanation": "Allowing a third person to repeat the spouse’s disclosure would gut the marital confidences privilege by doing indirectly what the privilege forbids directly.", "closeCall": true, "correctIndices": [1]}, {"number": 47, "stem": "Which of the following best distinguishes attorney-client privilege from work product?", "options": ["Attorney-client privilege protects confidential communications for legal advice; work product protects material prepared in anticipation of litigation or for trial.", "They are identical.", "Work product applies only to lawyers, while privilege applies only to clients.", "Attorney-client privilege disappears whenever litigation begins."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 502(g) reflects the basic difference: privilege covers confidential legal communications, while work product protects litigation-preparation material.", "closeCall": false, "correctIndices": [0]}, {"number": 48, "stem": "Which two of the following are accurate summaries of Unit 7?", "options": ["In federal-question cases, privilege is usually governed by federal common law under Rule 501.", "Rule 502(d) orders are weaker than private party agreements.", "Jaffee recognizes a psychotherapist privilege and rejects free-floating case-by-case balancing.", "Trammel lets the criminal defendant stop a willing spouse from testifying."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are correct. Rule 502(d) orders are stronger than private agreements, and Trammel gives the choice to the witness-spouse, not the defendant.", "closeCall": false, "correctIndices": [0, 2]}, {"number": 49, "stem": "A party voluntarily discloses only a tiny, insignificant fragment of a privileged communication that reveals no meaningful substance. The strongest waiver answer is:", "options": ["Any disclosure always waives everything.", "General waiver under a significant-part standard is weaker when the disclosure is not a significant part of the privileged matter.", "Subject-matter waiver automatically follows.", "The communication becomes public for all purposes."], "answerType": "mc", "modelAnswer": "b", "explanation": "Waiver doctrine usually focuses on meaningful voluntary disclosure of a significant part of the privileged matter, not trivial fragments.", "closeCall": true, "correctIndices": [1]}, {"number": 50, "stem": "Which question is the best first checklist question in any privilege problem?", "options": ["Is the evidence important?", "Is there a privilege at all, and if so, who holds it and does any exception or waiver defeat it?", "Did the communication happen on paper?", "Would the jury like to hear it?"], "answerType": "mc", "modelAnswer": "b", "explanation": "Privilege analysis is sequential: identify the privilege, identify the holder, and then test confidentiality, purpose, exceptions, and waiver.", "closeCall": false, "correctIndices": [1]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

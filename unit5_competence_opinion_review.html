@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 5 – Competence & Opinion Testimony Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 5 – Competence & Opinion Testimony</h1>
+        <div class="subhead">Tricky practice questions on Rules 601, 602, 603, 610, 701, 702, 703, 704, 705, plus Collins, Ganier, Johnson, Jinro, Batangan, Daubert, Kumho, Tardif, and the Unit 5 problems.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 5 competence-and-opinion-testimony notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on separating competency from credibility, keeping lay opinion distinct from expert testimony, and spotting when an expert has crossed from helpful analysis into unreliable method, improper vouching, or forbidden mental-state conclusions.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit5_competence_opinion_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "A seven-year-old is the only eyewitness to a car accident. The opposing party argues the child is automatically incompetent because of age. The best answer is:", "options": ["Correct; children are categorically incompetent.", "Incorrect; under Rule 601, almost everyone is competent unless some specific rule provides otherwise.", "Correct unless the child has a notarized statement.", "Correct unless the child is an expert."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 601 starts with a broad presumption of competency. Youth may affect credibility and the form of the oath, but not automatic competency.", "closeCall": false, "correctIndices": [1]}, {"number": 2, "stem": "A witness in a civil trial has a prior felony conviction and is closely related to one of the parties. The strongest Rule 601 answer is:", "options": ["The witness is generally competent; those facts go more to credibility than competency.", "The witness is incompetent because of bias and criminal history.", "The witness is incompetent unless corroborated.", "The witness is competent only if the judge believes the witness."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 601 makes competency broad. Bias, relationship, or criminal history usually affect weight and impeachment, not the basic ability to testify.", "closeCall": false, "correctIndices": [0]}, {"number": 3, "stem": "In a diversity civil case where state law supplies the rule of decision on the claim, a party raises a witness-competency issue. Which law controls?", "options": ["Federal Rule 601 alone always controls.", "State competency law controls on that issue.", "Whichever rule is more lenient controls.", "The jury decides without any legal rule."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 601 expressly sends competency questions to state law in civil cases where state law supplies the rule of decision.", "closeCall": false, "correctIndices": [1]}, {"number": 4, "stem": "A fact witness testifies, “I saw the defendant run the red light.” The strongest foundation rule is:", "options": ["Rule 602 is satisfied because the witness claims firsthand perception.", "Rule 602 fails unless the witness took notes.", "Rule 701 is the only relevant rule.", "Rule 703 lets any witness rely on others."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 602 requires personal knowledge. Firsthand observation of the light satisfies that requirement.", "closeCall": false, "correctIndices": [0]}, {"number": 5, "stem": "A witness says, “He must have intended to steal the money.” The witness did not hear any statement, see any taking, or observe any conduct beyond seeing the defendant walk by a desk. The best answer is:", "options": ["Admissible under Rule 602 because intent is obvious.", "Usually improper speculation lacking personal knowledge under Rule 602.", "Admissible because lay witnesses may always testify to intent.", "Admissible only if phrased as an opinion under Rule 701."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 602 requires a sufficient basis in personal perception. This statement is speculation, not firsthand knowledge.", "closeCall": false, "correctIndices": [1]}, {"number": 6, "stem": "A witness says, “I smelled gasoline immediately after the explosion.” The strongest answer is:", "options": ["Improper because smell is not personal knowledge.", "Proper because sensory perception can establish personal knowledge under Rule 602.", "Improper unless an expert confirms the smell.", "Proper only if the witness also saw the gas can."], "answerType": "mc", "modelAnswer": "b", "explanation": "Personal knowledge can come from any firsthand sensory perception, including smell.", "closeCall": false, "correctIndices": [1]}, {"number": 7, "stem": "Rule 603 requires that before testifying a witness must:", "options": ["Swear using a religious formula approved by the court.", "Give an oath or affirmation in a form designed to impress the duty of truthfulness on the witness’s conscience.", "Sign a written statement outside court at some point in life.", "Promise only to try their best."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 603 is flexible about wording, but requires a serious oath or affirmation to testify truthfully.", "closeCall": false, "correctIndices": [1]}, {"number": 8, "stem": "A child witness is asked, “Do you promise to tell the truth?” and says yes in a serious way. The best Rule 603 answer is:", "options": ["Insufficient because only adult-form oaths count.", "Potentially sufficient if the form used is designed to impress the truth-telling duty on the child’s conscience.", "Insufficient unless the child says “I swear.”", "Insufficient unless a parent is present."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 603 allows flexible forms, especially for children, so long as the form impresses the duty of truthfulness on the witness.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "A lawyer argues in closing, “You should believe this witness because she is a devout church member.” The best answer is:", "options": ["Proper bolstering under Rule 608(a).", "Barred by Rule 610.", "Proper if the witness’s religion is mainstream.", "Proper if the case is civil."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 610 forbids using religious beliefs or opinions to attack or support a witness’s credibility.", "closeCall": false, "correctIndices": [1]}, {"number": 10, "stem": "Evidence that a witness and a party belong to the same religious organization and work closely together in that organization is offered to show the witness may favor that party. The best answer is:", "options": ["Always barred by Rule 610.", "Potentially admissible if genuinely offered to show bias rather than general credibility through religion.", "Admissible only if the witness first mentions religion.", "Barred unless the witness denies the relationship."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 610 bars using religion as a credibility shortcut, but it does not necessarily bar religious evidence offered for another legitimate purpose such as bias.", "closeCall": true, "correctIndices": [1]}, {"number": 11, "stem": "A lay witness says, “He looked drunk.” The strongest Rule 701 answer is:", "options": ["Improper because intoxication requires an expert.", "Proper if based on personal observation and helpful to the jury.", "Improper because it embraces an ultimate issue.", "Proper only if the witness also administered a sobriety test."], "answerType": "mc", "modelAnswer": "b", "explanation": "Whether someone looked intoxicated is often a common-sense lay opinion based on firsthand perception and helpful to the jury.", "closeCall": false, "correctIndices": [1]}, {"number": 12, "stem": "A witness says, “She sounded frightened on the phone.” The best answer is:", "options": ["Improper because tone of voice always requires an expert.", "Proper lay opinion if rationally based on perception and helpful.", "Improper unless the witness can identify the exact decibel level of the voice.", "Improper because all opinions on emotion are speculative."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 701 allows ordinary impression testimony like “frightened,” “angry,” or “nervous” when grounded in firsthand perception.", "closeCall": false, "correctIndices": [1]}, {"number": 13, "stem": "A lay witness testifies, “Based on the skid marks, the defendant was traveling 72 miles per hour.” The strongest objection is:", "options": ["No problem; anyone may quantify speed from skid marks.", "Improper lay opinion because it relies on specialized accident-reconstruction knowledge within Rule 702.", "Improper only because it goes to an ultimate issue.", "Proper only if the witness owns a car."], "answerType": "mc", "modelAnswer": "b", "explanation": "Quantifying speed from skid marks generally requires technical or specialized expertise, making it expert testimony under Rule 702 rather than lay opinion under Rule 701.", "closeCall": false, "correctIndices": [1]}, {"number": 14, "stem": "An insurance investigator testifies that when accused of arson the defendant replied, “Look, Mister, I’m just a poor man.” Asked about tone of voice, the witness answers, “He sounded depressed.” Defense objects that this is improper opinion testimony. How should the court rule?", "options": ["Sustain, because describing a tone of voice always requires an expert.", "Overrule, because this is ordinary lay opinion rationally based on the witness’s perception and helpful to the jury.", "Sustain, because a witness may repeat words but never describe tone.", "Overrule only if the witness is a psychologist."], "answerType": "mc", "modelAnswer": "b", "explanation": "“He sounded depressed” is the sort of shorthand impression lay witnesses commonly may give under Rule 701.", "closeCall": false, "correctIndices": [1]}, {"number": 15, "stem": "Yazzie is charged with selling cigarettes to a minor, and the statute allows a defense that he reasonably believed the buyer was of age. Witnesses who knew the buyer would testify that at the time she appeared to be twenty or twenty-one years old. The best answer is:", "options": ["Admissible lay opinion on apparent age.", "Inadmissible because age always requires documentary proof.", "Inadmissible unless the witnesses are medical experts.", "Admissible only if the buyer testifies first."], "answerType": "mc", "modelAnswer": "a", "explanation": "A person’s apparent age is a classic subject for lay opinion based on everyday observation.", "closeCall": false, "correctIndices": [0]}, {"number": 16, "stem": "A lay witness with substantial personal experience using cocaine testifies that a white powder she found in Defendant’s shoe looked and tasted like cocaine. Should the court admit the opinion?", "options": [], "answerType": "essay", "modelAnswer": "Yes, the court may admit it as lay opinion if the witness’s opinion is rationally based on personal perception and experience and does not depend on specialized scientific methodology.", "explanation": "Paiva reflects that a witness’s firsthand familiarity with a substance can support a lay opinion identifying it, especially when based on direct observation and prior use, rather than laboratory science.", "closeCall": true, "correctIndices": null}, {"number": 17, "stem": "A detective deciphers a coded phone book by aligning symbols with ten-digit phone numbers obtained from wiretaps and then assigning Arabic numerals to the symbols. The prosecutor offers the detective as a lay witness rather than an expert. The best answer is:", "options": [], "answerType": "essay", "modelAnswer": "The court should likely require expert qualification rather than treat this as simple lay opinion.", "explanation": "Decoding a symbol system using investigative data and inferential methodology goes beyond ordinary common-sense perception. It looks like specialized analysis within Rule 702, not straightforward lay testimony under Rule 701.", "closeCall": true, "correctIndices": null}, {"number": 18, "stem": "Which statement best captures qualification under Rule 702?", "options": ["Only formal degrees can qualify a person as an expert.", "A witness may qualify by knowledge, skill, experience, training, or education.", "An expert must always hold a government license.", "A witness may be an expert only in scientific fields."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 702 expressly allows qualification through knowledge, skill, experience, training, or education.", "closeCall": false, "correctIndices": [1]}, {"number": 19, "stem": "Under Rule 702, the proponent must show to the court that it is more likely than not that the expert testimony is:", "options": ["Helpful, based on sufficient facts or data, the product of reliable methods, and reliably applied to the facts.", "Helpful only.", "Generally accepted only.", "Based on a witness who is famous in the field."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 702 has multiple requirements: qualification plus helpfulness, sufficient factual basis, reliable methods, and reliable application.", "closeCall": false, "correctIndices": [0]}, {"number": 20, "stem": "An expert offers a causation opinion based on only a few scattered facts and no meaningful review of the record. The strongest Rule 702 problem is:", "options": ["Lack of personal knowledge under Rule 602.", "Insufficient facts or data under Rule 702(b).", "Religious bias under Rule 610.", "Ultimate issue under Rule 704(a)."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 702(b) requires the testimony to be based on sufficient facts or data. Thin factual support is a core reliability problem.", "closeCall": false, "correctIndices": [1]}, {"number": 21, "stem": "Which statement best captures Daubert?", "options": ["Frye’s general-acceptance test remains the controlling federal rule.", "The Federal Rules displaced Frye as a rigid federal standard, and judges must act as gatekeepers for reliability and fit.", "Expert science is always admissible if the expert is qualified.", "Daubert applies only to handwriting cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Daubert rejected Frye as the federal rule and made judges gatekeepers who assess both reliability and relevance/fit under Rule 702.", "closeCall": false, "correctIndices": [1]}, {"number": 22, "stem": "Which of the following is most accurate about the Daubert factors?", "options": ["They are a mandatory checklist that must be mechanically applied in every expert case.", "They are flexible considerations that may help assess reliability when relevant.", "They replace Rule 702’s text.", "They apply only when both sides agree."], "answerType": "mc", "modelAnswer": "b", "explanation": "Daubert’s factors are useful tools, not rigid prerequisites. Their usefulness depends on the type of expertise at issue.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "Kumho Tire’s central holding is that the trial judge’s reliability gatekeeping role applies to:", "options": ["Only laboratory science experts.", "All expert testimony, including technical and experience-based expertise.", "Only civil cases.", "Only mental-health experts."], "answerType": "mc", "modelAnswer": "b", "explanation": "Kumho extended the gatekeeping function to all expert testimony, not just “scientific” experts.", "closeCall": false, "correctIndices": [1]}, {"number": 24, "stem": "Under Ganier, testimony interpreting specialized forensic computer reports is usually:", "options": ["Lay testimony because anyone can use a computer.", "Expert testimony because it requires specialized technical interpretation beyond ordinary knowledge.", "Admissible only if no report is shown to the jury.", "Barred unless the witness wrote the software."], "answerType": "mc", "modelAnswer": "b", "explanation": "Ganier treats interpretation of specialized computer-forensic output as expert testimony rather than ordinary lay testimony.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "Under Jinro, the biggest problem with the so-called “Korean business practices” expert was that he:", "options": ["Had no passport.", "Offered sweeping cultural stereotypes and anecdotal generalizations untethered to the specific party and not grounded in reliable methodology.", "Was not a U.S. citizen.", "Needed a religious oath."], "answerType": "mc", "modelAnswer": "b", "explanation": "Jinro rejected broad culture-based generalizations dressed up as expert testimony, especially when not tied to reliable methods or the actual party in the case.", "closeCall": false, "correctIndices": [1]}, {"number": 26, "stem": "Under Batangan, in a child sexual-abuse case an expert may:", "options": ["Explain general behavioral patterns like delayed reporting or recantation, but may not directly or indirectly vouch that the child is telling the truth.", "Tell the jury that the child is truthful if the expert met the child once.", "State that abuse definitely occurred.", "Certify that the complainant has no motive to lie."], "answerType": "mc", "modelAnswer": "a", "explanation": "Experts may educate the jury about general dynamics, but may not act as human lie detectors or certify the complainant’s truthfulness.", "closeCall": false, "correctIndices": [0]}, {"number": 27, "stem": "A psychologist diagnoses a plaintiff with PTSD, depression, and anxiety using accepted interviews, records review, and testing, but does not perform the kind of analysis needed to separate the effects of the defendant’s conduct from many other prior traumas. Under Tardif, what is the best result?", "options": [], "answerType": "essay", "modelAnswer": "The court may allow the diagnosis testimony, but should likely exclude a causation or exacerbation opinion attributing the condition to the defendant’s conduct.", "explanation": "Tardif distinguishes diagnosis from causation. A clinician may reliably diagnose current conditions yet still lack a reliable method for assigning those conditions to the defendant rather than other obvious causes.", "closeCall": true, "correctIndices": null}, {"number": 28, "stem": "The prosecutor calls a math instructor and argues that only 1 in 12 million couples would match a set of descriptive traits of the robbers, based on unsupported assumptions and multiplication of made-up probabilities. Under Collins, the strongest objection is:", "options": [], "answerType": "essay", "modelAnswer": "The court should exclude the evidence as unreliable and misleading.", "explanation": "Collins rejects “trial by mathematics” when the probability estimates lack evidentiary foundation, the independence assumptions are unsupported, and the math risks confusing rarity-of-description with probability of guilt.", "closeCall": false, "correctIndices": null}, {"number": 29, "stem": "Rule 703 allows an expert to base an opinion on inadmissible facts or data if:", "options": ["The expert secretly reviewed them.", "Experts in the field would reasonably rely on those kinds of facts or data in forming an opinion on the subject.", "The jury never hears any opposing expert.", "The judge personally believes the facts are true."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 703 focuses on whether experts in the particular field would reasonably rely on that sort of material.", "closeCall": false, "correctIndices": [1]}, {"number": 30, "stem": "If the facts or data underlying an expert opinion are otherwise inadmissible, the proponent may disclose them to the jury only if:", "options": ["Their probative value in helping the jury evaluate the opinion substantially outweighs their prejudicial effect.", "They are central to the expert’s story.", "The expert already mentioned them once.", "The witness is highly qualified."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 703 imposes a protective balancing test for disclosure of otherwise inadmissible bases to the jury.", "closeCall": false, "correctIndices": [0]}, {"number": 31, "stem": "Which statement best captures the “conduit for hearsay” problem under Rule 703?", "options": ["Any expert who relies on hearsay is automatically excluded.", "An expert may not simply parrot inadmissible statements from others without applying real expert analysis.", "Experts can never review reports made by others.", "Experts may recite all inadmissible material to the jury whenever they want."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 703 permits reasonable reliance, but not the use of an expert as a mere mouthpiece for inadmissible hearsay.", "closeCall": false, "correctIndices": [1]}, {"number": 32, "stem": "Under Rule 704(a), which statement is most accurate?", "options": ["An opinion is automatically objectionable if it embraces an ultimate issue.", "An opinion is not automatically objectionable just because it embraces an ultimate issue.", "Ultimate-issue opinions are allowed only from lay witnesses.", "Ultimate-issue opinions are allowed only in civil cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 704(a) abolishes the old ultimate-issue objection as a stand-alone bar.", "closeCall": false, "correctIndices": [1]}, {"number": 33, "stem": "In a criminal drug case, a psychiatrist testifies, “The defendant intended to distribute the drugs.” The strongest answer is:", "options": ["Admissible under Rule 704(a).", "Improper under Rule 704(b) because an expert may not directly state whether the defendant had the mental state constituting an element of the crime.", "Admissible if the psychiatrist is board-certified.", "Admissible only if the defendant testifies."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 704(b) bars expert testimony in a criminal case directly stating whether the defendant had the required mental state or condition constituting an element of the crime or defense.", "closeCall": false, "correctIndices": [1]}, {"number": 34, "stem": "In a criminal case, a lay witness says the defendant “looked drunk.” The best answer is:", "options": ["Barred by Rule 704(b).", "Potentially admissible; Rule 704(b) restricts experts, not ordinary lay impressions of intoxication.", "Barred as an ultimate issue.", "Admissible only through an expert toxicologist."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 704(b) applies only to expert testimony about a defendant’s mental state or condition constituting an element or defense. Ordinary lay observations are different.", "closeCall": false, "correctIndices": [1]}, {"number": 35, "stem": "Under Rule 705, an expert may generally:", "options": ["State an opinion and reasons for it without first testifying to all underlying facts or data.", "Never be asked about the basis on cross-examination.", "Give a bare conclusion immune from challenge.", "Ignore the court’s instructions about order of proof."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 705 allows an expert to give the opinion first unless the court orders otherwise, but the basis can be required on cross-examination.", "closeCall": false, "correctIndices": [0]}, {"number": 36, "stem": "Which statement about Rule 705 is most accurate?", "options": ["Once the expert gives an opinion, the opposing party cannot force disclosure of the basis.", "The court may require a different order of proof and can insist on more explanation first.", "Rule 705 makes unreliable opinions admissible.", "Rule 705 applies only to lay witnesses."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 705 begins with “unless the court orders otherwise,” so the judge may require more foundation upfront when appropriate.", "closeCall": false, "correctIndices": [1]}, {"number": 37, "stem": "Under Johnson, a witness with extensive real-world experience identifying Colombian marijuana may qualify as an expert even without formal academic credentials. The best answer is:", "options": ["Correct; expertise may come from experience, not just formal education.", "Wrong; only scientists with degrees can qualify.", "Wrong; all narcotics testimony must be lay opinion.", "Correct only if the government has no other witnesses."], "answerType": "mc", "modelAnswer": "a", "explanation": "Johnson illustrates that practical experience can qualify a witness as an expert under Rule 702.", "closeCall": false, "correctIndices": [0]}, {"number": 38, "stem": "A party argues a witness is incompetent because the witness is plainly biased. The strongest answer is:", "options": ["Bias generally goes to credibility, not competency.", "Bias makes the witness incompetent under Rule 601.", "Bias makes the witness incompetent only in criminal cases.", "Bias makes the witness incompetent unless the court gives a limiting instruction."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 601 sharply distinguishes competency from credibility. Bias usually affects weight, not the witness’s basic ability to testify.", "closeCall": false, "correctIndices": [0]}, {"number": 39, "stem": "A witness says, “My friend told me the defendant was drunk, so I think he was drunk.” The strongest objection is:", "options": ["Rule 602 lack of personal knowledge", "Rule 603 lack of oath", "Rule 704 ultimate issue", "Rule 705 order of proof"], "answerType": "mc", "modelAnswer": "a", "explanation": "The witness lacks firsthand perception of drunkenness and is relying on secondhand information.", "closeCall": false, "correctIndices": [0]}, {"number": 40, "stem": "Which list correctly states the ways a person may qualify as an expert under Rule 702?", "options": ["Only education and licensing", "Knowledge, skill, experience, training, or education", "Only scientific publications", "Only prior courtroom testimony"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 702’s qualification language is broad and expressly includes multiple forms of expertise.", "closeCall": false, "correctIndices": [1]}, {"number": 41, "stem": "Which statement best captures Rule 703’s relationship between expert reliance and admissibility?", "options": ["If an expert may rely on material, the material automatically comes in for its truth.", "Experts may sometimes rely on inadmissible material without the material itself automatically becoming admitted for its truth.", "Experts may rely only on admissible evidence.", "Rule 703 applies only to criminal cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 703 allows reasonable expert reliance even on inadmissible material, but that does not automatically admit the underlying material.", "closeCall": false, "correctIndices": [1]}, {"number": 42, "stem": "A doctor bases an opinion on medical records, imaging, and lab results prepared by others. The strongest Rule 703 answer is:", "options": ["Improper because the doctor did not personally create every item.", "Potentially proper because experts in medicine reasonably rely on such materials.", "Improper unless the records are first read to the jury in full.", "Improper because records are hearsay."], "answerType": "mc", "modelAnswer": "b", "explanation": "Medical experts commonly and reasonably rely on records, scans, tests, and reports prepared by others.", "closeCall": false, "correctIndices": [1]}, {"number": 43, "stem": "In a criminal insanity case, a psychiatrist testifies, “The defendant did not have the mens rea required for murder.” The strongest answer is:", "options": ["Allowed because it helps the jury.", "Improper under Rule 704(b).", "Allowed if the psychiatrist explains enough symptoms first.", "Allowed only in federal court."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 704(b) reserves that ultimate criminal mental-state conclusion to the trier of fact.", "closeCall": false, "correctIndices": [1]}, {"number": 44, "stem": "A lawyer asks a witness whether the witness is an atheist to suggest the witness is less trustworthy. The best answer is:", "options": ["Proper impeachment under Rule 608(a).", "Barred by Rule 610.", "Proper if the judge thinks jurors care about religion.", "Proper only if the witness first mentions religion."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 610 bars using religious beliefs or lack of beliefs to attack or support credibility.", "closeCall": false, "correctIndices": [1]}, {"number": 45, "stem": "A witness begins testifying without any oath or affirmation at all. The strongest answer is:", "options": ["No problem; credibility is for the jury.", "Improper under Rule 603.", "Improper only if the witness is a child.", "Fine if the witness seems sincere."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 603 requires an oath or affirmation before testimony.", "closeCall": false, "correctIndices": [1]}, {"number": 46, "stem": "A business owner testifies about the value of the owner’s own equipment based on years of managing and buying similar equipment for the business. The best answer is:", "options": ["Potentially proper lay opinion under Rule 701.", "Automatically expert testimony under Rule 702.", "Inadmissible unless the owner is licensed as an appraiser.", "Inadmissible because value always requires an economist."], "answerType": "mc", "modelAnswer": "a", "explanation": "Owners often may give lay opinions on value when grounded in firsthand experience and ordinary business knowledge rather than expert methodology.", "closeCall": false, "correctIndices": [0]}, {"number": 47, "stem": "Under modern Rule 702, the judge’s gatekeeping role requires the proponent to demonstrate reliability and helpfulness by what standard?", "options": ["Beyond a reasonable doubt", "Clear and convincing evidence", "More likely than not", "No standard at all"], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 702 now expressly states that the proponent must demonstrate to the court that the requirements are met by a more-likely-than-not standard.", "closeCall": false, "correctIndices": [2]}, {"number": 48, "stem": "Which statement best captures Rule 705’s relationship to Rules 702 and 703?", "options": ["Rule 705 can rescue an otherwise unreliable expert by letting the expert speak first.", "Rule 705 concerns order of presentation, but the opinion must still satisfy Rules 702 and 703.", "Rule 705 replaces cross-examination.", "Rule 705 allows only written expert opinions."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 705 is about presentation. It does not erase the separate requirements of qualification, reliability, and reasonable basis under Rules 702 and 703.", "closeCall": false, "correctIndices": [1]}, {"number": 49, "stem": "Which of the following is the strongest example of improper expert “vouching” for credibility?", "options": ["An expert explains that delayed reporting can be common among child sexual-abuse victims.", "An expert says, “Based on my evaluation, this child is telling the truth and the abuse happened.”", "An expert identifies the diagnostic criteria for PTSD.", "An expert explains the margin of error in a test."], "answerType": "mc", "modelAnswer": "b", "explanation": "Batangan forbids experts from directly or indirectly certifying that a complainant is truthful or that abuse occurred.", "closeCall": false, "correctIndices": [1]}, {"number": 50, "stem": "Which two of the following are accurate summaries of Unit 5?", "options": ["Rule 602 asks whether the witness actually perceived the matter, rather than speculated or repeated secondhand information.", "Rule 704(a) means no ultimate-issue opinions are ever allowed.", "Rule 703 may let an expert rely on inadmissible material, but disclosure of that material to the jury gets special scrutiny.", "Rule 610 lets lawyers argue a witness is truthful because she is religious."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are correct. Ultimate-issue opinions are generally allowed under Rule 704(a), and Rule 610 bars using religion to attack or support credibility.", "closeCall": false, "correctIndices": [0, 2]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

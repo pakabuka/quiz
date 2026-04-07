@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 2 – Hearsay Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 2 – Hearsay</h1>
+        <div class="subhead">Tricky practice questions on Rules 801, 802, 104, 803, 804, 612, 613, 806, 807, hearsay within hearsay, and key cases like Tome, Owens, Volland-Golden, Williamson, and Crawford.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 2 hearsay notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on asking the right hearsay sequence: is there a statement, who is the declarant, what is the offer-for-truth use, and is there a nonhearsay route or exception.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit2_hearsay_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "A witness testifies that when the officer asked the victim, “Was John the driver?,” the victim nodded yes. If offered to prove John was the driver, the nod is best described as:", "options": ["not a statement, because only spoken words count under Rule 801", "a statement, because nonverbal conduct intended as an assertion counts", "not hearsay, because nonverbal conduct can never be hearsay", "inadmissible only if the victim is unavailable"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 801(a) includes nonverbal conduct if the person intended it as an assertion. A deliberate nod answering a question is a statement.", "closeCall": false, "correctIndices": [1]}, {"number": 2, "stem": "A ship captain carefully inspects a vessel and then boards it with his family. In a later lawsuit over seaworthiness, the boarding conduct is offered to suggest the ship was seaworthy. Under the Federal Rules, the best answer is:", "options": ["It is hearsay because all conduct is a statement.", "It is hearsay only if the captain is dead.", "It is generally not hearsay because the conduct was not intended as an assertion.", "It is inadmissible unless it fits Rule 803(6)."], "answerType": "mc", "modelAnswer": "c", "explanation": "Nonassertive conduct is not hearsay under the Federal Rules. The captain’s boarding may have evidentiary significance, but it is not a 'statement' unless intended as an assertion.", "closeCall": false, "correctIndices": [2]}, {"number": 3, "stem": "At trial, Witness says, “Bystander told me the defendant ran the red light.” The statement is offered to prove the defendant in fact ran the red light. The best ruling is:", "options": ["Admit, because Witness is in court and can be cross-examined.", "Admit, because traffic-light statements are an exception to hearsay.", "Exclude as hearsay unless an exception or exclusion applies.", "Exclude only if Bystander is unidentified."], "answerType": "mc", "modelAnswer": "c", "explanation": "This is classic hearsay: an out-of-court statement offered for its truth. Cross-examining the repeating witness does not solve the inability to cross-examine the original declarant.", "closeCall": false, "correctIndices": [2]}, {"number": 4, "stem": "In a negligence case, Defendant claims she had no notice that her tire was dangerously worn. Plaintiff offers testimony that a mechanic told Defendant one hour before the crash, “That tire is about to blow.” The statement is offered only to show Defendant had notice. The best ruling is:", "options": ["Admit as nonhearsay, because it is offered for effect on the listener rather than truth.", "Exclude, because warnings are always hearsay.", "Admit only if the mechanic also testifies.", "Exclude unless the tire actually blew out."], "answerType": "mc", "modelAnswer": "a", "explanation": "A warning offered to show notice or knowledge is a classic nonhearsay use. The point is that the words were said to Defendant, not that the warning was necessarily true.", "closeCall": false, "correctIndices": [0]}, {"number": 5, "stem": "In a contract case, the plaintiff offers the words “I accept your offer” to prove a contract was formed. The best answer is:", "options": ["Hearsay, because the words were said out of court.", "Nonhearsay, because they are legally operative words.", "Hearsay unless the speaker is a party-opponent.", "Admissible only under the residual exception."], "answerType": "mc", "modelAnswer": "b", "explanation": "Words of offer and acceptance are verbal acts. They are admitted because the law attaches significance to the fact that the words were spoken, not because their truth is being asserted.", "closeCall": false, "correctIndices": [1]}, {"number": 6, "stem": "Police find a letter in H’s pocket saying, “Your wife has been having an affair with your neighbor for five years. Wise up!” In H’s murder trial, the prosecution offers the letter to show H had a motive to kill his wife. The strongest answer is:", "options": ["It is hearsay because it accuses the wife of adultery.", "It is nonhearsay because it is offered to show the probable effect on H, not the truth of the accusation.", "It is inadmissible unless the anonymous writer is found.", "It is admissible only if adultery is independently proven."], "answerType": "mc", "modelAnswer": "b", "explanation": "The letter is relevant to motive whether true or false. It is offered for its effect on H as reader, not to prove the affair actually occurred.", "closeCall": false, "correctIndices": [1]}, {"number": 7, "stem": "In a shooting case, a witness testifies, “I heard someone yell, ‘He has a gun!,’ and then everyone started running.” The statement is offered to explain why the crowd scattered, not to prove anyone really had a gun. How should the court rule?", "options": [], "answerType": "essay", "modelAnswer": "The court should admit the statement as nonhearsay.", "explanation": "When offered to explain the listeners’ reaction, the statement is not being offered for its truth. It comes in to show effect on the listeners and why the crowd ran.", "closeCall": false, "correctIndices": null}, {"number": 8, "stem": "At trial, Witness says, “I do not remember the accident, but I do remember telling my wife later that day, ‘The black car ran the red light.’” The earlier statement is offered to prove the black car ran the red light. The best answer is:", "options": ["Not hearsay, because the declarant and the in-court witness are the same person.", "Hearsay, because the earlier statement was made out of court and is offered for its truth.", "Not hearsay, because memory loss destroys hearsay concerns.", "Admissible automatically under Rule 613."], "answerType": "mc", "modelAnswer": "b", "explanation": "It is still hearsay. The problem is the absence of contemporaneous cross-examination about the earlier statement when it was made.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "A witness testifies at trial that the traffic light was green. In a prior deposition under oath, the witness said the light was red. If the prior deposition testimony is offered for its truth, the best answer is:", "options": ["It is hearsay and can be used only for impeachment.", "It is not hearsay under Rule 801(d)(1)(A).", "It is admissible only under Rule 807.", "It is inadmissible unless the witness is unavailable."], "answerType": "mc", "modelAnswer": "b", "explanation": "A prior inconsistent statement made under penalty of perjury at a deposition, trial, hearing, or similar proceeding is not hearsay under Rule 801(d)(1)(A).", "closeCall": false, "correctIndices": [1]}, {"number": 10, "stem": "A witness testifies at trial that the light was green. In an earlier unsworn interview with police, the witness said it was red. If offered for the truth that the light was red, the earlier interview is:", "options": ["Automatically admissible under Rule 801(d)(1)(A).", "Admissible for its truth because every prior inconsistent statement is nonhearsay.", "Not made nonhearsay by Rule 801(d)(1)(A), though it may still be used for impeachment or fit some other rule.", "Admissible only if the witness denies making it."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 801(d)(1)(A) requires the prior inconsistent statement to have been made under penalty of perjury at a qualifying proceeding. An unsworn police interview does not satisfy that requirement.", "closeCall": false, "correctIndices": [2]}, {"number": 11, "stem": "Which two uses of a prior consistent statement are recognized by Rule 801(d)(1)(B)?", "options": ["To rebut a charge of recent fabrication or improper motive.", "To rehabilitate a witness after attack on another ground such as sensory deficiency or inconsistency.", "To prove the witness is generally truthful whenever credibility is challenged in any way.", "To introduce cumulative repetition of the same story simply because the witness testified."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 801(d)(1)(B) recognizes two routes: rebutting a charge of recent fabrication or improper motive, and rehabilitation after certain other credibility attacks.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 12, "stem": "At trial, the defense says a child witness fabricated her accusation because she wanted to stay with her mother rather than return to her father. The prosecution offers consistent statements the child made only after that custody-related motive arose. Under Tome, the best answer is:", "options": ["The statements are admissible under Rule 801(d)(1)(B)(i) because consistency alone is enough.", "The statements are not admissible under Rule 801(d)(1)(B)(i) to rebut motive if they were made after the alleged motive arose.", "The statements are always admissible once the witness testifies.", "The statements are admissible only if they were made to doctors."], "answerType": "mc", "modelAnswer": "b", "explanation": "Tome requires premotive consistency for Rule 801(d)(1)(B)(i) when the theory is rebutting a charge of recent fabrication or improper motive.", "closeCall": false, "correctIndices": [1]}, {"number": 13, "stem": "A witness is attacked not for recent fabrication but for faulty perception and memory. The proponent offers a prior consistent statement to rehabilitate the witness on that ground. The best answer is:", "options": ["It can never come in because prior consistent statements require a motive attack.", "It may qualify under Rule 801(d)(1)(B)(ii) if the rule’s conditions are met.", "It is admissible only if made under oath.", "It is hearsay with no possible nonhearsay route."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 801(d)(1)(B)(ii) allows certain prior consistent statements to rehabilitate credibility after attack on another ground, such as sensory deficiency or inconsistency.", "closeCall": true, "correctIndices": [1]}, {"number": 14, "stem": "A prison counselor identified Owens from a photo lineup weeks after a beating. At trial, the counselor remembers making the identification but cannot remember the attacker’s face or the basis for the ID very well. Under Owens, the earlier identification is:", "options": ["Inadmissible because the witness lacks a full present memory of the basis.", "Admissible as nonhearsay under Rule 801(d)(1)(C) so long as the witness appears and is subject to cross-examination about it.", "Admissible only for impeachment, not substantively.", "Inadmissible unless the photo lineup was done under oath."], "answerType": "mc", "modelAnswer": "b", "explanation": "Owens holds that memory loss does not block admission of a prior identification so long as the witness takes the stand and is subject to cross-examination.", "closeCall": false, "correctIndices": [1]}, {"number": 15, "stem": "Defendant’s own out-of-court statement is offered against Defendant. Which is most accurate?", "options": ["It must have been against Defendant’s interest when made.", "It may qualify even if it was an opinion or based on hearsay, because personal knowledge is not strictly required for Rule 801(d)(2)(A).", "It is admissible only if made under oath.", "It is excluded if Defendant later denies it."], "answerType": "mc", "modelAnswer": "b", "explanation": "An opposing party’s statement need not have been against interest when made. It may even be opinion-based or predicated on hearsay.", "closeCall": false, "correctIndices": [1]}, {"number": 16, "stem": "A company’s officially designated press agent makes a statement about a chemical spill while acting within the assigned speaking role. Offered against the company, the statement most strongly fits:", "options": ["Rule 801(d)(1)(C)", "Rule 801(d)(2)(B)", "Rule 801(d)(2)(C)", "Rule 803(8)"], "answerType": "mc", "modelAnswer": "c", "explanation": "A statement by a person authorized by the party to speak on the subject is treated as an opposing-party statement under Rule 801(d)(2)(C).", "closeCall": false, "correctIndices": [2]}, {"number": 17, "stem": "A delivery driver employed by Company causes a crash while on the job and immediately says, “I was texting and never saw the stop sign.” Offered against Company, the statement is strongest under:", "options": ["Rule 801(d)(2)(D), because it concerns a matter within the scope of employment and was made during the employment relationship.", "Rule 801(d)(2)(D), but only if the driver was authorized to make public statements for the company.", "Rule 803(6), because every employee statement is a business record.", "Rule 804(b)(3), because the statement exposed the driver to liability."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 801(d)(2)(D) does not require speaking authority. It requires an agency or employment relationship, a statement during that relationship, and a matter within the scope of that relationship.", "closeCall": false, "correctIndices": [0]}, {"number": 18, "stem": "Which statement best describes the co-conspirator rule?", "options": ["The statement is admissible only if the declarant is unavailable.", "The statement must have been made before the conspiracy formed.", "The statement must have been made during and in furtherance of the conspiracy.", "The statement is admissible against co-defendants merely because they are tried together."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 801(d)(2)(E) requires that the statement be made during the conspiracy and in furtherance of it.", "closeCall": false, "correctIndices": [2]}, {"number": 19, "stem": "Under Bourjaily and Rule 801(d)(2), before admitting a co-conspirator statement the court must find the necessary conspiracy relationship by:", "options": ["Proof beyond a reasonable doubt, using only evidence independent of the statement.", "A preponderance of the evidence, and the court may consider the statement itself but the statement alone is not enough.", "Clear and convincing evidence, but only in criminal cases.", "A jury finding under Rule 104(b)."], "answerType": "mc", "modelAnswer": "b", "explanation": "The court makes the preliminary determination under Rule 104(a) by a preponderance standard. It may consider the contents of the offered statement, but the statement by itself is not sufficient.", "closeCall": false, "correctIndices": [1]}, {"number": 20, "stem": "Which statement best reflects United States v. Inadi?", "options": ["Co-conspirator statements require proof that the declarant is unavailable before admission.", "Co-conspirator statements do not require a showing that the declarant is unavailable.", "Co-conspirator statements are admissible only in civil conspiracies, not criminal conspiracies.", "Co-conspirator statements are governed by Rule 804, not Rule 801."], "answerType": "mc", "modelAnswer": "b", "explanation": "Inadi rejected an unavailability prerequisite for admitting co-conspirator statements under Rule 801(d)(2)(E).", "closeCall": false, "correctIndices": [1]}, {"number": 21, "stem": "Under Rule 104(a), when deciding a preliminary admissibility question, the judge:", "options": ["Is bound by all ordinary evidence rules with no exceptions.", "Is not bound by ordinary evidence rules except privilege rules.", "Must always send the issue to the jury first.", "May never consider hearsay."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 104(a) lets the judge consider information that might not itself be admissible before the jury, except that privilege rules still control.", "closeCall": false, "correctIndices": [1]}, {"number": 22, "stem": "A gun is relevant only if there is enough proof connecting it to Defendant. Under Rule 104(b), the judge should ask whether:", "options": ["the judge personally believes the gun was definitely Defendant’s", "there is sufficient evidence for a reasonable jury to find the connecting fact exists", "the statement about the gun fits a hearsay exception", "the gun is more persuasive than all other evidence combined"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 104(b) concerns conditional relevance. The judge asks whether there is enough evidence to support a jury finding of the connecting fact.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "Which statement is the clearest present sense impression?", "options": ["Ten minutes after the crash, a calm bystander says, “I think the red car was speeding.”", "While watching the intersection, a witness says, “The blue car is running the red light.”", "The next day, a witness writes, “Yesterday the blue car ran the light.”", "At trial, a witness testifies, “My friend told me the blue car ran the light.”"], "answerType": "mc", "modelAnswer": "b", "explanation": "Present sense impressions describe or explain an event while or immediately after it is perceived.", "closeCall": false, "correctIndices": [1]}, {"number": 24, "stem": "A bystander calmly tells police ten minutes after a crash, “I think the red car was speeding.” The strongest reason this usually does not fit present sense impression is:", "options": ["It was made to police.", "It was not made while or immediately after perceiving the event.", "The declarant was unidentified.", "Present sense impressions require the declarant to be unavailable."], "answerType": "mc", "modelAnswer": "b", "explanation": "Present sense impression requires tight contemporaneity. A delayed, reflective statement given ten minutes later usually falls outside the exception.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "Right after a stabbing, while bleeding and panicking, Victim screams, “Dan stabbed me!” The strongest exception is:", "options": ["Recorded recollection", "Excited utterance", "Ancient document", "Former testimony"], "answerType": "mc", "modelAnswer": "b", "explanation": "An excited utterance must relate to a startling event and be made while the declarant is still under the stress of excitement caused by it.", "closeCall": false, "correctIndices": [1]}, {"number": 26, "stem": "Which two of the following most clearly fit Rule 803(3)?", "options": ["“I am terrified.”", "“My back hurts right now.”", "“I believe John poisoned me last week.”", "“I remember that Mary admitted the fraud yesterday.”"], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 803(3) covers then-existing mental, emotional, or physical condition, such as current fear or current pain. Statements of memory or belief used to prove the fact remembered or believed usually do not qualify.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 27, "stem": "A patient tells an ER doctor, “My shoulder started hurting after I fell off a ladder, and the driver who caused it was drunk and ran the red light.” Which is most accurate under Rule 803(4)?", "options": ["All of it comes in because anything said to a doctor is admissible.", "The symptom and general-cause portions may qualify, but fault-assigning details often do not unless reasonably pertinent to diagnosis or treatment.", "None of it qualifies because the statement was unsworn.", "Only the fault-assigning details qualify."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 803(4) covers statements reasonably pertinent to diagnosis or treatment, including symptoms and general cause. Details about fault often fall outside that purpose unless treatment makes them pertinent.", "closeCall": false, "correctIndices": [1]}, {"number": 28, "stem": "Patient offers testimony that a doctor, after viewing images of Patient’s knee, said, “Whoever did this was an utter incompetent.” Patient argues the statement is admissible as a statement made for medical diagnosis or treatment. How should the court rule?", "options": [], "answerType": "essay", "modelAnswer": "The court should sustain the hearsay objection.", "explanation": "Rule 803(4) is aimed at patient statements made for diagnosis or treatment, not accusatory out-of-court statements by doctors blaming prior providers. The doctor’s remark does not fit the medical-diagnosis exception.", "closeCall": false, "correctIndices": null}, {"number": 29, "stem": "A witness once knew a license-plate number, wrote it down that same day while the matter was fresh, and now cannot remember it well enough to testify fully even after reviewing the writing. If the writing qualifies as recorded recollection, the best answer is:", "options": ["The proponent may read it into evidence, but it becomes an exhibit only if offered by the adverse party.", "The proponent may always send it to the jury room as an exhibit.", "The writing is inadmissible unless the witness is unavailable.", "The writing is admissible only if notarized."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 803(5) allows the record to be read into evidence, but the document itself is received as an exhibit only if the adverse party offers it.", "closeCall": false, "correctIndices": [0]}, {"number": 30, "stem": "A witness looks at notes on the stand but still cannot remember the events even after reading them. Which is the best answer?", "options": [], "answerType": "essay", "modelAnswer": "This is not true Rule 612 refreshed-memory testimony; the issue now is whether the notes might qualify as a recorded recollection under Rule 803(5).", "explanation": "Rule 612 assumes the writing refreshes present memory so the witness can then testify from memory. If memory is not revived, the proponent must look elsewhere, often to Rule 803(5).", "closeCall": false, "correctIndices": null}, {"number": 31, "stem": "Which is the strongest business-records example?", "options": ["A regularly kept inventory log made at or near the time of each shipment by an employee with knowledge.", "A narrative report created after the lawsuit began mainly to help the company’s litigation position.", "An anonymous note left on the manager’s desk.", "A customer’s letter stored in a file, offered for the truth of everything the customer said."], "answerType": "mc", "modelAnswer": "a", "explanation": "A routine, near-contemporaneous record kept as part of the regular practice of the business is the classic Rule 803(6) example.", "closeCall": false, "correctIndices": [0]}, {"number": 32, "stem": "A company creates a report only after being sued, mainly to support its litigation defense. The strongest objection to treating it as a business record is:", "options": ["It was unsigned.", "It was not created in the ordinary course, and the circumstances suggest lack of trustworthiness.", "Business records must always be handwritten.", "Business records are admissible only in civil cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Records prepared specially for litigation often fail Rule 803(6), especially on regular-practice and trustworthiness grounds.", "closeCall": false, "correctIndices": [1]}, {"number": 33, "stem": "A hospital regularly records medication administrations. Defendant offers testimony that, after checking the regularly kept medication log, there is no entry showing that the disputed drug was ever administered that day. The best answer is:", "options": ["Inadmissible because absence can never prove anything.", "Potentially admissible under Rule 803(7) to show the event likely did not occur, assuming records of that kind are regularly kept and trustworthy.", "Admissible only if the declarant is unavailable.", "Admissible only as character evidence."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 803(7) allows absence of a business record to prove nonoccurrence or nonexistence when records of that kind are regularly kept and trustworthy.", "closeCall": false, "correctIndices": [1]}, {"number": 34, "stem": "In a criminal case, the prosecution offers a police officer’s report describing what the officer personally observed during the investigation. The best hearsay answer is:", "options": ["It usually fits the public-records exception when offered against the defendant.", "It often does not fit Rule 803(8) when offered against the defendant because law-enforcement observations are restricted in criminal cases.", "It is admissible only if certified.", "It is inadmissible in every civil case too."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 803(8) excludes certain matters observed by law-enforcement personnel when offered against a criminal defendant.", "closeCall": false, "correctIndices": [1]}, {"number": 35, "stem": "Under Rule 803(18), a learned treatise may be used substantively if established as reliable authority and either called to the expert’s attention on cross or relied on on direct. If admitted, the relevant passage:", "options": ["may be read into evidence but the treatise itself is generally not received as an exhibit", "must be marked and sent to the jury room", "is admissible only for impeachment, never substantively", "requires the author to testify"], "answerType": "mc", "modelAnswer": "a", "explanation": "The rule allows the contents to be read into evidence, not the treatise itself to be received as an exhibit.", "closeCall": false, "correctIndices": [0]}, {"number": 36, "stem": "A grocery-store manager prepares a standard incident report after Bob falls. The report says, “An hour later, I interviewed Anne, who said Bob was running at high speed and tripped over his own feet.” If the store offers that portion of the report for its truth, the best answer is:", "options": ["Admissible because once the report is a business record, everything inside it comes in automatically.", "Inadmissible unless both the outer report and Anne’s embedded statement each fit a hearsay exception or exclusion.", "Admissible because Anne was a shopper, not an employee.", "Admissible only if Anne is unavailable."], "answerType": "mc", "modelAnswer": "b", "explanation": "This is hearsay within hearsay. The outer layer and the inner layer must each have a valid hearsay route.", "closeCall": false, "correctIndices": [1]}, {"number": 37, "stem": "Which of the following counts as unavailability under Rule 804(a)?", "options": ["The witness refuses to testify despite a court order.", "The witness says, “I don’t remember the subject matter.”", "The witness dies before trial.", "All of the above."], "answerType": "mc", "modelAnswer": "d", "explanation": "Rule 804(a) includes refusal despite court order, claimed lack of memory, and death or qualifying illness, among other categories.", "closeCall": false, "correctIndices": [3]}, {"number": 38, "stem": "A witness is absent from trial, but the proponent made little effort to subpoena or locate the witness. The strongest answer is:", "options": ["Rule 804 usually does not apply because reasonable efforts to procure attendance or testimony were not shown.", "The witness is automatically unavailable because she is absent.", "Former testimony can always be used whenever a witness is absent.", "The witness is unavailable only in criminal cases."], "answerType": "mc", "modelAnswer": "a", "explanation": "Absence alone is not enough. The proponent must show reasonable efforts to procure the witness’s attendance or testimony.", "closeCall": false, "correctIndices": [0]}, {"number": 39, "stem": "Volland testified under oath at his criminal trial and was vigorously cross-examined by the prosecutor. He later died before his civil rights suit against the officers could be tried. Under the former-testimony exception, the strongest answer is:", "options": ["The prior testimony can never come into the civil case because the parties are not literally identical.", "The prior testimony may come in if the party now opposing it, or in a civil case a predecessor in interest, had an opportunity and similar motive to develop the testimony.", "The testimony comes in only if it was videotaped.", "The testimony comes in only if the witness died in the courtroom."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 804(b)(1) focuses on opportunity and similar motive. Volland-Golden illustrates that prior criminal-trial testimony may be usable later in a civil case when that standard is met.", "closeCall": true, "correctIndices": [1]}, {"number": 40, "stem": "Which statement best describes the dying-declaration exception under Rule 804(b)(2)?", "options": ["It applies in all criminal cases whenever a declarant later dies.", "It applies in a homicide prosecution or a civil case when the declarant, believing death to be imminent, speaks about its cause or circumstances.", "It applies whenever a statement is dramatic and memorable.", "It requires the statement to be made to police."], "answerType": "mc", "modelAnswer": "b", "explanation": "The exception is limited to homicide prosecutions and civil cases, and requires a belief in imminent death plus a statement about the cause or circumstances of the believed impending death.", "closeCall": false, "correctIndices": [1]}, {"number": 41, "stem": "A now-unavailable declarant told police, “The drugs in the trunk are mine, and Williamson is following me in the other car.” If offered in a criminal case under Rule 804(b)(3), how should the court think about the statement?", "options": [], "answerType": "essay", "modelAnswer": "The court should separate the genuinely self-inculpatory parts from the blame-shifting parts. “The drugs are mine” may qualify as a statement against penal interest if corroborated; the accusation about Williamson does not automatically come in simply because it appears in the same narrative.", "explanation": "Williamson teaches that Rule 804(b)(3) is about particular self-inculpatory statements, not wholesale admission of every surrounding remark. In criminal cases, corroborating circumstances indicating trustworthiness are also required.", "closeCall": true, "correctIndices": null}, {"number": 42, "stem": "Which statement best reflects Rule 804(b)(6)?", "options": ["A party who wrongfully causes a witness’s unavailability intending to prevent testimony may forfeit the hearsay objection to that witness’s statement.", "Forfeiture by wrongdoing applies only if the witness is actually murdered.", "The rule benefits the party who caused the absence, because the witness is now unavailable.", "The rule applies only in civil cases."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 804(b)(6) prevents a party from profiting from intentional wrongdoing that keeps the witness from testifying.", "closeCall": false, "correctIndices": [0]}, {"number": 43, "stem": "Rule 612 gives an adverse party certain rights when a witness uses a writing to refresh memory. Which two rights are clearly among them?", "options": ["To inspect the writing.", "To cross-examine the witness about it.", "To force the entire writing into evidence no matter what portion relates to the testimony.", "To bar the witness from testifying further."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 612 gives the adverse party rights to production, inspection, cross-examination, and introduction of the relevant portion. It does not automatically put the whole writing into evidence.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 44, "stem": "Under Rule 613(a), when examining a witness about the witness’s prior statement, counsel:", "options": ["must first show the statement to the witness", "need not show the statement to the witness, but must show or disclose it to opposing counsel on request", "must show the statement to both the witness and the jury immediately", "may keep the statement from opposing counsel even on request"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 613(a) abolished the old foundation requirement of first showing the statement to the witness, but preserves the adverse party’s right to see it on request.", "closeCall": false, "correctIndices": [1]}, {"number": 45, "stem": "A witness denies making an earlier inconsistent statement. Counsel wants to call another witness to prove the earlier statement. Under Rule 613(b), the usual rule is:", "options": ["Extrinsic evidence is always admissible immediately.", "Extrinsic evidence is usually not admitted until the witness has had an opportunity to explain or deny the statement and the other side has had an opportunity to question the witness about it.", "Extrinsic evidence is barred in every case.", "Rule 613(b) applies equally to opposing party statements under Rule 801(d)(2)."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 613(b) generally requires an opportunity to explain or deny before extrinsic evidence of a prior inconsistent statement is admitted. It does not apply to opposing-party statements under Rule 801(d)(2).", "closeCall": false, "correctIndices": [1]}, {"number": 46, "stem": "After a hearsay statement has been admitted, the opposing party offers evidence that the declarant made an inconsistent statement years earlier. The proponent objects that the declarant never had a chance to explain or deny it. Under Rule 806, the best answer is:", "options": ["Exclude, because Rule 613’s foundation rules always apply.", "Admit, because Rule 806 allows impeachment of the declarant much like a live witness, and inconsistent statements may be used regardless of when they occurred or whether the declarant had a chance to explain or deny them.", "Exclude unless the declarant testifies first.", "Admit only if the inconsistent statement was under oath."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 806 is more flexible than Rule 613 on this point. Once qualifying hearsay is admitted, the declarant’s credibility can be attacked like that of a witness.", "closeCall": false, "correctIndices": [1]}, {"number": 47, "stem": "Which of the following is required for the residual exception in Rule 807?", "options": ["The statement must fit one of the named Rule 803 exceptions first.", "The statement must have sufficient guarantees of trustworthiness, be more probative than other reasonably obtainable evidence on the point, and the opponent must receive reasonable notice.", "The declarant must always be unavailable.", "The statement must have been made under oath."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 807 requires trustworthiness, relative necessity/probativeness, and reasonable notice to the adverse party.", "closeCall": false, "correctIndices": [1]}, {"number": 48, "stem": "Police question a bleeding victim while the shooter is still at large and reportedly armed nearby. The victim answers, identifying the shooter and warning that he still has a gun. Under the Confrontation Clause’s primary-purpose test, the strongest answer is:", "options": ["The statement is testimonial because it was made to law enforcement.", "The statement is nontestimonial if the primary purpose was to address an ongoing emergency.", "The statement is testimonial unless recorded on video.", "The statement is inadmissible whenever the declarant later dies."], "answerType": "mc", "modelAnswer": "b", "explanation": "Statements to police are not automatically testimonial. When the primary purpose is to help resolve an ongoing emergency, the statements are generally nontestimonial.", "closeCall": true, "correctIndices": [1]}, {"number": 49, "stem": "Under Crawford’s basic framework, even a statement that fits a hearsay exception may still be excluded in a criminal case if:", "options": ["the statement was testimonial, the declarant is unavailable, and the accused had no prior opportunity to cross-examine the declarant", "the declarant is a family member of the victim", "the statement was made under oath", "the defendant denies guilt"], "answerType": "mc", "modelAnswer": "a", "explanation": "Crawford focuses on testimonial hearsay offered against the accused when the declarant is unavailable and there was no prior chance for cross-examination.", "closeCall": false, "correctIndices": [0]}, {"number": 50, "stem": "Which statement best captures Rule 802?", "options": ["Hearsay is admissible whenever the witness repeating it is credible.", "Hearsay is not admissible unless a federal statute, the Rules of Evidence, or another Supreme Court rule provides otherwise.", "Hearsay is inadmissible only in criminal cases.", "Hearsay is admissible whenever it seems trustworthy to the judge."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 802 states the basic ban on hearsay, subject to exceptions and exclusions supplied by statute, the Rules, or other Supreme Court rules.", "closeCall": false, "correctIndices": [1]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 6 – Confrontation & Completeness Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 6 – Confrontation & Completeness</h1>
+        <div class="subhead">Tricky practice questions on the Confrontation Clause and Rule 106, plus Crawford, Mattox, Bryant, Bruton, Gray, and the Unit 6 problem-set scenarios.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 6 confrontation notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on separating testimonial from non-testimonial statements, keeping hearsay analysis distinct from Confrontation Clause analysis, and spotting when Rule 106 really requires immediate context rather than extra self-serving material.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit6_confrontation_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "The Confrontation Clause of the Sixth Amendment applies directly to:", "options": ["All civil and criminal cases", "Criminal prosecutions", "Only felony trials", "Only federal cases"], "answerType": "mc", "modelAnswer": "b", "explanation": "The Sixth Amendment confrontation right applies in criminal prosecutions, not ordinary civil litigation.", "closeCall": false, "correctIndices": [1]}, {"number": 2, "stem": "Modern Confrontation Clause doctrine focuses primarily on:", "options": ["All hearsay of every kind", "Testimonial hearsay", "Only dying declarations", "Only statements by police officers"], "answerType": "mc", "modelAnswer": "b", "explanation": "The modern doctrine, beginning with Crawford, centers on testimonial hearsay. Nontestimonial hearsay is usually handled by ordinary hearsay rules, not the Confrontation Clause.", "closeCall": false, "correctIndices": [1]}, {"number": 3, "stem": "As a general rule, the prosecution may not introduce a testimonial out-of-court statement from an absent witness unless:", "options": ["the statement seems reliable to the judge", "the witness is unavailable and the defendant had a prior opportunity to cross-examine", "the statement fits a hearsay exception", "the prosecutor gives notice before trial"], "answerType": "mc", "modelAnswer": "b", "explanation": "Crawford rejects mere judicial reliability balancing for testimonial hearsay. The core rule is unavailability plus prior opportunity for cross-examination.", "closeCall": false, "correctIndices": [1]}, {"number": 4, "stem": "If the declarant appears at trial and is subject to cross-examination about the earlier statement, the core Confrontation Clause concern is generally:", "options": ["Satisfied", "Still violated because the statement was made out of court", "Violated unless the statement was under oath", "Violated unless the statement was recorded"], "answerType": "mc", "modelAnswer": "a", "explanation": "When the witness appears and can be cross-examined, the main confrontation concern is generally satisfied.", "closeCall": false, "correctIndices": [0]}, {"number": 5, "stem": "A victim calls 911 during an ongoing assault and says, “He’s hitting me right now—please send help.” The strongest Confrontation Clause answer is:", "options": ["Usually testimonial because it identifies a crime", "Usually non-testimonial because the primary purpose is to get emergency help", "Always testimonial if police later use it at trial", "Always barred because the victim is upset"], "answerType": "mc", "modelAnswer": "b", "explanation": "Statements made to obtain help during an ongoing emergency are usually non-testimonial under the primary-purpose test.", "closeCall": false, "correctIndices": [1]}, {"number": 6, "stem": "After the emergency is over, police question a victim at the station about what happened earlier. The strongest Confrontation Clause answer is:", "options": ["Likely testimonial because the primary purpose is to establish past events potentially relevant to prosecution", "Always non-testimonial because police are asking questions", "Automatically admissible if recorded", "Always admissible if the victim later becomes unavailable"], "answerType": "mc", "modelAnswer": "a", "explanation": "Once the emergency has passed and the questioning is about past events for prosecution, the statement is likely testimonial.", "closeCall": false, "correctIndices": [0]}, {"number": 7, "stem": "The prosecution introduces a lab certificate identifying a seized substance as cocaine, but the analyst who performed the test does not testify. The strongest answer is:", "options": ["No confrontation problem because lab certificates are routine business records", "Usually a Confrontation Clause problem because the certificate is testimonial forensic evidence", "Always admissible if the certificate is notarized", "Always admissible if the defendant contests identity"], "answerType": "mc", "modelAnswer": "b", "explanation": "Forensic certificates prepared for prosecution are typically testimonial, so the defendant is entitled to confrontation absent a valid substitute route like prior cross-examination.", "closeCall": false, "correctIndices": [1]}, {"number": 8, "stem": "A substitute expert takes the stand and repeats the conclusions of a non-testifying analyst who actually performed the forensic testing. The strongest Confrontation Clause answer is:", "options": ["No problem if the substitute expert has impressive credentials", "This raises a confrontation problem when the absent analyst’s testimonial statements are conveyed for their truth", "No problem because experts may always relay hearsay", "No problem if the prosecution labels the testimony “basis” evidence"], "answerType": "mc", "modelAnswer": "b", "explanation": "The Court has rejected using a surrogate expert to relay an absent analyst’s testimonial statements for their truth as an end-run around confrontation.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "Which statement best captures the Court’s treatment of “opening the door” in confrontation cases?", "options": ["A defendant loses confrontation protection whenever the defense makes the prosecution’s hearsay look useful.", "There is no broad opening-the-door exception that lets the prosecution answer a defense theory with uncrossed testimonial hearsay.", "Opening the door always permits testimonial hearsay if the judge gives a limiting instruction.", "Opening the door matters only in civil cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "The Court has rejected a broad opening-the-door exception to the Confrontation Clause.", "closeCall": false, "correctIndices": [1]}, {"number": 10, "stem": "Rule 106 is designed primarily to prevent a party from:", "options": ["Using any hearsay statement at trial", "Creating a misleading impression by introducing only a fragment of a writing or recorded statement", "Calling too many witnesses", "Using expert testimony on ultimate issues"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 106 is the rule of completeness. Its purpose is to prevent distortion through selective presentation of statements.", "closeCall": false, "correctIndices": [1]}, {"number": 11, "stem": "Which statement best captures Rule 106’s hearsay feature?", "options": ["The completing portion must always fit its own hearsay exception.", "The adverse party may require completing material at that time over a hearsay objection if fairness so requires.", "Rule 106 applies only to statements that are already admissible under Crawford.", "Rule 106 automatically admits an entire conversation whenever any piece is introduced."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 106 expressly allows the adverse party to require completing material over a hearsay objection when fairness calls for it.", "closeCall": false, "correctIndices": [1]}, {"number": 12, "stem": "In a criminal case, the prosecution introduces only the defendant’s statement, “I took the money.” The defense wants the rest introduced immediately: “I took the money because the manager told me to move it to the safe.” The strongest rule is:", "options": ["Rule 106 may require the rest to come in at the same time if fairness requires the context.", "Rule 106 never applies in criminal cases.", "The defense must wait until its own case-in-chief.", "The completing part is automatically excluded as self-serving hearsay."], "answerType": "mc", "modelAnswer": "a", "explanation": "If the omitted portion is needed to prevent a misleading impression, Rule 106 allows the adverse party to require its immediate introduction.", "closeCall": false, "correctIndices": [0]}, {"number": 13, "stem": "Crawford’s central holding is best stated as:", "options": ["Reliable testimonial hearsay may always be admitted.", "Testimonial police statements from an absent witness may not be used unless the witness is unavailable and there was a prior opportunity for cross-examination.", "All hearsay is barred in criminal trials.", "Only sworn affidavits violate confrontation."], "answerType": "mc", "modelAnswer": "b", "explanation": "Crawford rejected a free-floating reliability test and required confrontation for testimonial hearsay unless the defendant already had a chance to cross-examine.", "closeCall": false, "correctIndices": [1]}, {"number": 14, "stem": "Under Mattox, when a witness testified under oath at an earlier trial and the defendant fully cross-examined the witness, that testimony may generally be used at a retrial after the witness dies because:", "options": ["The defendant already received the core protection of confrontation.", "Death automatically makes all hearsay admissible.", "The Constitution does not care about cross-examination.", "Prior testimony is never testimonial."], "answerType": "mc", "modelAnswer": "a", "explanation": "Mattox recognizes that prior testimony from an earlier proceeding may be used when the witness is unavailable and the defendant already had a meaningful opportunity to cross-examine.", "closeCall": false, "correctIndices": [0]}, {"number": 15, "stem": "Under Bryant, whether a statement is testimonial depends primarily on:", "options": ["The subjective hopes of the prosecutor alone", "The objective primary purpose of the interaction, including whether reasonable participants would understand it as addressing an ongoing emergency or proving past events", "Whether the victim later dies", "Whether the statement is recorded"], "answerType": "mc", "modelAnswer": "b", "explanation": "Bryant asks objectively what the main purpose of the questioning was—handling an ongoing emergency or creating evidence about past events for prosecution.", "closeCall": false, "correctIndices": [1]}, {"number": 16, "stem": "Bruton holds that in a joint trial, a non-testifying codefendant’s confession that directly implicates the defendant:", "options": ["Can always be cured with a limiting instruction", "Creates a confrontation problem that a limiting instruction alone does not cure", "Is admissible if the confession was voluntary", "Is admissible if the defendant also confessed"], "answerType": "mc", "modelAnswer": "b", "explanation": "Bruton recognizes that some confessions are so powerfully incriminating that jurors cannot realistically ignore them as to the nonconfessing defendant.", "closeCall": false, "correctIndices": [1]}, {"number": 17, "stem": "Gray v. Maryland teaches that replacing the defendant’s name in a non-testifying codefendant’s confession with blanks or the word “deleted”:", "options": ["Cures the Bruton problem because the name is gone", "Does not cure the Bruton problem if the redaction still obviously points to the defendant", "Always makes the confession non-testimonial", "Works whenever the jury receives a limiting instruction"], "answerType": "mc", "modelAnswer": "b", "explanation": "Gray rejects obvious “blanks” or “deleted” redactions that still make it easy for jurors to infer the defendant’s identity.", "closeCall": false, "correctIndices": [1]}, {"number": 18, "stem": "Minutes after being stabbed 23 times, a victim calls 911, repeatedly begs for help, identifies “Ralph Nesbitt” as the attacker, says he is no longer there, and sounds frantic and near death. Under today’s law after Bryant, how should the Confrontation Clause issue likely be resolved?", "options": [], "answerType": "essay", "modelAnswer": "The trial judge should likely admit the 911 call as non-testimonial.", "explanation": "Objectively, the dispatcher’s and victim’s exchange was centered on obtaining emergency assistance, locating danger, and understanding an active violent scene. Even though the attacker had fled, the situation remained unstable and urgent, so the primary purpose was not to create a trial record.", "closeCall": true, "correctIndices": null}, {"number": 19, "stem": "An anonymous 911 caller reports an ongoing crack sale at 2505 Sweetgum, describes the seller’s clothing, names him, says he can see the drugs in the car door panel, and begs police not to confront the suspect in a way that reveals the caller’s identity. Under Bryant, the strongest Confrontation Clause answer is:", "options": [], "answerType": "essay", "modelAnswer": "The calls are likely non-testimonial, though the issue is closer than in a classic emergency assault case.", "explanation": "The caller was reporting a crime allegedly in progress and actively trying to secure police intervention while protecting personal safety. That supports a non-testimonial primary purpose. The defense would argue the caller was supplying evidence for prosecution, especially with detailed location and drug information, but the better answer is that the ongoing crime and fear of retaliation push toward non-testimonial status.", "closeCall": true, "correctIndices": null}, {"number": 20, "stem": "A murder victim leaves a sealed letter with a neighbor two weeks before death and says that if anything happens to her, the neighbor should give it to police. The letter says she fears her husband will kill her and that she would never commit suicide. Assume state hearsay law would allow the letter. The strongest Confrontation Clause answer is:", "options": ["Admissible because any statement predicting death is non-testimonial", "Likely testimonial and therefore barred absent unavailability plus prior cross-examination or some forfeiture basis", "Automatically admissible as a dying declaration", "Admissible because it was not made in a police station"], "answerType": "mc", "modelAnswer": "b", "explanation": "A sealed letter prepared for delivery to police if anything happens looks much more like a statement created for later prosecution than an emergency plea for help. That makes it strongly testimonial under modern doctrine.", "closeCall": true, "correctIndices": [1]}, {"number": 21, "stem": "A physician supervisor reads from emergency-room records created while treating an injured officer: “left foot run over by car at work,” “suspect tried to flee and ran over left foot,” and a diagnosis of crush injury. The treating doctor and nurses do not testify. The strongest confrontation answer is:", "options": ["Always barred because medical records are hearsay", "Likely not barred if the records were created primarily for medical treatment rather than for prosecution, though some identity/fault details may raise closer questions", "Always testimonial because police were involved in the incident", "Automatically admissible because a substitute doctor testified"], "answerType": "mc", "modelAnswer": "b", "explanation": "Statements made for medical treatment are usually non-testimonial. Still, some portions—especially detailed blame or investigative narration—can be closer if they look more prosecutorial than treatment-related.", "closeCall": true, "correctIndices": [1]}, {"number": 22, "stem": "A rape complainant gives a detailed account to a specialized nurse practitioner in a hospital DOVE unit. An officer is present but does not ask questions. The exam includes treatment, STI testing, a discharge plan, and evidence collection; the victim signed a form authorizing release of evidence for investigation and prosecution. The victim later dies before trial. The best characterization of the confrontation issue is:", "options": [], "answerType": "essay", "modelAnswer": "This is a close case. The defense has a substantial argument that at least parts of the statements were testimonial, but the prosecution has a substantial argument that the primary purpose remained medical diagnosis, treatment, and safe discharge.", "explanation": "The defense will stress the forensic setting, consent form, officer presence, and evidence-collection function. The prosecution will stress treatment, STI concerns, discharge planning, patient safety, and the medical reasons for learning what happened. The answer likely turns on the primary purpose of the particular statements and portions of the exam, not a one-size-fits-all label.", "closeCall": true, "correctIndices": null}, {"number": 23, "stem": "Under Giles-style forfeiture by wrongdoing principles, the prosecution seeking to admit a witness’s prior testimonial statements must generally show that the defendant:", "options": ["Caused the witness not to testify, with the intent to prevent that witness from testifying", "Had a bad relationship with the witness", "Was charged with domestic violence", "Was in contact with the witness before trial"], "answerType": "mc", "modelAnswer": "a", "explanation": "Forfeiture by wrongdoing is not triggered by mere causation or bad conduct alone. It generally requires intentional conduct designed to prevent testimony.", "closeCall": false, "correctIndices": [0]}, {"number": 24, "stem": "Which is the prosecution’s strongest argument in a domestic-violence forfeiture hearing where the complainant has a long pattern of reporting abuse, later refusing to testify, repeatedly visiting the jailed defendant, and nervously recanting while watching him blow kisses in court?", "options": ["That any recanting domestic-violence victim automatically forfeits confrontation rights", "That the defendant’s longstanding abuse and influence campaign can support an inference that he intended to make her unavailable or unwilling to testify", "That the victim’s love for the defendant is irrelevant as a matter of law", "That expert testimony alone proves forfeiture beyond dispute"], "answerType": "mc", "modelAnswer": "b", "explanation": "The prosecution’s best argument is intentional witness tampering or coercive control inferred from the pattern of abuse, contacts, dependence, and the witness’s conduct.", "closeCall": true, "correctIndices": [1]}, {"number": 25, "stem": "Which is the defense’s strongest argument against forfeiture in that same domestic-violence hearing?", "options": ["That forfeiture never applies in domestic-violence cases", "That the witness’s reluctance may stem from economic, emotional, and family pressures rather than any intentional scheme by the defendant to prevent testimony", "That the defendant did not commit any prior abuse", "That the witness’s courtroom demeanor can never be considered"], "answerType": "mc", "modelAnswer": "b", "explanation": "After Giles, the defense will emphasize that the state must prove intent to prevent testimony, not simply a troubled relationship that may have influenced the witness for many reasons.", "closeCall": true, "correctIndices": [1]}, {"number": 26, "stem": "A preschool teacher notices injuries and asks a child what happened. The child says, “Mom’s boyfriend hit me.” The strongest Confrontation Clause answer under modern doctrine is:", "options": ["Usually non-testimonial in that setting", "Always testimonial because abuse is criminal", "Always barred unless the child testifies", "Automatically admissible because children can never make testimonial statements"], "answerType": "mc", "modelAnswer": "a", "explanation": "Under Ohio v. Clark, statements like these to teachers are often non-testimonial because the setting and purpose are not primarily to create evidence for trial.", "closeCall": false, "correctIndices": [0]}, {"number": 27, "stem": "A stabbing victim tells an ER doctor, “I was stabbed in the chest about ten minutes ago.” The strongest confrontation answer is:", "options": ["Usually testimonial because the doctor may later testify", "Usually non-testimonial because the purpose is medical treatment", "Always barred if the victim later dies", "Always testimonial if the police are nearby"], "answerType": "mc", "modelAnswer": "b", "explanation": "Statements for medical diagnosis or treatment are usually not testimonial because their primary purpose is care, not prosecution.", "closeCall": false, "correctIndices": [1]}, {"number": 28, "stem": "A victim runs to a neighbor’s house moments after an assault and blurts out, “John just stabbed me!” The strongest confrontation answer is:", "options": ["Often non-testimonial because it was made informally to a private person, not to create trial evidence", "Always testimonial because it identifies a culprit", "Always barred unless the victim later testifies", "Automatically admissible because neighbors are not police"], "answerType": "mc", "modelAnswer": "a", "explanation": "Informal spontaneous statements to private persons are typically non-testimonial, though hearsay exceptions must still be satisfied.", "closeCall": false, "correctIndices": [0]}, {"number": 29, "stem": "If the prosecution offers a testimonial statement from a witness who is now unavailable, but the defendant previously had an adequate opportunity to cross-examine that witness, the strongest answer is:", "options": ["The Crawford rule is generally satisfied", "The statement remains barred because testimonial hearsay is never admissible", "The statement is admissible only if it is a business record", "The statement is admissible only if the jury receives a limiting instruction"], "answerType": "mc", "modelAnswer": "a", "explanation": "Prior opportunity for cross-examination plus unavailability generally satisfies the confrontation requirement for testimonial hearsay.", "closeCall": false, "correctIndices": [0]}, {"number": 30, "stem": "Which statement best captures the confrontation treatment of ordinary business records?", "options": ["They are generally non-testimonial when created to administer an entity’s affairs rather than to prove facts at trial.", "They are always testimonial because they are written down.", "They are automatically inadmissible if a custodian does not testify.", "They are testimonial whenever the prosecution offers them."], "answerType": "mc", "modelAnswer": "a", "explanation": "Routine business records are generally non-testimonial because they are not created primarily for criminal prosecution.", "closeCall": false, "correctIndices": [0]}, {"number": 31, "stem": "Which statement best captures the confrontation treatment of routine public records such as birth or DMV records?", "options": ["They are generally non-testimonial when kept for ordinary governmental administration rather than trial use.", "They are always testimonial because the government created them.", "They are barred unless the clerk testifies live.", "They become testimonial whenever they help the prosecution."], "answerType": "mc", "modelAnswer": "a", "explanation": "Ordinary public records kept for administrative reasons are typically non-testimonial.", "closeCall": false, "correctIndices": [0]}, {"number": 32, "stem": "The prosecution introduces only one sentence from an email: “I agree.” The adverse party wants the next line introduced immediately: “I agree only if delivery occurs by Friday.” The best rule is:", "options": ["Rule 106 may require immediate completion because the omitted text changes the meaning of the snippet", "Rule 106 never applies to emails", "The additional line must wait for cross-examination much later", "The added line is barred if it is hearsay"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 106 applies to writings and recorded statements and can require immediate context over a hearsay objection when fairness demands it.", "closeCall": false, "correctIndices": [0]}, {"number": 33, "stem": "Which of the following is NOT usually a proper use of Rule 106?", "options": ["Introducing another part needed to avoid a misleading impression", "Introducing a related statement necessary to qualify the fragment already offered", "Introducing unrelated self-serving material that merely helps one side generally", "Requiring the context at that time rather than later"], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 106 is limited to what fairness requires to explain or qualify the introduced portion. It is not a license to admit unrelated favorable material.", "closeCall": false, "correctIndices": [2]}, {"number": 34, "stem": "A codefendant’s confession is redacted to use “they,” “someone,” and “others” instead of names. In a joint trial, the prosecutor’s proof makes it obvious those neutral terms refer to the other defendants. The strongest answer is:", "options": ["No confrontation problem because names were removed", "Still a likely Bruton/Gray problem if the redaction obviously points to the defendants in context", "Always fine if the judge says to consider it only against the declarant", "Automatically cured if the confession is read rather than played as audio"], "answerType": "mc", "modelAnswer": "b", "explanation": "Obvious contextual redactions do not solve the confrontation problem if jurors can readily figure out who the neutral terms mean.", "closeCall": true, "correctIndices": [1]}, {"number": 35, "stem": "Which two statements are most accurate under Bruton and Gray?", "options": ["A limiting instruction is not enough when a non-testifying codefendant’s confession directly implicates the defendant.", "Replacing the defendant’s name with blanks or “deleted” automatically cures the problem.", "Obvious redactions that still point to the defendant are still constitutionally problematic.", "Bruton applies only if both defendants testify."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Bruton rejects the limiting-instruction fix for directly implicating confessions, and Gray rejects transparent redactions that obviously still accuse the defendant.", "closeCall": false, "correctIndices": [0, 2]}, {"number": 36, "stem": "A non-testifying codefendant’s plea allocution is offered by the prosecution to rebut a defense theory at trial. The defendant objects under the Confrontation Clause. The strongest answer is:", "options": ["Likely a confrontation problem if the allocution is testimonial and offered for its truth, even if the prosecution says the defense “opened the door.”", "Always admissible because plea allocutions are public records.", "Always admissible if the prosecution offers only part of it.", "Admissible only if the codefendant received immunity."], "answerType": "mc", "modelAnswer": "a", "explanation": "Testimonial statements such as plea allocutions raise classic confrontation issues, and there is no broad opening-the-door exception.", "closeCall": false, "correctIndices": [0]}, {"number": 37, "stem": "Which question is the most important starting point in deciding whether a statement is testimonial?", "options": ["Whether the statement was truthful", "Whether the declarant later died", "What the statement’s objective primary purpose was", "Whether the prosecution really needs the evidence"], "answerType": "mc", "modelAnswer": "c", "explanation": "Modern doctrine centers on the objective primary purpose of the interaction or statement.", "closeCall": false, "correctIndices": [2]}, {"number": 38, "stem": "Which statement is most accurate about a 911 call reporting an active domestic assault or an unknown armed shooter?", "options": ["It is always testimonial because police may use it later.", "It is often non-testimonial because the call’s primary purpose is emergency response and scene safety.", "It is always inadmissible unless the caller later testifies.", "It is automatically admissible under the Sixth Amendment alone."], "answerType": "mc", "modelAnswer": "b", "explanation": "When the call is aimed at getting urgent police assistance during an active or unstable emergency, it is often non-testimonial.", "closeCall": false, "correctIndices": [1]}, {"number": 39, "stem": "Which statement is most accurate about police questioning after the scene is secure and the immediate threat has ended?", "options": ["It is still automatically non-testimonial because police are involved.", "It is more likely testimonial if the purpose is to establish past facts for later prosecution.", "It is inadmissible only if recorded on video.", "It is always admissible if the witness is upset."], "answerType": "mc", "modelAnswer": "b", "explanation": "Once the emergency is over, statements about past events are much more likely to be testimonial.", "closeCall": false, "correctIndices": [1]}, {"number": 40, "stem": "Which two of the following are generally non-testimonial examples?", "options": ["Routine bank logs created for administration, not litigation", "A formal police interrogation after the emergency ended", "A victim’s frantic 911 plea for immediate help during an attack", "A sworn plea allocution blaming a codefendant"], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Routine administrative records and emergency pleas for help are usually non-testimonial. Formal police interrogation and plea allocutions are classic testimonial forms.", "closeCall": false, "correctIndices": [0, 2]}, {"number": 41, "stem": "A trial judge says, “This statement is testimonial, but I think it is reliable.” Under Crawford, the strongest answer is:", "options": ["That solves the Sixth Amendment issue.", "Reliability alone is not enough for testimonial hearsay; the key safeguard is confrontation.", "Reliability matters only if the witness is dead.", "The judge may substitute reliability for cross-examination only in homicide cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Crawford rejected the idea that a judge may admit testimonial hearsay simply because it seems reliable.", "closeCall": false, "correctIndices": [1]}, {"number": 42, "stem": "Which statement best captures the relationship between the Confrontation Clause and ordinary hearsay rules?", "options": ["If the Confrontation Clause allows evidence, hearsay rules vanish.", "If hearsay rules allow a statement, the Confrontation Clause is irrelevant even if the statement is testimonial.", "The Confrontation Clause focuses on testimonial hearsay, while ordinary hearsay rules still matter for both testimonial and non-testimonial statements.", "The Confrontation Clause applies only to business records."], "answerType": "mc", "modelAnswer": "c", "explanation": "The Confrontation Clause and hearsay rules are distinct. A statement may satisfy one set of rules and still fail the other.", "closeCall": false, "correctIndices": [2]}, {"number": 43, "stem": "Which two of the following are accurate statements about Rule 106?", "options": ["Only the portion that fairness requires comes in, not everything on the same topic.", "Rule 106 can require the additional material to come in at that time.", "Once any part of a statement is introduced, the whole conversation automatically comes in.", "Rule 106 applies only to civil cases."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 106 is targeted and immediate. It admits only what fairness requires to avoid distortion, and it does so at that time.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 44, "stem": "A prosecutor introduces part of a recorded interview that sounds like a confession. The defense says another section immediately afterward shows the statement was conditional and ambiguous. The best rule is:", "options": ["Rule 106 may require the additional section immediately if it is needed to avoid a misleading impression.", "The defense must wait until closing argument to mention the omitted context.", "The prosecution gets to choose the only portion the jury hears.", "The omitted part is barred if it helps the defense."], "answerType": "mc", "modelAnswer": "a", "explanation": "The point of Rule 106 is to prevent misleading snippets from sitting uncorrected until later.", "closeCall": false, "correctIndices": [0]}, {"number": 45, "stem": "Which of the following is the strongest example of a testimonial statement?", "options": ["A spontaneous blurt to a neighbor moments after an assault", "A formal recorded police interrogation about past events after the scene is secure", "A routine shipping log", "A statement to an ER doctor for treatment"], "answerType": "mc", "modelAnswer": "b", "explanation": "Formal police interrogation about past events for prosecution is the paradigmatic testimonial scenario under Crawford.", "closeCall": false, "correctIndices": [1]}, {"number": 46, "stem": "In a joint trial, a non-testifying codefendant’s confession is admitted with no redaction at all and expressly names the defendant. The judge instructs the jury to consider it only against the confessor. Under Bruton, the best answer is:", "options": ["The instruction cures the problem.", "The defendant’s confrontation rights are violated.", "The confession is fine if the codefendant does not object.", "The confession is admissible if it fits a hearsay exception."], "answerType": "mc", "modelAnswer": "b", "explanation": "Bruton holds that a limiting instruction is not enough when the confession directly accuses the defendant and the codefendant does not testify.", "closeCall": false, "correctIndices": [1]}, {"number": 47, "stem": "A defendant argues that because the prosecution’s evidence is weak, the court should admit uncrossed testimonial hearsay to “complete the story.” The best answer is:", "options": ["The Confrontation Clause yields whenever the state’s case is weak.", "The strength or weakness of the prosecution’s case does not create a general exception to confrontation.", "Weak evidence matters only in civil cases.", "Weak evidence automatically makes statements non-testimonial."], "answerType": "mc", "modelAnswer": "b", "explanation": "The Clause sets a constitutional rule for testimonial hearsay. It does not dissolve because the prosecution says it needs the evidence badly.", "closeCall": false, "correctIndices": [1]}, {"number": 48, "stem": "If the prosecution offers a testimonial statement from an absent analyst through a surrogate expert and says, “We are not offering it for its truth, just as basis,” the strongest answer is:", "options": ["That label automatically solves the confrontation problem.", "The Clause may still be violated if the surrogate is effectively conveying the absent analyst’s testimonial assertions to the jury for their truth.", "Basis evidence is exempt from all constitutional scrutiny.", "The problem disappears if the expert is well qualified."], "answerType": "mc", "modelAnswer": "b", "explanation": "The Court has made clear that the prosecution cannot avoid confrontation by relabeling testimonial hearsay as expert “basis” material when the jury is being asked to accept it for its truth.", "closeCall": false, "correctIndices": [1]}, {"number": 49, "stem": "Which is the prosecution’s strongest argument against a confrontation objection to a young child’s statement to a teacher, or a patient’s statement to an ER doctor?", "options": ["Those statements are usually made for non-prosecutorial purposes such as safety, treatment, or ordinary caregiving, making them non-testimonial.", "Children and patients can never make testimonial statements.", "The Confrontation Clause does not apply to private persons.", "Those statements are always admissible because they fit hearsay exceptions."], "answerType": "mc", "modelAnswer": "a", "explanation": "The strongest point is primary purpose: these settings often involve safety, treatment, or caregiving, not building a prosecution record.", "closeCall": false, "correctIndices": [0]}, {"number": 50, "stem": "Which two of the following are accurate summaries of Unit 6?", "options": ["Testimonial hearsay generally requires unavailability plus prior opportunity to cross-examine.", "A substitute expert may freely relay an absent analyst’s testimonial statements so long as the jury hears them through an expert.", "Rule 106 can require completing context at the same time, even over a hearsay objection.", "A defendant broadly loses confrontation rights whenever the defense opens the door."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are correct. The Court rejects broad opening-the-door theories and does not permit surrogate experts to relay absent analysts’ testimonial statements for their truth.", "closeCall": false, "correctIndices": [0, 2]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

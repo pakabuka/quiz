@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 4 – Authentication & Best Evidence Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 4 – Authentication & Best Evidence</h1>
+        <div class="subhead">Tricky practice questions on Rules 901, 902, 1001–1008, plus Stelmokas, Benton, and the modern authentication / Best Evidence themes from your notes.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 4 authentication-and-best-evidence notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on separating authentication from hearsay, distinguishing originals from duplicates and other secondary evidence, and spotting when the Best Evidence Rule does not apply because content is not what is being proved.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit4_auth_best_evidence_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "Under Rule 901(a), to authenticate an item the proponent must produce:", "options": ["Proof beyond a reasonable doubt that the item is genuine.", "Proof by a preponderance that the item is genuine.", "Evidence sufficient to support a finding that the item is what the proponent claims it is.", "Only self-authenticating features listed in Rule 902."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 901 sets a low threshold. The proponent need only produce enough evidence for a reasonable factfinder to conclude the item is what it is claimed to be.", "closeCall": false, "correctIndices": [2]}, {"number": 2, "stem": "A witness testifies, “I was present when this photograph was taken, and it fairly shows the intersection as it looked that night.” The strongest authentication route is:", "options": ["Rule 901(b)(1), testimony of a witness with knowledge", "Rule 902(6), newspaper self-authentication", "Rule 1002, Best Evidence Rule", "Rule 404(b), distinctive characteristics"], "answerType": "mc", "modelAnswer": "a", "explanation": "A witness with personal knowledge can authenticate a photograph by testifying that it fairly depicts the scene.", "closeCall": false, "correctIndices": [0]}, {"number": 3, "stem": "A coworker became familiar with Defendant’s handwriting years before litigation and now identifies a disputed signature as Defendant’s. This is strongest under:", "options": ["Rule 901(b)(2), nonexpert opinion about handwriting", "Rule 901(b)(3), expert comparison only", "Rule 902(8), acknowledged documents", "Rule 1003, duplicates"], "answerType": "mc", "modelAnswer": "a", "explanation": "A lay witness may identify handwriting if the familiarity was not acquired for the current litigation.", "closeCall": false, "correctIndices": [0]}, {"number": 4, "stem": "An expert compares a questioned signature to an admitted genuine specimen and says they match. This is strongest under:", "options": ["Rule 901(b)(1)", "Rule 901(b)(3)", "Rule 902(4)", "Rule 1007"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 901(b)(3) expressly permits comparison by an expert witness or the trier of fact with an authenticated specimen.", "closeCall": false, "correctIndices": [1]}, {"number": 5, "stem": "A text message is signed with Defendant’s nickname, refers to a private event only Defendant and the recipient would likely know, and matches Defendant’s usual style of speaking. The strongest authentication route is:", "options": ["Rule 901(b)(4), distinctive characteristics taken with the circumstances", "Rule 902(11), certified domestic business records", "Rule 1004(a), lost originals", "Rule 608(b), specific acts of dishonesty"], "answerType": "mc", "modelAnswer": "a", "explanation": "Distinctive contents, internal details, and surrounding circumstances can authenticate a message under Rule 901(b)(4).", "closeCall": false, "correctIndices": [0]}, {"number": 6, "stem": "A witness first hears Defendant’s voice after litigation begins, listens several times, and then identifies Defendant’s voice on a recording. Which is most accurate?", "options": ["Impossible; voice familiarity must predate litigation.", "Potentially sufficient; voice identification may be based on hearing the voice at any time under circumstances connecting it to the alleged speaker.", "Insufficient unless the recording is self-authenticating.", "Sufficient only if the witness is an expert phonetics analyst."], "answerType": "mc", "modelAnswer": "b", "explanation": "Unlike handwriting familiarity, voice familiarity may be acquired at any time, including after litigation has begun, so long as the circumstances connect the voice to the alleged speaker.", "closeCall": false, "correctIndices": [1]}, {"number": 7, "stem": "A party offers a phone conversation and says, “The speaker answered, ‘This is John,’ so that proves it was John.” With no other supporting circumstances, the best answer is:", "options": ["Enough by itself under Rule 901(b)(6)(A).", "Usually not enough by itself; self-identification alone often needs surrounding circumstances connecting the speaker to John.", "Automatically self-authenticating under Rule 902.", "Enough because phone calls are exempt from authentication."], "answerType": "mc", "modelAnswer": "b", "explanation": "Self-identification alone is often insufficient. Rule 901 looks for surrounding circumstances supporting the claimed identity of the speaker.", "closeCall": false, "correctIndices": [1]}, {"number": 8, "stem": "A customer calls the number listed for a business and discusses an order problem with someone handling ordinary company business. The strongest authentication route is:", "options": ["Rule 901(b)(6)(B), business telephone conversation", "Rule 901(b)(8), ancient documents", "Rule 902(5), official publications", "Rule 1005, public records"], "answerType": "mc", "modelAnswer": "a", "explanation": "Calls to a business number about matters reasonably transacted by phone can be authenticated under Rule 901(b)(6)(B).", "closeCall": false, "correctIndices": [0]}, {"number": 9, "stem": "Which three conditions define authentication of an ancient document under Rule 901(b)(8)?", "options": ["It must be at least 20 years old, free from suspicious condition, and found where such a document would likely be kept.", "It must be notarized, sealed, and signed.", "It must predate 1998, be public, and be certified.", "It must come from a government archive and be translated."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 901(b)(8) requires age, unsuspicious condition, and proper place of keeping. The separate hearsay exception for ancient documents has its own date limit.", "closeCall": false, "correctIndices": [0]}, {"number": 10, "stem": "A proponent offers machine-generated results from a surveillance system. The strongest authentication route is:", "options": ["Rule 901(b)(9), evidence describing the process or system and showing it produces an accurate result", "Rule 404(b), other acts", "Rule 608(a), character for truthfulness", "Rule 1007, opponent admission"], "answerType": "mc", "modelAnswer": "a", "explanation": "Machine or system output may be authenticated by proof that the process or system operates accurately.", "closeCall": false, "correctIndices": [0]}, {"number": 11, "stem": "Which statement is most accurate about discovery production and authentication?", "options": ["If a document was produced in discovery, it is always automatically authenticated.", "Production alone does not always satisfy Rule 901; authentication may still be required.", "Any produced item becomes self-authenticating under Rule 902.", "Production in discovery makes all hearsay objections disappear."], "answerType": "mc", "modelAnswer": "b", "explanation": "Discovery production can matter, and sometimes admissions or stipulations solve the issue, but production alone does not universally eliminate authentication questions.", "closeCall": false, "correctIndices": [1]}, {"number": 12, "stem": "In a murder case, the State offers Facebook and text messages allegedly sent by Defendant. The messages contain Defendant’s nickname, references to the robbery plan, mention facts later corroborated by physical evidence, and come from accounts associated with Defendant. Under Benton, the strongest answer is:", "options": ["Authentication fails unless the State proves authorship beyond a reasonable doubt.", "Authentication may be sufficient because Rule 901 is a low threshold and circumstantial evidence can support a finding that Defendant authored the messages.", "Authentication fails unless Defendant admits authorship.", "Social media messages are never admissible because they are too easy to fake."], "answerType": "mc", "modelAnswer": "b", "explanation": "Benton emphasizes that authentication is a low threshold. Circumstantial evidence like account ownership, contents, nicknames, and corroborating details can be enough for the jury to consider the messages.", "closeCall": false, "correctIndices": [1]}, {"number": 13, "stem": "A party offers text messages allegedly sent by Defendant. The only evidence is that the messages came from a phone associated with Defendant’s number and that the sender discussed Defendant’s dog, girlfriend, and recent private trip. How should the court think about authentication?", "options": [], "answerType": "essay", "modelAnswer": "The court may find authentication sufficient under Rule 901 if the surrounding circumstances support a reasonable finding that Defendant was the sender.", "explanation": "Authentication is a threshold question. Defendant can still argue spoofing, shared access, or fabrication to the jury, but distinctive characteristics and contextual details may be enough to get the messages over Rule 901’s low bar.", "closeCall": true, "correctIndices": null}, {"number": 14, "stem": "Which of the following is self-authenticating under Rule 902(1)?", "options": ["A sealed and signed domestic public document", "Any email from a government address", "Any document with a logo on it", "Any document produced by a public agency in discovery"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 902(1) covers domestic public documents that are sealed and signed.", "closeCall": false, "correctIndices": [0]}, {"number": 15, "stem": "Which two of the following are classic self-authenticating categories under Rule 902?", "options": ["Official publications issued by a public authority", "Newspapers and periodicals", "Ordinary unsigned internet printouts", "Private handwritten letters"], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Official publications and newspapers/periodicals are expressly listed in Rule 902. Ordinary web printouts and private letters are not automatically self-authenticating.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 16, "stem": "A business offers domestic records with a custodian certification under Rule 902(11), but gives no reasonable written pretrial notice and no chance for inspection. The best answer is:", "options": ["Still self-authenticating because certification alone is enough.", "Likely not self-authenticating under Rule 902(11) because the notice requirement was not met.", "Automatically admissible under Rule 1006.", "Self-authenticating only in criminal cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 902(11) requires notice and an opportunity to inspect the records and certification before trial or hearing.", "closeCall": false, "correctIndices": [1]}, {"number": 17, "stem": "Which rule most directly covers a certified forensic extraction showing that a digital copy of phone data was authenticated by a digital-identification process?", "options": ["Rule 902(11)", "Rule 902(13)", "Rule 902(14)", "Rule 1005"], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 902(14) specifically addresses certified data copied from an electronic device, storage medium, or file, authenticated by a digital-identification process.", "closeCall": false, "correctIndices": [2]}, {"number": 18, "stem": "Which statement best captures self-authentication?", "options": ["If evidence is self-authenticating, it is automatically admissible for its truth.", "Self-authentication eliminates the need for extrinsic evidence of authenticity, but other objections like hearsay, relevance, and Rule 403 may still apply.", "Self-authenticating evidence is conclusive and cannot be challenged.", "Self-authentication applies only to public records."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 902 solves only the authentication problem. The evidence still must satisfy other evidentiary rules.", "closeCall": false, "correctIndices": [1]}, {"number": 19, "stem": "Under Rule 1001, which of the following can count as an original of electronically stored information?", "options": ["Only the data on the hard drive itself", "Any printout or other output readable by sight if it accurately reflects the information", "Only a notarized printout", "Only a screenshot taken by the party offering it"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1001(d) specifically says that for ESI, an original includes any accurate printout or other output readable by sight.", "closeCall": false, "correctIndices": [1]}, {"number": 20, "stem": "A photocopy of a signed contract made by a process that accurately reproduces the original is best described under Rule 1001 as:", "options": ["A summary", "A duplicate", "An ancient document", "Secondary evidence that is never admissible"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1001(e) defines a duplicate as a counterpart produced by an accurate mechanical, photographic, electronic, or equivalent process.", "closeCall": false, "correctIndices": [1]}, {"number": 21, "stem": "In a breach-of-contract case, Plaintiff wants to prove the exact terms of a written contract. Under Rule 1002, the best answer is:", "options": ["No writing is needed because witness memory is always enough.", "The original is usually required because Plaintiff is proving the contract’s contents.", "A summary is always enough.", "Any oral testimony automatically satisfies the Best Evidence Rule."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1002 applies when a party seeks to prove the contents of a writing, recording, or photograph. Contract terms are the classic example.", "closeCall": false, "correctIndices": [1]}, {"number": 22, "stem": "A witness testifies, “I saw Defendant sign the contract.” The witness is not trying to prove the exact wording of the contract, only the act of signing. The strongest answer is:", "options": ["Rule 1002 always requires the original contract whenever a contract exists.", "Rule 1002 may not apply because the witness is proving an event from personal knowledge rather than the writing’s content.", "The testimony is barred unless a duplicate is produced.", "The testimony is barred as hearsay."], "answerType": "mc", "modelAnswer": "b", "explanation": "The Best Evidence Rule is triggered when content is being proved. Testimony based on firsthand knowledge of the signing act is different.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "A witness saw a car crash with her own eyes. A security camera also recorded it. The witness testifies from personal observation. The strongest Rule 1002 answer is:", "options": ["The video must be produced because it exists.", "Rule 1002 does not require the video because the witness is not proving the video’s content.", "The witness may testify only if she also watched the video.", "The testimony is inadmissible unless the video is lost."], "answerType": "mc", "modelAnswer": "b", "explanation": "A witness may testify from personal knowledge about an event even if that event was also recorded. The rule does not require the recording unless the party is proving the recording’s contents.", "closeCall": false, "correctIndices": [1]}, {"number": 24, "stem": "Under Rule 1003, a duplicate is admissible to the same extent as the original unless:", "options": ["the case is criminal", "a genuine question is raised about the original’s authenticity or it would be unfair to admit the duplicate", "the duplicate is electronic", "the original is older than twenty years"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1003 normally puts duplicates on par with originals, subject to the two important exceptions of authenticity concerns and unfairness.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "A party offers a photocopy of a will. The opponent raises a genuine argument that the original signature may have been forged. Under Rule 1003, the best answer is:", "options": ["The duplicate must still be admitted because all photocopies are admissible.", "The court may refuse the duplicate because a genuine question about the original’s authenticity has been raised.", "The duplicate is automatically self-authenticating.", "The duplicate becomes admissible only if the copy is in color."], "answerType": "mc", "modelAnswer": "b", "explanation": "A real authenticity challenge to the original is one of the specific grounds for refusing a duplicate under Rule 1003.", "closeCall": false, "correctIndices": [1]}, {"number": 26, "stem": "A warehouse fire destroys the only originals of a contract, and the proponent did not cause the fire. Under Rule 1004, the strongest answer is:", "options": ["Secondary evidence of content may be admitted because the originals were lost or destroyed without bad faith.", "Secondary evidence is barred because originals are always required.", "Only a duplicate is allowed; oral testimony is never allowed.", "The proponent must first get a stipulation from the opponent."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1004(a) allows other evidence of content if all originals are lost or destroyed and not by the proponent acting in bad faith.", "closeCall": false, "correctIndices": [0]}, {"number": 27, "stem": "A party intentionally shreds the original contract to avoid producing it and then tries to testify from memory about what it said. The best answer is:", "options": ["Allowed under Rule 1004(a) because the original is destroyed.", "Not allowed under Rule 1004(a) because the destruction was in bad faith.", "Allowed because oral testimony is the strongest evidence.", "Allowed only if the judge believes the testimony."], "answerType": "mc", "modelAnswer": "b", "explanation": "Bad-faith destruction defeats the lost-or-destroyed basis for secondary evidence under Rule 1004(a).", "closeCall": false, "correctIndices": [1]}, {"number": 28, "stem": "The original recording is in the hands of a foreign third party outside the court’s subpoena power, and reasonable efforts to obtain it have failed. The strongest Rule 1004 answer is:", "options": ["Secondary evidence is admissible because the original cannot be obtained by available judicial process.", "Secondary evidence is barred unless the third party consents.", "Only a summary may be used.", "The recording’s contents can never be proved."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1004(b) allows other evidence of content when the original cannot be obtained by available judicial process.", "closeCall": false, "correctIndices": [0]}, {"number": 29, "stem": "Defendant had control of the original invoice, was on notice before trial that its contents would be an issue, and still failed to produce it. Under Rule 1004, the strongest answer is:", "options": ["Secondary evidence of the invoice’s contents may be admitted.", "The court must dismiss the claim.", "Only the judge may look at the invoice in chambers.", "The proponent must still prove loss or destruction."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1004(c) applies when the opponent had control, notice, and failed to produce the original.", "closeCall": false, "correctIndices": [0]}, {"number": 30, "stem": "A witness describes the wording of a posted sign, but the exact wording of the sign is only a minor side issue in the case. The strongest answer is:", "options": ["Rule 1004(d) may allow other evidence of content because the writing is not closely related to a controlling issue.", "Rule 1002 always requires the sign itself.", "Rule 1003 forbids oral testimony.", "The evidence is inadmissible unless the sign was photographed."], "answerType": "mc", "modelAnswer": "a", "explanation": "If the writing is only collateral and not closely related to a controlling issue, Rule 1004(d) allows other evidence of its content.", "closeCall": false, "correctIndices": [0]}, {"number": 31, "stem": "To prove the contents of a recorded deed, the proponent offers a certified copy from the county recorder’s office. The strongest rule is:", "options": ["Rule 1005", "Rule 608(b)", "Rule 404(a)", "Rule 901(b)(5)"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1005 is the special Best Evidence provision for proving the contents of official records and recorded public-office documents with a certified or properly compared copy.", "closeCall": false, "correctIndices": [0]}, {"number": 32, "stem": "A party offers a random internet printout of a supposed government record, but there is no certification and no witness who compared it to the original. Under Rule 1005, the best answer is:", "options": ["Sufficient, because anything from a government website is automatically enough.", "Usually insufficient, because Rule 1005 requires a properly certified copy or a comparison witness unless no such copy can be obtained by reasonable diligence.", "Enough because Rule 902(6) covers it.", "Enough if the printout looks official."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1005 has formal requirements. A random printout is not enough by itself.", "closeCall": false, "correctIndices": [1]}, {"number": 33, "stem": "The government offers a spreadsheet summarizing thousands of admissible bank transactions that would be impossible to review one by one in court, and it has made the underlying records available for inspection. The strongest rule is:", "options": ["Rule 1006", "Rule 1007", "Rule 901(b)(8)", "Rule 608(a)"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1006 allows summaries, charts, or calculations to prove the contents of voluminous admissible materials that cannot conveniently be examined in court.", "closeCall": false, "correctIndices": [0]}, {"number": 34, "stem": "Which statement best distinguishes a Rule 1006 summary from an illustrative aid?", "options": ["A Rule 1006 summary is substantive evidence of content; an illustrative aid only helps explain testimony or argument.", "A Rule 1006 summary is never evidence.", "An illustrative aid must always be admitted as substantive evidence.", "There is no difference under the Rules."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1006 deals with substantive summaries of voluminous materials. A chart that merely helps the jury follow testimony is different.", "closeCall": false, "correctIndices": [0]}, {"number": 35, "stem": "In a contract dispute, Defendant’s deposition states, “Yes, the lease required me to deliver 500 units by June 1.” Plaintiff offers the deposition to prove the lease’s content without producing the original lease. The strongest rule is:", "options": ["Rule 1007", "Rule 902(11)", "Rule 404(b)", "Rule 1008"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 1007 allows the content of a writing, recording, or photograph to be proved by the testimony, deposition, or written statement of the party against whom it is offered, without accounting for the original.", "closeCall": false, "correctIndices": [0]}, {"number": 36, "stem": "Which of the following does Rule 1007 usually NOT allow by itself?", "options": ["Proving content through the opposing party’s testimony", "Proving content through the opposing party’s deposition", "Proving content through the opposing party’s written statement", "Proving content solely through the opposing party’s out-of-court oral statement that was not testimony, a deposition, or a written statement"], "answerType": "mc", "modelAnswer": "d", "explanation": "Rule 1007 specifically lists testimony, deposition, and written statement. It does not generally extend to ordinary out-of-court oral admissions.", "closeCall": false, "correctIndices": [3]}, {"number": 37, "stem": "In a jury trial, who ordinarily decides whether Rule 1004’s or 1005’s threshold conditions for admitting other evidence of content have been met?", "options": ["The jury", "The judge", "Whichever side objects first", "An expert witness"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1008 says the court ordinarily decides the foundational admissibility conditions under Rules 1004 and 1005.", "closeCall": false, "correctIndices": [1]}, {"number": 38, "stem": "In a jury trial, which of the following is for the jury under Rule 1008?", "options": ["Whether the proponent gave enough notice under Rule 1005", "Whether the judge should hold a hearing", "Whether the asserted writing ever existed", "Whether Rule 902(11) certification is facially proper"], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 1008 assigns certain factual disputes to the jury in a jury trial, including whether the asserted writing, recording, or photograph ever existed.", "closeCall": false, "correctIndices": [2]}, {"number": 39, "stem": "Under Stelmokas, what was the best answer to the defendant’s argument that Holocaust-era archival documents should be excluded because they came through Soviet or Lithuanian archives with imperfect chain-of-custody proof?", "options": ["Exclude them automatically because old foreign archival records are never trustworthy.", "Admit them if the government produced enough authentication evidence—such as archival certification and credible expert testimony—showing the documents were what the government claimed, despite chain gaps.", "Exclude them unless every custodian testified live.", "Exclude them because ancient documents require a perfect chain of custody."], "answerType": "mc", "modelAnswer": "b", "explanation": "Stelmokas emphasizes that authentication is a low threshold and that ancient or archival documents can be authenticated through place of keeping, condition, certification, and expert testimony even without perfect chain proof.", "closeCall": false, "correctIndices": [1]}, {"number": 40, "stem": "A foreign public document is offered without the usual final certification, but all parties had a reasonable opportunity to investigate authenticity and the court finds good cause. Under Rule 902(3), the court may:", "options": ["Never do anything; final certification is always mandatory.", "Treat the document as presumptively authentic or allow an attested summary.", "Require a jury finding before even considering it.", "Admit it only if it is more than 20 years old."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 902(3) gives the court some flexibility for foreign public documents when the parties had a reasonable chance to investigate and good cause exists.", "closeCall": false, "correctIndices": [1]}, {"number": 41, "stem": "Which statement about subscribing witnesses is most accurate under modern federal practice?", "options": ["Every writing must be authenticated by a subscribing witness.", "A subscribing witness is generally unnecessary unless a statute specifically requires one.", "A subscribing witness is required only for photographs.", "Rule 903 abolished all authentication requirements for wills."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 903 eliminates the common-law necessity of producing a subscribing witness unless a statute specifically requires it.", "closeCall": false, "correctIndices": [1]}, {"number": 42, "stem": "A letter is authenticated partly because it was obviously written in reply to an earlier letter sent to the claimed author, and the reply’s contents make it unlikely anyone else wrote it. This is often described as:", "options": ["The reply-letter doctrine", "Self-authentication by trade inscription", "The Best Evidence Rule", "Rule 609 impeachment"], "answerType": "mc", "modelAnswer": "a", "explanation": "A reply that responds in a way only the intended recipient would likely know can be authenticated circumstantially through the reply-letter doctrine.", "closeCall": false, "correctIndices": [0]}, {"number": 43, "stem": "An unattended surveillance camera records a burglary. No witness observed the burglary firsthand. The strongest authentication route is:", "options": ["It cannot be authenticated because no human saw the event.", "Evidence that the camera was properly operating and that the offered footage came from that camera.", "Rule 902(6), newspaper self-authentication.", "Rule 1007, opponent testimony."], "answerType": "mc", "modelAnswer": "b", "explanation": "When no witness saw the event, the proponent can authenticate the recording by showing the camera was functioning properly and the footage came from that camera.", "closeCall": false, "correctIndices": [1]}, {"number": 44, "stem": "Which of the following is most important in authenticating an X-ray or similar diagnostic image?", "options": ["Only a witness saying it looks right", "Showing the process is accurate, the machine worked properly, the operator was qualified, and chain of custody is sufficient", "A newspaper article about the hospital", "The patient’s reputation for honesty"], "answerType": "mc", "modelAnswer": "b", "explanation": "Because an X-ray is not just a scene photograph, courts focus on the accuracy of the process, functioning of the machine, operator qualification, and custody chain.", "closeCall": false, "correctIndices": [1]}, {"number": 45, "stem": "In a wage-and-hour case, Plaintiff offers a summary chart of payroll data, but the underlying payroll records are themselves inadmissible hearsay and were never made available for inspection. The best answer is:", "options": ["The summary is admissible because Rule 1006 cures all foundation and hearsay problems.", "The summary likely fails because Rule 1006 requires underlying materials that are admissible and available for examination or copying.", "The summary is automatically self-authenticating.", "The summary becomes admissible if it is colorful and easy to read."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1006 does not allow a party to smuggle in inadmissible material through a summary, and it requires access to the underlying records.", "closeCall": false, "correctIndices": [1]}, {"number": 46, "stem": "A party wants to prove the contents of a public record with other evidence rather than a certified or compared copy, but has made no showing that such a copy could not be obtained with reasonable diligence. The best answer is:", "options": ["Allowed because Rule 1005 always allows other evidence too.", "Usually not allowed, because Rule 1005 first expects a certified or compared copy unless no such copy can be obtained by reasonable diligence.", "Allowed if the record is more than 20 years old.", "Allowed if the case is civil."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 1005 creates a hierarchy: use a proper copy first, and only then resort to other evidence if no such copy can be obtained with reasonable diligence.", "closeCall": false, "correctIndices": [1]}, {"number": 47, "stem": "A party offers an ordinary unsigned printout from a website and says, “It’s on the internet, so it’s self-authenticating.” The best answer is:", "options": ["Correct under Rule 902.", "Usually wrong; Rule 902 does not automatically self-authenticate every internet printout.", "Correct if the page has a URL.", "Correct if the printout was made in color."], "answerType": "mc", "modelAnswer": "b", "explanation": "Ordinary internet printouts are not automatically self-authenticating just because they appear online.", "closeCall": false, "correctIndices": [1]}, {"number": 48, "stem": "Which two of the following are accurate summaries of Unit 4?", "options": ["Authentication under Rule 901 is a threshold showing, not a demand for absolute proof.", "If an item is self-authenticating, all other objections disappear.", "Rule 1002 usually matters only when a party is proving the content of a writing, recording, or photograph.", "Rule 1003 makes duplicates inadmissible unless the original is lost."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are right. Self-authentication does not solve hearsay or relevance issues, and Rule 1003 usually lets duplicates in unless authenticity or fairness is genuinely disputed.", "closeCall": false, "correctIndices": [0, 2]}, {"number": 49, "stem": "A party offers a signed and sealed state-court judgment. Opponent objects, “Fine, maybe it is self-authenticating, but it is still hearsay.” The strongest answer is:", "options": ["Self-authentication defeats hearsay objections.", "Opponent is right that self-authentication and hearsay are separate issues.", "Once a seal appears, the document is admissible for every purpose.", "The objection fails because judgments are never hearsay."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 902 addresses authenticity only. A document can be self-authenticating and still face hearsay or other admissibility objections.", "closeCall": false, "correctIndices": [1]}, {"number": 50, "stem": "In a jury trial, the judge admits testimony about the contents of a lost recording under Rule 1004. The opponent says the witness’s description is inaccurate. Who decides that factual dispute under Rule 1008?", "options": ["The judge alone", "The jury", "The custodian of records", "A handwriting expert"], "answerType": "mc", "modelAnswer": "b", "explanation": "Once the threshold foundation is met, the jury in a jury trial decides disputed factual questions such as whether the secondary evidence accurately reflects the content.", "closeCall": false, "correctIndices": [1]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

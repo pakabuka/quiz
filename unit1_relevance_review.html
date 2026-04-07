@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 1 – Relevance Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 1 – Relevance</h1>
+        <div class="subhead">Tricky practice questions on Rules 401, 402, 403, 201, 407, 408, 409, 411, 410, plus the James, Myers, and Jackson themes.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 1 notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Several turn on using the right theory of relevance, spotting a forbidden use versus a permitted use, and resisting overreading a rule.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit1_relevance_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "In a battery case, the main disputed issue is whether Defendant struck Plaintiff outside a bar. Plaintiff offers testimony that, thirty seconds before the punch, Defendant yelled, “I’m going to break your nose.” Defendant objects that the statement does not itself prove a punch occurred. How should the court rule?", "options": ["Sustain the objection, because evidence must independently prove the ultimate fact to be relevant.", "Overrule the objection, because the statement has some tendency to make the punch more probable and the fact is consequential.", "Sustain the objection, because only eyewitness testimony to the punch itself is relevant.", "Overrule the objection, but only if the statement also qualifies for judicial notice."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 401 sets a low bar. The threat does not need to prove the battery by itself. It is relevant because it makes the later punch more likely, and whether Defendant struck Plaintiff is plainly a fact of consequence.", "closeCall": false, "correctIndices": [1]}, {"number": 2, "stem": "In a theft prosecution, the government offers evidence that the defendant likes jazz music and collects rare saxophone records. The stated theory is simply that the defendant has 'refined but secretive tastes.' The defense objects on relevance grounds. The best ruling is:", "options": ["Overrule, because all personal tastes are relevant to credibility.", "Overrule, because Rule 401 permits any evidence with cultural significance.", "Sustain, because the musical preference does not make any consequential fact in the theft case more or less probable.", "Sustain, but only if the defendant denies liking jazz."], "answerType": "mc", "modelAnswer": "c", "explanation": "Liking jazz does not bear on whether the defendant committed the theft. Rule 401 requires a link to a fact of consequence, and there is none here.", "closeCall": false, "correctIndices": [2]}, {"number": 3, "stem": "A contract case turns on whether Buyer paid Seller on June 1. Buyer offers a bank record showing a transfer of the exact disputed amount to Seller on June 1. Seller objects that the record does not conclusively establish payment because the transfer might have been for something else. The best ruling is:", "options": ["Sustain, because evidence is irrelevant unless it eliminates all alternative explanations.", "Overrule, because the record makes payment more likely even if it does not settle the issue by itself.", "Sustain, because only testimony from the bank custodian could be relevant.", "Overrule, but only if Seller admits receiving the transfer."], "answerType": "mc", "modelAnswer": "b", "explanation": "Evidence need not be conclusive to be relevant. A transfer of the exact amount on the disputed date plainly has some tendency to make payment more probable.", "closeCall": false, "correctIndices": [1]}, {"number": 4, "stem": "In a fraud case, Plaintiff offers evidence that Defendant hates broccoli, wears expensive shoes, and is generally arrogant. Plaintiff says the jury should hear 'the whole picture' of who Defendant is. Defendant objects under Rules 401 and 402. How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "The court should sustain the objection and exclude the evidence.", "explanation": "Those traits and preferences do not make any consequential fact in the fraud case more or less probable. Rules 401 and 402 do not allow personality-color evidence untethered to a material issue.", "closeCall": false, "correctIndices": null}, {"number": 5, "stem": "Which statement best captures Rule 402?", "options": ["Relevant evidence is admissible unless some other authority—such as the Constitution, a federal statute, or another evidence rule—requires exclusion.", "Relevant evidence is admissible only if it cannot create any prejudice.", "Relevant evidence is admissible only in civil cases, not criminal cases.", "Irrelevant evidence is admissible if the judge finds it interesting."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 402 adopts a default of admissibility for relevant evidence, subject to exclusion by the Constitution, statutes, the Federal Rules of Evidence, or other Supreme Court rules. Irrelevant evidence is not admissible.", "closeCall": false, "correctIndices": [0]}, {"number": 6, "stem": "In a murder trial, the prosecution has one clear crime-scene photo that accurately shows the victim’s position. Instead, it offers ten highly graphic autopsy photographs that add almost nothing new. The defense objects under Rule 403. The strongest ruling is:", "options": ["Overrule, because relevant evidence can never be excluded simply for being cumulative.", "Overrule, because autopsy photographs are automatically admissible in homicide cases.", "Sustain, because the danger of unfair prejudice and needless cumulative proof may substantially outweigh the added probative value.", "Sustain, but only if the photos are in color rather than black and white."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 403 allows exclusion where the incremental value is slight and the risk of unfair prejudice and cumulative presentation is substantial. Ten graphic photos that add little are the classic example.", "closeCall": false, "correctIndices": [2]}, {"number": 7, "stem": "In an attempted-murder case, the defense theory is that the complainant intentionally overdosed and therefore was not the victim of any crime. Before opening statements, the defense asks the court to forbid the prosecution from referring to the complainant as 'the victim.' How should the court rule?", "options": [], "answerType": "essay", "modelAnswer": "The court should likely grant the request, or at least require a neutral term such as the complainant’s name.", "explanation": "If whether a crime occurred is itself disputed, calling the person 'the victim' risks unfairly assuming the answer to that very question. Rule 403 can justify neutralizing that loaded label.", "closeCall": true, "correctIndices": null}, {"number": 8, "stem": "Which statement is most accurate about Rule 403?", "options": ["It favors exclusion, because any prejudice defeats admissibility.", "It favors admission, because the dangers must substantially outweigh the evidence’s probative value.", "It applies only to criminal trials.", "It applies only when evidence is hearsay."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 403 is tilted toward admission. Exclusion is appropriate only when the listed dangers substantially outweigh the evidence’s probative value.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "Which two of the following facts are the clearest proper subjects of judicial notice under Rule 201?", "options": ["That New Haven is in Connecticut.", "That July 4, 2026, fell on a Saturday, as shown by a reliable calendar.", "That the defendant intended to commit fraud because the circumstances seem suspicious.", "That the store floor had been wet for at least thirty minutes before the fall."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Both geography within the court’s jurisdiction and a calendar date readily verified from a source whose accuracy cannot reasonably be questioned are proper subjects of judicial notice. Intent and duration of a wet floor are disputable adjudicative facts that usually require proof.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 10, "stem": "Rule 201 governs judicial notice of:", "options": ["Adjudicative facts only, not legislative facts.", "Legislative facts only, not adjudicative facts.", "All legal arguments made by counsel.", "Only facts appearing in public records."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 201 is limited to adjudicative facts—case-specific facts—not broader legislative or policy facts.", "closeCall": false, "correctIndices": [0]}, {"number": 11, "stem": "A party timely requests judicial notice of a proper Rule 201 fact and supplies the court with the necessary information. The court:", "options": ["May take notice, but is never required to.", "Must take judicial notice.", "Must refuse unless both parties stipulate.", "May take notice only after the jury begins deliberating."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 201(c)(2) makes judicial notice mandatory when a party requests it and supplies the necessary information.", "closeCall": false, "correctIndices": [1]}, {"number": 12, "stem": "When may a court take judicial notice under Rule 201?", "options": ["Only before trial.", "Only during the plaintiff’s case-in-chief.", "At any stage of the proceeding.", "Only after both sides rest."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 201(d) expressly says the court may take judicial notice at any stage of the proceeding.", "closeCall": false, "correctIndices": [2]}, {"number": 13, "stem": "If a court judicially notices a fact in a civil case, the jury must be instructed:", "options": ["That it may or may not accept the fact as conclusive.", "That it must accept the noticed fact as conclusive.", "That judicial notice has no effect unless the parties agree.", "That it may accept the fact only if supported by independent testimony."], "answerType": "mc", "modelAnswer": "b", "explanation": "In a civil case, Rule 201(f) requires the jury to accept the noticed fact as conclusive.", "closeCall": false, "correctIndices": [1]}, {"number": 14, "stem": "If a court judicially notices a fact in a criminal case, the jury must be instructed:", "options": ["That it must accept the noticed fact as conclusive.", "That it may, but need not, accept the noticed fact as conclusive.", "That judicial notice is prohibited in criminal cases.", "That it may consider the fact only if the defendant testifies."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 201 protects the criminal defendant by allowing the jury to accept or reject the noticed fact.", "closeCall": false, "correctIndices": [1]}, {"number": 15, "stem": "In an assault prosecution, the government asks the court to take judicial notice that the blurry person shown in a surveillance video is the defendant. The government says the jurors can 'see for themselves.' How should the court rule and why?", "options": [], "answerType": "essay", "modelAnswer": "The court should refuse judicial notice.", "explanation": "Identity in a blurry video is a disputed adjudicative fact, not an indisputable one. Rule 201 allows notice only for facts not subject to reasonable dispute.", "closeCall": false, "correctIndices": null}, {"number": 16, "stem": "The following five questions relate to this fact pattern:\n\nA shopper slips on a wet grocery-store floor and is injured. The next day, the store installs non-slip mats in the area. At trial, the shopper offers the installation to show the store was negligent before the fall. What is the best ruling?", "options": ["Admit the evidence, because later repairs are the strongest proof of earlier negligence.", "Admit the evidence, because Rule 407 applies only in product cases.", "Exclude the evidence, because subsequent remedial measures are not admissible to prove negligence.", "Exclude the evidence, but only if the mats were inexpensive."], "answerType": "mc", "modelAnswer": "c", "explanation": "Installing non-slip mats after the accident is a classic subsequent remedial measure. Rule 407 bars using that later fix to prove prior negligence.", "closeCall": false, "correctIndices": [2]}, {"number": 17, "stem": "The following five questions relate to this fact pattern:\n\nA shopper slips on a wet grocery-store floor and is injured. The next day, the store installs non-slip mats in the area. Assume the store denies that it controlled that aisle and also argues that mats were impossible to use there. Which two uses of the post-accident mats are the strongest under Rule 407?", "options": ["To prove the store was negligent before the fall.", "To prove control over the area, if control is genuinely disputed.", "To prove feasibility of mats, if feasibility is genuinely disputed.", "To prove the store must have known the floor was slippery before the accident."], "answerType": "mc", "modelAnswer": "b + c", "explanation": "Rule 407 bars the negligence inference, but allows subsequent remedial measures for proper disputed issues such as control and feasibility.", "closeCall": false, "correctIndices": [1, 2]}, {"number": 18, "stem": "The following five questions relate to this fact pattern:\n\nA shopper slips on a wet grocery-store floor and is injured. The next day, the store installs non-slip mats in the area. At trial, the manager testifies, 'There was absolutely nothing we could have done to make that area safer.' The shopper then offers the later mats. The strongest argument for admission is:", "options": ["They are admissible as direct proof that the store was negligent.", "They are admissible to impeach the manager’s broad claim that nothing safer could have been done.", "They are admissible because Rule 407 disappears once a manager testifies.", "They are admissible only if the mats cost more than the verdict sought."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 407 permits limited use of later measures for impeachment where a witness creates a misleading impression by making sweeping claims of impossibility or perfect safety.", "closeCall": true, "correctIndices": [1]}, {"number": 19, "stem": "A wolf attacked a beagle on Monday. After learning of that attack, the owner chained the wolf. On Friday, the same wolf injured a child. In the child’s later suit, the child offers the chaining evidence. The best ruling is:", "options": ["Exclude, because the chaining was a subsequent remedial measure relative to any later suit involving the wolf.", "Admit, because relative to the child’s injury, the chaining happened before the injury being litigated.", "Exclude, because Rule 407 bars all evidence of precautions taken after any animal attack.", "Admit, but only to prove the wolf acted intentionally."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 407 is measured relative to the injury being litigated. Although the chaining was subsequent to the beagle attack, it preceded the child’s injury, so the rule does not fit the same way in the child’s case.", "closeCall": false, "correctIndices": [1]}, {"number": 20, "stem": "A manufacturer wins a pretrial ruling excluding evidence that it later redesigned a wood chipper. At trial, however, defense counsel tells the jury that after the accident identical machines were still being ordered and used, creating the impression that the design remained unchanged and broadly trusted. Plaintiff now offers the redesign evidence. The best ruling is:", "options": ["Admit for the limited purpose of impeaching the misleading impression created by the defense.", "Exclude, because Rule 407 never allows redesign evidence once excluded pretrial.", "Admit as unrestricted proof of defect and negligence.", "Exclude, because impeachment is never a valid Rule 407 purpose."], "answerType": "mc", "modelAnswer": "a", "explanation": "If the defense opens the door by suggesting the original design remained acceptable and unchanged, later redesign evidence may come in for the limited purpose of impeachment.", "closeCall": true, "correctIndices": [0]}, {"number": 21, "stem": "After a fatal police shooting, the transit authority changes its Taser policy to reduce handgun/Taser confusion. At the officer’s criminal trial, the officer offers the policy change to argue that poor training and policy—not murderous intent—best explain what happened. The prosecution invokes Rule 407. How should the court rule?", "options": [], "answerType": "essay", "modelAnswer": "The court should not treat Rule 407 as an automatic bar, though it may still consider Rule 403 limits.", "explanation": "The later measure was taken by a third party and is offered to negate the defendant’s mens rea rather than to prove that the defendant previously acted negligently. That makes Rule 407 a weaker fit, though the court still has discretion under Rule 403.", "closeCall": true, "correctIndices": null}, {"number": 22, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. Which statement is most accurate about Driver’s offer to pay the hospital bills?", "options": ["It is admissible to prove liability because it was made voluntarily.", "It is inadmissible to prove liability under Rule 409.", "It is inadmissible for every purpose whatsoever.", "It is admissible only if the amount of the bills was reasonable."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 409 bars using an offer to pay medical or similar expenses to prove liability for the injury.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. Which statement is most accurate about Driver’s sentence, 'I know I ran the red light'?", "options": ["It is protected by Rule 409 simply because it was uttered in the same breath as the medical-payment offer.", "It is automatically barred by Rule 408 because every post-accident statement is a settlement statement.", "It may still be admissible, because Rule 409 protects the offer to pay medical expenses, not every accompanying admission of fault.", "It is inadmissible unless Driver repeats it under oath."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 409 protects the payment offer itself. A separate admission of fault made during the same conversation is not automatically shielded.", "closeCall": false, "correctIndices": [2]}, {"number": 24, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. Pedestrian offers Driver’s statement, 'Maybe we can settle this for $50,000,' to prove Driver knew he was liable. The best ruling is:", "options": ["Admit, because settlement figures are always relevant to the value of a claim.", "Exclude, because compromise offers and negotiations are not admissible to prove the validity or amount of a disputed claim.", "Admit, because Rule 408 protects only final signed settlement agreements.", "Exclude, but only if Pedestrian had already hired a lawyer."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 408 bars compromise offers and negotiation statements when offered to prove liability or the amount of the claim.", "closeCall": false, "correctIndices": [1]}, {"number": 25, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. Which two of the following are the strongest proper non-liability uses of otherwise excluded evidence?", "options": ["Showing that the witness who settled separately may be biased toward Pedestrian.", "Showing that the insurance adjuster may be biased because of the insurer relationship.", "Showing that Driver was negligent because people with insurance drive less carefully.", "Showing that the claim must be weak because Pedestrian was willing to discuss settlement."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 408 allows settlement evidence to show bias, and Rule 411 allows insurance evidence to show bias. The negligence and claim-weakness uses are the forbidden ones.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 26, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. Defendant wants to use a statement Pedestrian made during settlement talks solely to show that Pedestrian told a different story at trial. The best ruling is:", "options": ["Admit, because prior inconsistent statements are always admissible to impeach.", "Exclude, because Rule 408 specifically bars using settlement statements to impeach by prior inconsistent statement or contradiction.", "Admit, because impeachment use is always outside Rule 408.", "Exclude only if the statement was made in mediation rather than in a letter."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 408 expressly forbids using settlement statements to impeach by prior inconsistent statement or contradiction.", "closeCall": false, "correctIndices": [1]}, {"number": 27, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. During settlement discussions about a regulatory claim, a party offers to bribe a government investigator to make the matter disappear. The evidence is offered in a later criminal case to show obstruction. The best ruling is:", "options": ["Exclude, because every settlement-related statement is absolutely privileged.", "Admit, because Rule 408 allows such evidence to prove an effort to obstruct a criminal investigation or prosecution.", "Exclude, because obstruction can never be proved with statements made during compromise talks.", "Admit only if the party also denied liability in the same conversation."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 408 contains a specific allowance for using such evidence to prove efforts to obstruct a criminal investigation or prosecution.", "closeCall": false, "correctIndices": [1]}, {"number": 28, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. In a separate truck case, the defendant denies owning the truck involved in the collision. The plaintiff offers evidence that the defendant carried liability insurance on that truck. The best ruling is:", "options": ["Admit, if offered to prove ownership and ownership is genuinely disputed.", "Exclude, because insurance evidence is never admissible for any purpose.", "Admit, because insurance always proves negligence.", "Exclude, unless the policy limits exceed the damages demand."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 411 bars insurance evidence to prove negligence or wrongful conduct, but allows it for another purpose such as ownership, control, agency, or bias if genuinely disputed.", "closeCall": false, "correctIndices": [0]}, {"number": 29, "stem": "The following eight questions relate to this fact pattern:\n\nAfter a car crash, Driver tells Pedestrian: 'I’ll pay your hospital bills. Maybe we can settle this for $50,000. I know I ran the red light.' Later, one witness settles separately with Pedestrian and testifies for Pedestrian at trial. The defense also calls an insurance adjuster employed by Driver’s liability insurer. A daycare owner is prosecuted for failing to report child abuse. She offers evidence that her daycare carried liability insurance covering abuse claims, arguing this shows she lacked a motive to conceal abuse. The prosecution objects. How should the court rule?", "options": [], "answerType": "essay", "modelAnswer": "The court should likely exclude the insurance evidence.", "explanation": "The proposed motive theory is weak and still points toward the forbidden inference that, because insurance existed, the owner was less likely to have acted wrongfully. Rule 411 is a poor fit for this use, and Rule 403 also cuts against admission.", "closeCall": true, "correctIndices": null}, {"number": 30, "stem": "The following six questions relate to this fact pattern:\n\nDuring a federal fraud investigation, Defendant first enters a guilty plea but later successfully withdraws it. In a separate conversation, Defendant tells a police detective, 'I’ll talk if I can get some kind of deal.' Later still, Defendant meets with a prosecutor and defense counsel for a plea discussion that goes nowhere. Which item is clearly inadmissible against Defendant under Rule 410?", "options": ["The later-withdrawn guilty plea.", "The detective’s notes of the roadside conversation.", "A witness’s testimony that Defendant seemed nervous before the meeting.", "Bank records independently showing the fraud."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 410 expressly bars a guilty plea that was later withdrawn when offered against the defendant.", "closeCall": false, "correctIndices": [0]}, {"number": 31, "stem": "The following six questions relate to this fact pattern:\n\nDuring a federal fraud investigation, Defendant first enters a guilty plea but later successfully withdraws it. In a separate conversation, Defendant tells a police detective, 'I’ll talk if I can get some kind of deal.' Later still, Defendant meets with a prosecutor and defense counsel for a plea discussion that goes nowhere. Which statement about a nolo contendere plea is most accurate?", "options": ["It is generally admissible against the defendant as a full confession.", "It is generally inadmissible against the defendant under Rule 410.", "It is admissible whenever the government calls it a compromise rather than a plea.", "It is admissible in criminal cases but not civil cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 410 bars the use of a nolo contendere plea against the defendant.", "closeCall": false, "correctIndices": [1]}, {"number": 32, "stem": "The following six questions relate to this fact pattern:\n\nDuring a federal fraud investigation, Defendant first enters a guilty plea but later successfully withdraws it. In a separate conversation, Defendant tells a police detective, 'I’ll talk if I can get some kind of deal.' Later still, Defendant meets with a prosecutor and defense counsel for a plea discussion that goes nowhere. The roadside statement to the police detective is:", "options": ["Automatically protected by Rule 410 because Defendant subjectively hoped for a deal.", "Usually outside Rule 410, because the rule focuses on plea discussions with an attorney for the prosecuting authority.", "Protected only if the detective wore a body camera.", "Protected because every conversation after arrest is a plea discussion."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 410 is directed to plea discussions with a prosecutor or comparable prosecuting attorney. Mere hopes for leniency during police questioning do not automatically trigger the rule.", "closeCall": false, "correctIndices": [1]}, {"number": 33, "stem": "Sexton is interviewed by a government investigator after suspicion has fallen on her. She says she is interested in a deal. The investigator replies that he is not a lawyer but will talk to the prosecutor if she tells him what she has to offer. Sexton then confesses. At trial, Sexton moves to exclude the confession as a plea-discussion statement. The best ruling is:", "options": ["Grant the motion, because any mention of a deal by any government agent triggers Rule 410.", "Grant the motion, because the investigator subjectively hoped to help the prosecution.", "Deny the motion, because this was not a plea discussion with an attorney for the prosecuting authority.", "Deny the motion, but only if the prosecutor personally promised never to listen to the investigator."], "answerType": "mc", "modelAnswer": "c", "explanation": "This looks like an investigative interview, not a protected plea discussion with a prosecutor. The investigator expressly said he was not a lawyer and only offered to pass information along.", "closeCall": false, "correctIndices": [2]}, {"number": 34, "stem": "The following six questions relate to this fact pattern:\n\nDuring a federal fraud investigation, Defendant first enters a guilty plea but later successfully withdraws it. In a separate conversation, Defendant tells a police detective, 'I’ll talk if I can get some kind of deal.' Later still, Defendant meets with a prosecutor and defense counsel for a plea discussion that goes nowhere. Defendant introduces a favorable snippet from that prosecutor meeting. The government seeks to introduce the surrounding statements from the same discussion so the jury is not misled. The strongest answer is:", "options": ["Rule 410 always bars the rest of the conversation, even if Defendant introduced a misleading slice.", "The rest may come in if fairness requires considering the statements together.", "The rest comes in automatically for all purposes once any plea-related statement is mentioned.", "The rest can come in only if the defendant testifies."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 410 includes a fairness/completeness principle: if one statement from the same plea discussion has been introduced, related statements may also come in when fairness requires it.", "closeCall": true, "correctIndices": [1]}, {"number": 35, "stem": "The following six questions relate to this fact pattern:\n\nDuring a federal fraud investigation, Defendant first enters a guilty plea but later successfully withdraws it. In a separate conversation, Defendant tells a police detective, 'I’ll talk if I can get some kind of deal.' Later still, Defendant meets with a prosecutor and defense counsel for a plea discussion that goes nowhere. During a Rule 11 plea proceeding, Defendant makes a false statement under oath, on the record, with counsel present. In a later perjury prosecution, may the government use that statement?", "options": [], "answerType": "essay", "modelAnswer": "Yes. Rule 410 permits use of such a statement in a later criminal proceeding for perjury or false statement.", "explanation": "The perjury exception applies when the plea-related statement was made under oath, on the record, and with counsel present.", "closeCall": false, "correctIndices": null}, {"number": 36, "stem": "James claims she handed a gun to her daughter because she believed Ogden was violently dangerous based on stories he had told and acts she had seen. James had never seen the court records proving some of Ogden’s prior violence, but she offers those records at trial. Why are the records still relevant?", "options": ["Because any court record is automatically admissible whenever self-defense is raised.", "Because if the violent events were real, that makes it more likely James was telling the truth that Ogden had told her about them, which bears on her credibility and the reasonableness of her fear.", "Because the records prove Ogden had a violent character and therefore definitely attacked first on the charged occasion.", "Because Rule 201 requires judicial notice of all prior convictions."], "answerType": "mc", "modelAnswer": "b", "explanation": "James teaches that corroborating evidence can be relevant even if the defendant did not know of it at the time, when it strongly supports the defendant’s credibility on a central issue.", "closeCall": false, "correctIndices": [1]}, {"number": 37, "stem": "In a murder case, the prosecution offers evidence that Defendant traveled across the country one week after the killing and says the travel shows flight. Which fact most strongly breaks the prosecution’s inferential chain?", "options": ["Defendant’s cousin had long invited him to visit that city.", "Defendant was considering buying property there.", "Defendant did not know he was a suspect in the killing.", "The trip required two airline connections."], "answerType": "mc", "modelAnswer": "c", "explanation": "Myers emphasizes that flight evidence matters only if the defendant knew he was suspected and the conduct reasonably suggests consciousness of guilt for this particular crime.", "closeCall": false, "correctIndices": [2]}, {"number": 38, "stem": "A bank-robbery defendant is arrested ten weeks later in another state while carrying false identification; guns are found in the car, and he later escapes from jail. The prosecution offers the whole later episode as evidence of flight showing guilt of the original robbery. The strongest objection is:", "options": ["The episode is weakly tied to consciousness of guilt for the charged robbery and carries serious prejudice from unrelated bad-act details.", "Flight evidence is never relevant as a matter of law.", "False identification can never be admitted in federal court.", "Escape from jail always proves innocence, not guilt."], "answerType": "mc", "modelAnswer": "a", "explanation": "Jackson underscores how attenuated later flight-type conduct can be, especially when loaded with other prejudicial facts that may reflect different wrongdoing or create a mini-trial about unrelated acts.", "closeCall": true, "correctIndices": [0]}, {"number": 39, "stem": "Which two of the following statements are accurate summaries of this unit?", "options": ["Evidence is relevant if it has any tendency to make a consequential fact more or less probable.", "Rule 403 excludes relevant evidence whenever there is any prejudice at all.", "In a criminal case, the jury may but need not accept a judicially noticed fact as conclusive.", "An offer to pay medical expenses automatically shields any separate admission of fault made at the same time."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are correct. Rule 403 requires that the danger substantially outweigh probative value, and Rule 409 protects the offer to pay medical expenses—not every accompanying statement.", "closeCall": false, "correctIndices": [0, 2]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

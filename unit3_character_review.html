@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Unit 3 – Character & Impeachment Interactive Review</title>
+  <style>
+    :root {
+      --bg: #f3f1ed;
+      --paper: #fffdf9;
+      --ink: #1d1a17;
+      --muted: #6b6259;
+      --line: #d7d0c7;
+      --accent: #1f4f8b;
+      --accent-soft: rgba(31, 79, 139, 0.12);
+      --success: #dcefdc;
+      --success-border: #9cc49c;
+      --danger: #f8dddd;
+      --danger-border: #d9a0a0;
+      --warn: #fff2cf;
+      --warn-border: #dcc37a;
+      --shadow: 0 18px 42px rgba(0,0,0,0.08);
+      --radius: 18px;
+      --bottomBarHeight: 98px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top, rgba(31,79,139,0.08), transparent 30%),
+        linear-gradient(180deg, #f7f5f1 0%, var(--bg) 100%);
+      min-height: 100vh;
+      padding: 24px 16px calc(var(--bottomBarHeight) + 30px + env(safe-area-inset-bottom));
+    }
+    .shell { max-width: 860px; margin: 0 auto; }
+    .container {
+      background: var(--paper);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .masthead {
+      padding: 26px 26px 18px;
+      background: linear-gradient(180deg, rgba(31,79,139,0.07), rgba(31,79,139,0.02) 70%, transparent 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.05; margin: 0; }
+    .subhead {
+      margin-top: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+      max-width: 760px;
+    }
+    .screen { padding: 26px; }
+    .hidden { display: none !important; }
+    .hero-card, .explanation, .model-answer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+    }
+    .hero-card {
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat strong { font-size: 22px; }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, box-shadow .2s ease, opacity .2s ease, background-color .2s ease;
+      font-family: inherit;
+    }
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+    .primary-button {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 8px 18px rgba(31,79,139,0.2);
+    }
+    .secondary-button {
+      background: #ece7df;
+      color: var(--ink);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .danger-button {
+      background: #6f3038;
+      color: white;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .soft-button {
+      background: white;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .question-top {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .question-count {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+      color: var(--muted);
+    }
+    .badge.close {
+      background: var(--warn);
+      border-color: var(--warn-border);
+      color: #725d19;
+    }
+    .question-card {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: white;
+    }
+    .question {
+      font-size: clamp(18px, 2.5vw, 24px);
+      line-height: 1.5;
+    }
+    .stimulus-block {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #faf7f1;
+      white-space: pre-line;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .question-text {
+      white-space: normal;
+    }
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+    .option-button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid #e7e1d8;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .option-button .opt-label {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      margin-right: 10px;
+      font-weight: 700;
+      background: #f1ede7;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .option-button.selected {
+      border-color: var(--accent);
+      background: #f8fbff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .option-button.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .option-button.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .option-row { display: flex; align-items: flex-start; }
+    .multi-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .answer-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .model-answer, .explanation {
+      margin-top: 18px;
+      padding: 18px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .model-answer { background: #faf7f1; }
+    .explanation {
+      background: #f7fafc;
+      border-left: 5px solid var(--accent);
+    }
+    .section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .result-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .review-table-wrap {
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      overflow: hidden;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7f3ee;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    tr:last-child td { border-bottom: none; }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      background: #faf8f5;
+    }
+    .status-pill.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+      color: #235d23;
+    }
+    .status-pill.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+      color: #8f2c2c;
+    }
+    .status-pill.pending {
+      background: #efe9ff;
+      border-color: #c9b8ff;
+      color: #5a42a6;
+    }
+    .status-pill.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+      color: #35538e;
+    }
+    #bottom-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      background: rgba(255, 253, 249, 0.97);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    }
+    .bottom-bar-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    #bottom-bar-meta {
+      flex: 0 0 auto;
+      min-width: 135px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    #bottom-bar-list {
+      flex: 1 1 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 3px 2px;
+      scrollbar-width: thin;
+    }
+    .qnav-btn {
+      flex: 0 0 auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 1px solid #cfc6bb;
+      background: white;
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .qnav-btn.current {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .qnav-btn.correct {
+      background: var(--success);
+      border-color: var(--success-border);
+    }
+    .qnav-btn.wrong {
+      background: var(--danger);
+      border-color: var(--danger-border);
+    }
+    .qnav-btn.study {
+      background: #eef3ff;
+      border-color: #b9c8e8;
+    }
+    .qnav-btn.pending { background: #faf8f5; }
+    .small-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .footer-note {
+      padding: 0 26px 26px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 640px) {
+      .screen, .masthead { padding: 18px; }
+      .question-card { padding: 18px; }
+      .bottom-bar-inner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      #bottom-bar-meta { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="container">
+      <div class="masthead">
+        <div class="eyebrow">Interactive Unit Review</div>
+        <h1>Unit 3 – Character & Impeachment</h1>
+        <div class="subhead">Tricky practice questions on Rules 404, 405, 406, 607, 608, 609, 412, 413–415, plus Zackowitz, Trenkler, Stevens, Huddleston, Michelson, Halloran, Whitmore, Brewer, and the Unit 3 problems.</div>
+      </div>
+
+      <div id="start-screen" class="screen">
+        <div class="hero-card">
+          <div class="section-title">What’s inside</div>
+          <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains a new tricky practice set built from your Unit 3 character-and-impeachment notes. It keeps the same interactive structure as your uploaded exam page, with model answers, concise explanations, saved progress, jump navigation, and a results screen.
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <span class="label">Total Questions</span>
+              <strong id="total-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Multiple Choice</span>
+              <strong id="mc-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Short Answer</span>
+              <strong id="essay-question-stat">0</strong>
+            </div>
+            <div class="stat">
+              <span class="label">Saved Progress</span>
+              <strong id="save-status-stat">No</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="start-button" class="primary-button">Start Review</button>
+            <button id="resume-button" class="secondary-button hidden">Resume Saved Progress</button>
+            <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
+          </div>
+
+          <div class="small-note">
+            Note: these questions are designed to be a little tricky on purpose. Many turn on distinguishing forbidden propensity reasoning from a real non-propensity use, separating character from habit, and keeping impeachment rules separate from substantive character rules.
+          </div>
+        </div>
+      </div>
+
+      <div id="quiz-screen" class="screen hidden">
+        <div class="question-top">
+          <div><div class="question-count" id="question-count"></div></div>
+          <div class="badge-row" id="badge-row"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="question" id="question"></div>
+
+          <div id="options" class="options"></div>
+          <div id="multi-hint" class="multi-hint hidden">Select all correct choices, then submit your answer.</div>
+
+          <div class="answer-tools">
+            <button id="submit-answer-button" class="primary-button hidden">Submit Answer</button>
+            <button id="show-model-button" class="soft-button hidden">Reveal Model Answer</button>
+          </div>
+
+          <div id="model-answer" class="model-answer hidden"></div>
+          <div id="explanation" class="explanation hidden"></div>
+
+          <div class="navigation">
+            <button id="prev-button" class="secondary-button">Go Back</button>
+            <button id="next-button" class="primary-button">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="result-screen" class="screen hidden">
+        <div class="hero-card">
+          <div class="section-title">Results</div>
+          <h2 style="margin: 0 0 8px; font-size: 30px;">Study Summary</h2>
+          <div id="final-score" style="font-size: 17px; color: var(--muted); line-height: 1.55;"></div>
+
+          <div class="result-summary" id="result-summary"></div>
+
+          <div class="review-table-wrap">
+            <table id="review-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">Q</th>
+                  <th style="width: 140px;">Status</th>
+                  <th>Answer / Note</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="button-row">
+            <button id="restart-button" class="primary-button">Restart From Question 1</button>
+            <button id="review-again-button" class="secondary-button">Back To Review</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note">
+        Standalone HTML study file for offline use. Progress saves locally in your browser.
+      </div>
+    </div>
+  </div>
+
+  <div id="bottom-bar" class="hidden">
+    <div class="bottom-bar-inner">
+      <div id="bottom-bar-meta"></div>
+      <div id="bottom-bar-list"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "unit3_character_interactive_review_v1";
+    const questions = [{"number": 1, "stem": "In a battery prosecution, the government offers evidence that Defendant has a violent personality to show he probably committed the charged battery. The best answer is:", "options": ["Admissible under Rule 404(a)(1) because violence is pertinent to battery.", "Inadmissible because this is classic propensity reasoning.", "Admissible only if the government gives pretrial notice.", "Admissible because all relevant character evidence comes in in criminal cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 404(a)(1) generally bars using character evidence to prove action in conformity on the occasion charged. “He is violent, so he probably battered someone here” is the classic forbidden inference.", "closeCall": false, "correctIndices": [1]}, {"number": 2, "stem": "In a civil negligence case, Defendant offers evidence that she is generally a cautious driver to prove she probably drove carefully on the day of the accident. The best answer is:", "options": ["Admissible, because civil defendants may always prove their own carefulness.", "Inadmissible, because general character evidence to prove conduct is generally barred in civil cases.", "Admissible only if Plaintiff first offers reckless-driver evidence.", "Admissible under Rule 406 as habit."], "answerType": "mc", "modelAnswer": "b", "explanation": "General carefulness is character, not habit. Rule 404(a) generally bars using character to prove conduct in civil cases.", "closeCall": false, "correctIndices": [1]}, {"number": 3, "stem": "In a criminal assault case, the defendant wants to offer evidence that he is peaceful. The strongest answer is:", "options": ["He may do so because a criminal defendant may offer evidence of a pertinent trait.", "He may do so only through specific good acts on direct.", "He may do so only if the prosecutor first attacks his character.", "He may not do so because the prosecution controls all character evidence."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 404(a)(2)(A) allows a criminal defendant to offer evidence of the defendant’s own pertinent trait, such as peacefulness in an assault case.", "closeCall": false, "correctIndices": [0]}, {"number": 4, "stem": "In a homicide case, Defendant claims self-defense and offers evidence that the victim was violent. If admitted, the prosecutor may:", "options": ["Offer evidence of the victim’s peacefulness and also evidence of Defendant’s same trait.", "Offer evidence only of Defendant’s bad character for every trait imaginable.", "Offer specific violent acts of Defendant on direct as character proof.", "Do nothing; the defendant’s evidence cannot be rebutted."], "answerType": "mc", "modelAnswer": "a", "explanation": "Under Rule 404(a)(2)(B), once the defendant offers a victim’s pertinent trait, the prosecutor may rebut it and may also offer evidence of the defendant’s same trait.", "closeCall": false, "correctIndices": [0]}, {"number": 5, "stem": "In a homicide case, the defendant presents eyewitness testimony that the victim threw the first punch, but the defendant offers no character evidence about the victim. The prosecutor then offers evidence that the victim was peaceful. The strongest answer is:", "options": ["Admissible under Rule 404(a)(2)(C) to rebut evidence that the victim was the first aggressor.", "Inadmissible unless the defendant first offers reputation evidence of the victim’s violence.", "Admissible only if the victim survived.", "Inadmissible because peacefulness is never a pertinent trait."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 404(a)(2)(C) specifically permits peacefulness evidence in homicide cases to rebut evidence that the victim was the first aggressor, even if the defendant did not first introduce victim-character evidence.", "closeCall": false, "correctIndices": [0]}, {"number": 6, "stem": "Rule 404(a)(3) mainly means that character evidence concerning a witness is governed by:", "options": ["Only Rule 404, with no exceptions.", "Rules 607, 608, and 609.", "Only Rule 405(b).", "Only Rule 406."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 404(a)(3) carves witness-credibility questions out for treatment under Rules 607, 608, and 609.", "closeCall": false, "correctIndices": [1]}, {"number": 7, "stem": "In a theft case, the prosecutor argues, “He stole once before, so he probably stole here too.” The best answer is:", "options": ["Proper under Rule 404(b)(2) as proof of plan.", "Improper propensity reasoning barred by Rule 404(b)(1).", "Proper if the earlier theft was within ten years.", "Proper if the earlier theft resulted in a conviction."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 404(b)(1) forbids using prior acts simply to show character and conformity. The prosecution’s argument is pure propensity.", "closeCall": false, "correctIndices": [1]}, {"number": 8, "stem": "In an arson case, the prosecution offers evidence that Defendant previously set fires using the same unusual timer, same accelerant mix, and same hidden ignition method as in the charged fire. The strongest non-propensity purpose is:", "options": ["General bad character", "Identity through signature-like modus operandi", "Truthfulness", "Habit"], "answerType": "mc", "modelAnswer": "b", "explanation": "Highly distinctive similarities can support identity under Rule 404(b), not because Defendant is a bad person but because the acts function like a signature.", "closeCall": false, "correctIndices": [1]}, {"number": 9, "stem": "In a drug-possession case, Defendant says he had no idea drugs were in the bag. The prosecution offers prior similar drug dealings. The strongest possible Rule 404(b) theory is:", "options": ["Propensity to commit drug crimes", "Knowledge or absence of mistake", "Peacefulness", "Reputation for dishonesty"], "answerType": "mc", "modelAnswer": "b", "explanation": "When Defendant claims innocent ignorance, prior similar acts may sometimes be relevant to knowledge or absence of mistake, assuming the purpose is genuine and Rule 403 is satisfied.", "closeCall": true, "correctIndices": [1]}, {"number": 10, "stem": "In a criminal case, Rule 404(b)(3) generally requires the prosecutor to:", "options": ["Give reasonable notice, articulate the permitted purpose and reasoning, and usually do so in writing before trial unless the court excuses earlier notice for good cause.", "Tell the jury about the prior act before opening statement.", "Obtain a conviction for the prior act first.", "Limit the evidence to crimes involving dishonesty."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 404(b)(3) imposes a notice obligation in criminal cases: identify the evidence, the non-propensity purpose, and the supporting reasoning, generally in writing before trial.", "closeCall": false, "correctIndices": [0]}, {"number": 11, "stem": "A hacker used a computer maker’s encryption system in February to ship desktops to a fake high school. In March, the same encryption system was penetrated again, fourteen laptops were ordered to a fake office, and the defendant was arrested while signing for the March delivery. The defendant pleads guilty to March but denies February. The government offers the March incident at the February trial. How should the court analyze admissibility?", "options": [], "answerType": "essay", "modelAnswer": "The court should likely admit the March incident for a genuine non-propensity purpose such as identity, knowledge, plan, or absence of mistake, assuming the similarities are strong and Rule 403 is satisfied.", "explanation": "The prosecution should argue the two incidents share highly similar features—same system penetration, fake destinations, bypassing normal checks, and closely connected timing—so the later act helps identify the February actor rather than merely showing bad character. The defense will argue this is just disguised propensity and that the prejudice is substantial. The judge should ask whether the purpose is real, whether a jury could reasonably find the March act occurred, and whether Rule 403 still favors admission.", "closeCall": true, "correctIndices": null}, {"number": 12, "stem": "Police watched a drug sale from a distance, later arrested Davis, found no drugs on him, and now seek to introduce Davis’s earlier drug-distribution conviction. The government says the old conviction shows Davis’s “knowledge of the drug trade—and therefore identity as the seller.” The best answer is:", "options": ["Admit, because prior drug dealing always proves identity.", "Exclude, because when identity is the only real issue, a prior distribution conviction usually shows propensity rather than identity or knowledge.", "Admit automatically under Rule 609.", "Admit only if the conviction is more than ten years old."], "answerType": "mc", "modelAnswer": "b", "explanation": "If the case is really about whether police caught the right person, a prior drug conviction usually does not identify Davis as this seller. Calling it “knowledge” may just disguise propensity.", "closeCall": true, "correctIndices": [1]}, {"number": 13, "stem": "Which statement best captures reverse 404(b) evidence under Stevens?", "options": ["A defendant must satisfy a rigid signature-crime test before offering similar-crime evidence pointing away from guilt.", "A defendant may offer other-crime evidence suggesting someone else did it if the evidence is genuinely relevant and does not create serious confusion, delay, or unfair trial problems.", "Reverse 404(b) is barred because only the prosecution may use Rule 404(b).", "Reverse 404(b) requires the same prejudice showing as when the prosecution offers prior bad acts against the accused."], "answerType": "mc", "modelAnswer": "b", "explanation": "Stevens treats defense-offered similar-crime evidence more flexibly because the usual unfair-prejudice concern to the accused is missing. The key is relevance plus ordinary Rule 403 concerns like confusion or waste of time.", "closeCall": false, "correctIndices": [1]}, {"number": 14, "stem": "Under Trenkler, prior bad-act evidence offered to prove identity is strongest when:", "options": ["It shows the defendant is a bad person.", "The prior act and charged act share distinctive combined features that amount to a signature.", "The prior act is older than ten years.", "The prior act resulted in a civil judgment rather than a conviction."], "answerType": "mc", "modelAnswer": "b", "explanation": "Identity-based Rule 404(b) evidence becomes powerful when the similarities are distinctive enough to function like a fingerprint or signature, not just when both acts are the same general type of crime.", "closeCall": false, "correctIndices": [1]}, {"number": 15, "stem": "Under Zackowitz, the prosecution’s use of unrelated extra weapons found at the defendant’s home was improper mainly because it:", "options": ["Showed motive beyond dispute.", "Invited the jury to treat the defendant as the sort of person who would kill deliberately, rather than proving something specific about the charged shooting.", "Was hearsay.", "Violated the Best Evidence Rule."], "answerType": "mc", "modelAnswer": "b", "explanation": "Zackowitz is the classic anti-propensity case: unrelated weapons at home were used mainly to paint the defendant as murderously inclined, not to prove a specific fact about the charged homicide.", "closeCall": false, "correctIndices": [1]}, {"number": 16, "stem": "Under Huddleston, before admitting 404(b) evidence the judge must:", "options": ["Personally find by a preponderance under Rule 104(a) that the prior act definitely happened.", "Ask only whether there is sufficient evidence for a reasonable jury to find that the prior act occurred, then rely on Rules 104(b), 403, and 105.", "Require a prior conviction for the act.", "Submit the admissibility question directly to the jury without screening it."], "answerType": "mc", "modelAnswer": "b", "explanation": "Huddleston treats the prior-act occurrence question as one of conditional relevance under Rule 104(b), not a separate 104(a) finding that the act happened by a preponderance.", "closeCall": false, "correctIndices": [1]}, {"number": 17, "stem": "In a defamation case, Defendant is sued for calling Plaintiff a thief and pleads truth. Which is most accurate?", "options": ["Plaintiff’s character for honesty is never relevant.", "Plaintiff’s character may be directly in issue, so character evidence is admissible and specific acts may be used under Rule 405(b).", "Only opinion evidence is allowed, never specific acts.", "Character is in issue only if the case is criminal."], "answerType": "mc", "modelAnswer": "b", "explanation": "When character is itself an essential element of a claim or defense—as in truth as a defense to defamation—character is directly in issue and Rule 405(b) allows specific-act proof.", "closeCall": false, "correctIndices": [1]}, {"number": 18, "stem": "In a negligent entrustment suit, Plaintiff claims Defendant entrusted a truck to a driver known to be reckless. Which is most accurate?", "options": ["The driver’s dangerous character may be directly in issue, so specific prior reckless-driving incidents may be admissible under Rule 405(b).", "The driver’s character is never relevant in civil cases.", "Only reputation evidence is allowed, never specific acts.", "Evidence of the driver’s character is admissible only if the driver testifies."], "answerType": "mc", "modelAnswer": "a", "explanation": "Negligent entrustment is a classic setting where character can become an essential element, allowing specific-act proof under Rule 405(b).", "closeCall": false, "correctIndices": [0]}, {"number": 19, "stem": "In a civil assault case, Defendant claims self-defense and tries to prove Plaintiff-victim was violent by offering general character evidence that Plaintiff often starts fights. The best answer is:", "options": ["Character is directly in issue, so the evidence is automatically admissible.", "Character is not directly in issue merely because self-defense is claimed in a civil battery case.", "The evidence is admissible only through specific acts.", "The evidence is admissible because any victim character evidence is allowed in self-defense cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "The substantive law of civil assault/battery does not usually make either party’s character an essential element. Self-defense does not by itself put general violent character directly in issue.", "closeCall": false, "correctIndices": [1]}, {"number": 20, "stem": "When character evidence is admissible, the normal direct methods of proof under Rule 405(a) are:", "options": ["Specific acts only", "Reputation and opinion", "Convictions and arrests", "Habit and routine practice"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 405(a) provides the default methods: reputation testimony or opinion testimony.", "closeCall": false, "correctIndices": [1]}, {"number": 21, "stem": "On cross-examination of a defendant’s character witness, the prosecutor asks, “Have you heard that Defendant was in three bar fights last year?” The best justification is:", "options": ["To prove the fights happened as substantive character evidence.", "To test the character witness’s knowledge, credibility, and basis for the testimony.", "Because specific acts are always admissible once character is in issue.", "Because Rule 404(b) requires the prosecutor to do so."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 405(a) allows inquiry into relevant specific acts on cross to test the basis of the character witness’s opinion or reputation testimony.", "closeCall": false, "correctIndices": [1]}, {"number": 22, "stem": "Which statement best captures Rule 405(b)?", "options": ["Specific acts may always be used whenever character is relevant.", "Specific acts may be used as substantive proof only when character or the trait is an essential element of a charge, claim, or defense.", "Specific acts may never be used to prove character.", "Specific acts may be used only in criminal cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 405(b) is narrow. It allows specific-act proof only when character itself is an essential element, not merely because character is relevant or someone opened the door.", "closeCall": false, "correctIndices": [1]}, {"number": 23, "stem": "Under Michelson, after a criminal defendant calls good-character witnesses, the prosecutor may in good faith ask those witnesses about old arrests or misconduct mainly to:", "options": ["Prove the misconduct actually happened.", "Test whether the witnesses truly know the defendant’s reputation or have a solid basis for their opinions.", "Show the jury that the defendant must be guilty.", "Bypass Rule 403 altogether."], "answerType": "mc", "modelAnswer": "b", "explanation": "Michelson allows carefully supervised “have you heard / did you know” testing of the character witness’s foundation. The questions are not substantive proof of the bad act.", "closeCall": false, "correctIndices": [1]}, {"number": 24, "stem": "If the character witness denies hearing about the prior arrest mentioned on cross, the prosecutor may usually:", "options": ["Call another witness to prove the arrest happened.", "Introduce the arrest record as extrinsic proof solely to show the character witness is wrong.", "Not prove the arrest with extrinsic evidence just for that basis-testing purpose.", "Turn the arrest into automatic Rule 609 impeachment."], "answerType": "mc", "modelAnswer": "c", "explanation": "The prosecution is generally stuck with the answer. The point of the question is to test the witness’s basis, not to prove the specific incident with extrinsic evidence.", "closeCall": false, "correctIndices": [2]}, {"number": 25, "stem": "A driver always buckles her seatbelt immediately upon entering any car, every single time. Offered to show she probably wore a seatbelt on the day of the crash, this is best described as:", "options": ["Impermissible character evidence", "Habit evidence under Rule 406", "Improper opinion evidence", "Only admissible if corroborated by an eyewitness"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 406 covers a regular, specific, almost automatic response to a repeated situation. Seatbelt buckling every time is the classic example of habit.", "closeCall": false, "correctIndices": [1]}, {"number": 26, "stem": "A witness says, “The company is generally sloppy.” Offered to show it probably botched the inspection here, the statement is best characterized as:", "options": ["A routine practice under Rule 406", "Too vague and general; it sounds like character, not a specific routine practice", "Automatically admissible if the witness is a former employee", "Admissible only if the company has no eyewitnesses"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 406 demands a specific, repeated, regular practice—not a broad, generalized description like “sloppy.”", "closeCall": false, "correctIndices": [1]}, {"number": 27, "stem": "Under Halloran, evidence that a mechanic regularly used an immersion coil to heat Freon cans can be admissible if:", "options": ["It shows he was a careless person.", "There are enough prior instances to establish a genuine repeated routine rather than a one-off story.", "The mechanic admits fault.", "The evidence is introduced only by the plaintiff."], "answerType": "mc", "modelAnswer": "b", "explanation": "Halloran distinguishes habit from general character. Repeated, specific routine conduct may be admissible, but the proponent must lay a sufficient foundation showing a real habit.", "closeCall": false, "correctIndices": [1]}, {"number": 28, "stem": "Rule 406 says habit or routine-practice evidence may be admitted:", "options": ["Only if corroborated by documents", "Only if there was an eyewitness", "Even without corroboration and even without an eyewitness", "Only in civil cases"], "answerType": "mc", "modelAnswer": "c", "explanation": "The rule expressly allows admission regardless of corroboration and regardless of whether there was an eyewitness.", "closeCall": false, "correctIndices": [2]}, {"number": 29, "stem": "Rule 607 answers which question?", "options": ["What kinds of convictions count under Rule 609", "Who may impeach a witness", "When character is directly in issue", "Whether habit evidence needs corroboration"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 607 is simple: any party, including the party that called the witness, may attack the witness’s credibility.", "closeCall": false, "correctIndices": [1]}, {"number": 30, "stem": "Which statement about Rule 607 is most accurate?", "options": ["A party who calls a witness automatically vouches for everything the witness says.", "A party may call a witness solely as a sham to place otherwise inadmissible hearsay before the jury in the guise of impeachment.", "Any party may impeach, but Rule 607 does not override other evidentiary limits or permit sham impeachment.", "Only the opposing party may impeach."], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 607 abolished the old voucher rule, but it does not authorize an end-run around hearsay or other admissibility rules.", "closeCall": false, "correctIndices": [2]}, {"number": 31, "stem": "Under Rule 608(a), a witness’s credibility may be attacked by:", "options": ["Opinion or reputation testimony about the witness’s character for untruthfulness", "Specific acts proved by extrinsic evidence", "Habit evidence", "Evidence of general violence"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 608(a) permits opinion or reputation evidence about truthfulness or untruthfulness.", "closeCall": false, "correctIndices": [0]}, {"number": 32, "stem": "Evidence that a witness is a truthful person is generally admissible:", "options": ["Any time the witness testifies", "Only after the witness’s character for truthfulness has been attacked", "Whenever the witness is the party who called the witness", "Only in criminal cases"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 608(a) allows support for truthful character only after an attack on that trait.", "closeCall": false, "correctIndices": [1]}, {"number": 33, "stem": "On cross-examination, counsel asks a witness, “Isn’t it true you falsified expense reports last year?” The strongest Rule 608 answer is:", "options": ["Always improper because specific acts can never be asked about.", "Potentially proper if the court allows it and the act is probative of truthfulness.", "Proper only if the expense-report fraud resulted in a conviction.", "Proper only if extrinsic proof is ready to be introduced."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 608(b) permits inquiry on cross into specific acts probative of truthfulness or untruthfulness, subject to the court’s discretion.", "closeCall": false, "correctIndices": [1]}, {"number": 34, "stem": "Which of the following usually does NOT fit Rule 608(b) as a truthfulness-related act?", "options": ["Forging signatures", "Lying on tax forms", "Getting into bar fights", "Cheating on expense reports"], "answerType": "mc", "modelAnswer": "c", "explanation": "Violence usually does not bear on truthfulness. Rule 608(b) is about honesty-related conduct, not just bad behavior.", "closeCall": false, "correctIndices": [2]}, {"number": 35, "stem": "A witness denies having falsified expense reports. Counsel then offers company records and another witness to prove the falsification happened, solely to show the witness is untruthful. The best answer is:", "options": ["Allowed under Rule 608(b) because the act is probative of truthfulness.", "Barred because Rule 608(b) forbids extrinsic evidence to prove specific acts solely for character-for-truthfulness impeachment.", "Allowed automatically if the witness is important.", "Allowed only in civil cases."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 608(b) permits the inquiry, but not extrinsic proof, when the specific act is offered only to show the witness’s character for truthfulness or untruthfulness.", "closeCall": false, "correctIndices": [1]}, {"number": 36, "stem": "Under Whitmore, the defense wanted to ask the key officer about a license suspension tied to child-support issues and failure to report the suspension to supervisors. The strongest point from Whitmore is:", "options": ["Defense needed an admissible certified record before it could even ask the question.", "Defense needed only a reasonable factual basis to ask the question on cross; it did not need to admit the supporting document itself.", "Rule 608(b) bars questions about any official misconduct by police.", "Questions about truthfulness can be asked only of non-police witnesses."], "answerType": "mc", "modelAnswer": "b", "explanation": "Whitmore emphasizes that for Rule 608(b) cross-examination, counsel needs a good-faith factual basis to ask; the supporting document itself need not be admissible if it is not being offered into evidence.", "closeCall": false, "correctIndices": [1]}, {"number": 37, "stem": "Which conviction must ordinarily be admitted under Rule 609(a)(2), regardless of punishment?", "options": ["Simple assault", "Perjury", "Public intoxication", "Trespass"], "answerType": "mc", "modelAnswer": "b", "explanation": "Crimes whose elements require proving a dishonest act or false statement—crimen falsi, like perjury—must be admitted under Rule 609(a)(2).", "closeCall": false, "correctIndices": [1]}, {"number": 38, "stem": "In a criminal case, a recent burglary felony is offered to impeach a witness who is not the defendant. The best answer is:", "options": ["The conviction must be admitted, subject to Rule 403.", "The conviction is automatically excluded because burglary is not dishonesty.", "The conviction is admissible only if the witness opens the door.", "The conviction is inadmissible unless it is under ten years old and under oath."], "answerType": "mc", "modelAnswer": "a", "explanation": "For a non-defendant witness, qualifying felonies come in subject to ordinary Rule 403 balancing.", "closeCall": false, "correctIndices": [0]}, {"number": 39, "stem": "In a criminal case, the defendant takes the stand. The prosecution seeks to use Defendant’s recent felony conviction to impeach. Under Rule 609(a)(1)(B), the court should admit it only if:", "options": ["its prejudicial effect substantially outweighs its probative value", "its probative value outweighs its prejudicial effect to that defendant", "it involves a dishonest act or false statement", "the prosecution gives 404(b) notice"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 609 gives criminal defendants extra protection: for non-crimen-falsi felonies, probative value must outweigh prejudicial effect to the defendant.", "closeCall": false, "correctIndices": [1]}, {"number": 40, "stem": "For the 10-year rule in Rule 609(b), the clock runs from the later of:", "options": ["the indictment or the trial date", "the conviction date or the release from confinement for that conviction", "the arrest or the sentencing date", "the plea date or the appeal date"], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 609(b) measures from the later of the conviction date or the release from confinement for it.", "closeCall": false, "correctIndices": [1]}, {"number": 41, "stem": "Which conviction is NOT admissible under Rule 609(c)?", "options": ["A conviction pardoned based on innocence", "A conviction followed by a rehabilitation-based pardon where there has been no later serious conviction", "Both of the above", "Neither of the above"], "answerType": "mc", "modelAnswer": "c", "explanation": "Rule 609(c) excludes convictions wiped away based on innocence, and also certain rehabilitation-based pardons or equivalent procedures if there has been no later serious conviction.", "closeCall": false, "correctIndices": [2]}, {"number": 42, "stem": "Which statement best captures Rule 609(d) on juvenile adjudications?", "options": ["They are freely admissible for impeachment against any witness.", "They are admissible only in narrow circumstances, generally only in criminal cases and not against the defendant.", "They are treated exactly like adult convictions.", "They are admissible only if the juvenile offense involved violence."], "answerType": "mc", "modelAnswer": "b", "explanation": "Juvenile adjudications are rarely admissible and only if the rule’s specific conditions are met, including that the witness is not the defendant.", "closeCall": false, "correctIndices": [1]}, {"number": 43, "stem": "If a qualifying conviction is currently on appeal, Rule 609 says:", "options": ["It is inadmissible until the appeal ends.", "It remains admissible, and the pendency of the appeal may also be shown.", "It becomes admissible only in civil cases.", "It is admissible only if the appeal is frivolous."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 609(e) expressly says that a qualifying conviction remains admissible even while an appeal is pending, and the jury may also hear that the appeal exists.", "closeCall": false, "correctIndices": [1]}, {"number": 44, "stem": "Under Brewer, the judge excluded the defendant’s prior kidnapping conviction while allowing other prior felonies to impeach him in a kidnapping trial chiefly because:", "options": ["Kidnapping is never admissible under Rule 609.", "The similarity between the prior kidnapping and the charged kidnapping created too much risk of propensity misuse and added little extra impeachment value.", "The conviction was more than ten years old.", "The defendant had already introduced good-character evidence."], "answerType": "mc", "modelAnswer": "b", "explanation": "Brewer illustrates that when the witness is the criminal defendant, a same-crime conviction can be especially prejudicial because the jury may misuse it as “he did it before, so he did it again.”", "closeCall": false, "correctIndices": [1]}, {"number": 45, "stem": "Rule 412 generally provides that in proceedings involving alleged sexual misconduct, evidence offered to prove the alleged victim’s sexual behavior or sexual disposition is:", "options": ["generally inadmissible", "always admissible to show consent", "admissible only through reputation evidence", "admissible whenever the victim testifies"], "answerType": "mc", "modelAnswer": "a", "explanation": "Rule 412 is the rape-shield rule. It generally bars evidence of the alleged victim’s sexual behavior or sexual disposition, subject to limited exceptions.", "closeCall": false, "correctIndices": [0]}, {"number": 46, "stem": "Which two are among Rule 412(b)(1)’s criminal-case exceptions?", "options": ["Specific sexual behavior to prove someone other than the accused was the source of semen, injury, or other physical evidence.", "Specific sexual behavior between the victim and the accused when offered to prove consent.", "General reputation for promiscuity whenever the defense wants it.", "Any sexual-history evidence that might embarrass the victim."], "answerType": "mc", "modelAnswer": "a + b", "explanation": "Rule 412 has narrow criminal-case exceptions, including alternate source of physical evidence and specific sexual behavior between victim and accused to prove consent. General promiscuity evidence is not one of them.", "closeCall": false, "correctIndices": [0, 1]}, {"number": 47, "stem": "Which statement best describes Rules 413–415?", "options": ["They generally make prior sexual-assault or child-molestation acts admissible in qualifying civil or criminal cases, subject to notice and other ordinary constraints.", "They abolish Rule 403 in sex-offense cases.", "They apply only if the prior act resulted in a conviction.", "They allow the prosecution to introduce any bad act whatever in sex cases."], "answerType": "mc", "modelAnswer": "a", "explanation": "Rules 413–415 create special admissibility rules for prior sexual assault or child molestation acts, but they do not erase other controls like notice and Rule 403.", "closeCall": false, "correctIndices": [0]}, {"number": 48, "stem": "A drunken engineer’s employer is sued after a train crash. Plaintiff offers evidence of the engineer’s bad reputation for drunkenness, prior discharge for drunkenness, and a yardmaster’s warning to keep watch on the engineer. On what theory might this evidence be admitted against the railroad, and what limiting instruction should the judge give?", "options": [], "answerType": "essay", "modelAnswer": "The evidence may be admitted to show the railroad’s notice or knowledge of the engineer’s dangerous condition or incompetence, not to prove directly that he was drunk on this particular trip.", "explanation": "The limiting instruction should tell the jury not to use the reputation and prior incidents as proof that the engineer was drunk at the time of the crash, but only to decide whether the railroad had notice that he was reputedly or previously intoxicated and therefore may have been negligent in retaining, supervising, or warning about him.", "closeCall": true, "correctIndices": null}, {"number": 49, "stem": "Which statement best distinguishes character from habit?", "options": ["Character is a specific repeated response to a specific situation; habit is a broad moral trait.", "Character is a broad trait like carefulness or violence; habit is a regular, specific, almost automatic response to a repeated situation.", "They are the same under the Federal Rules.", "Habit is admissible only if the person first puts character in issue."], "answerType": "mc", "modelAnswer": "b", "explanation": "Rule 404 generally bars broad character-propensity reasoning, while Rule 406 permits proof of a highly specific regular response to a repeated situation.", "closeCall": false, "correctIndices": [1]}, {"number": 50, "stem": "Which two of the following are accurate summaries of Unit 3?", "options": ["If the prosecution offers prior bad acts only to show “he is the type,” Rule 404 usually blocks them.", "Once character evidence is admissible, specific acts are always the normal method of proof on direct.", "Rule 608(b) allows cross-examination about truthfulness-related acts, but generally bars extrinsic proof of those acts for that purpose.", "Rule 609 lets every prior conviction come in automatically against every witness."], "answerType": "mc", "modelAnswer": "a + c", "explanation": "Statements (1) and (3) are correct. Specific acts are not the normal direct method under Rule 405(a), and Rule 609 is full of distinctions and balancing rules.", "closeCall": false, "correctIndices": [0, 2]}];
+
+    let currentQuestionIndex = 0;
+    let responses = [];
+    let revealed = [];
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const bottomBar = document.getElementById("bottom-bar");
+
+    const questionCount = document.getElementById("question-count");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const multiHint = document.getElementById("multi-hint");
+    const badgeRow = document.getElementById("badge-row");
+    const modelAnswerElement = document.getElementById("model-answer");
+    const explanationElement = document.getElementById("explanation");
+
+    const startButton = document.getElementById("start-button");
+    const resumeButton = document.getElementById("resume-button");
+    const clearProgressButton = document.getElementById("clear-progress-button");
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+    const submitAnswerButton = document.getElementById("submit-answer-button");
+    const showModelButton = document.getElementById("show-model-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewAgainButton = document.getElementById("review-again-button");
+    const finalScore = document.getElementById("final-score");
+    const reviewTableBody = document.querySelector("#review-table tbody");
+    const bottomBarMeta = document.getElementById("bottom-bar-meta");
+    const bottomBarList = document.getElementById("bottom-bar-list");
+
+    function cleanupQuestionData() {}
+
+    function renderQuestionText(stem) {
+      questionElement.innerHTML = "";
+      const normalizedStem = (stem || "").trim();
+      const startsWithSharedStimulus = normalizedStem.startsWith("The following") && normalizedStem.includes("\n\n");
+
+      if (startsWithSharedStimulus) {
+        const splitIndex = normalizedStem.indexOf("\n\n");
+        const stimulusText = normalizedStem.slice(0, splitIndex).trim();
+        const questionText = normalizedStem.slice(splitIndex + 2).trim();
+
+        const stimulusBlock = document.createElement("div");
+        stimulusBlock.className = "stimulus-block";
+        stimulusBlock.textContent = stimulusText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(stimulusBlock);
+
+        const questionTextBlock = document.createElement("div");
+        questionTextBlock.className = "question-text";
+        questionTextBlock.textContent = questionText.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+        questionElement.appendChild(questionTextBlock);
+        return;
+      }
+
+      const questionTextBlock = document.createElement("div");
+      questionTextBlock.className = "question-text";
+      questionTextBlock.textContent = normalizedStem.replace(/\s*\n+\s*/g, " ").replace(/\s+/g, " ").trim();
+      questionElement.appendChild(questionTextBlock);
+    }
+
+    cleanupQuestionData();
+
+    function blankResponses() {
+      return questions.map(q => {
+        if (q.options && q.options.length) {
+          return q.correctIndices && q.correctIndices.length > 1 ? [] : null;
+        }
+        return null;
+      });
+    }
+
+    function blankRevealed() {
+      return questions.map(() => false);
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          currentQuestionIndex,
+          responses,
+          revealed,
+          phase: getPhase()
+        }));
+      } catch (err) {}
+    }
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function clearProgress() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {}
+    }
+
+    function getPhase() {
+      if (!startScreen.classList.contains("hidden")) return "start";
+      if (!quizScreen.classList.contains("hidden")) return "quiz";
+      if (!resultScreen.classList.contains("hidden")) return "results";
+      return "start";
+    }
+
+    function setStartStats() {
+      const total = questions.length;
+      const mc = questions.filter(q => q.options && q.options.length).length;
+      const essay = total - mc;
+      document.getElementById("total-question-stat").textContent = total;
+      document.getElementById("mc-question-stat").textContent = mc;
+      document.getElementById("essay-question-stat").textContent = essay;
+
+      const saved = loadProgress();
+      const hasSaved = !!(saved && Array.isArray(saved.responses));
+      document.getElementById("save-status-stat").textContent = hasSaved ? "Yes" : "No";
+      resumeButton.classList.toggle("hidden", !hasSaved);
+      clearProgressButton.classList.toggle("hidden", !hasSaved);
+    }
+
+    function startNewReview() {
+      currentQuestionIndex = 0;
+      responses = blankResponses();
+      revealed = blankRevealed();
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    }
+
+    function resumeReview() {
+      const saved = loadProgress();
+      if (!saved || !Array.isArray(saved.responses)) {
+        startNewReview();
+        return;
+      }
+
+      responses = saved.responses.length === questions.length ? saved.responses : blankResponses();
+      revealed = Array.isArray(saved.revealed) && saved.revealed.length === questions.length ? saved.revealed : blankRevealed();
+      currentQuestionIndex = Number.isInteger(saved.currentQuestionIndex) ? Math.max(0, Math.min(saved.currentQuestionIndex, questions.length - 1)) : 0;
+
+      if (saved.phase === "results") {
+        showResultScreen();
+        renderResults();
+      } else {
+        showQuizScreen();
+        renderQuestion();
+      }
+    }
+
+    function showQuizScreen() {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      bottomBar.classList.remove("hidden");
+    }
+
+    function showResultScreen() {
+      startScreen.classList.add("hidden");
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      bottomBar.classList.add("hidden");
+    }
+
+    function formatOptionLabel(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function isMultiSelect(question) {
+      return !!(question.correctIndices && question.correctIndices.length > 1);
+    }
+
+    function normalizeSelection(selection) {
+      if (selection == null) return null;
+      if (Array.isArray(selection)) {
+        return [...selection].sort((a,b) => a-b);
+      }
+      return selection;
+    }
+
+    function selectionsMatch(a, b) {
+      if (a == null || b == null) return false;
+      const aa = Array.isArray(a) ? normalizeSelection(a) : [a];
+      const bb = Array.isArray(b) ? normalizeSelection(b) : [b];
+      return aa.length === bb.length && aa.every((value, idx) => value === bb[idx]);
+    }
+
+    function scoreableMC(question) {
+      return !!(question.options && question.options.length && Array.isArray(question.correctIndices) && question.correctIndices.length > 0);
+    }
+
+    function questionStatus(index) {
+      const q = questions[index];
+      const resp = responses[index];
+      const wasRevealed = revealed[index];
+
+      if (q.options && q.options.length) {
+        if (scoreableMC(q)) {
+          if (resp == null || (Array.isArray(resp) && resp.length === 0)) return "pending";
+          return selectionsMatch(resp, q.correctIndices) ? "correct" : "wrong";
+        }
+        return wasRevealed ? "study" : "pending";
+      }
+
+      return wasRevealed ? "study" : "pending";
+    }
+
+    function renderBadges(question) {
+      badgeRow.innerHTML = "";
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = question.options && question.options.length ? "Multiple Choice" : "Short Answer";
+      badgeRow.appendChild(typeBadge);
+
+      if (isMultiSelect(question)) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Select 2";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.closeCall) {
+        const b = document.createElement("span");
+        b.className = "badge close";
+        b.textContent = "Close Call / Context Sensitive";
+        badgeRow.appendChild(b);
+      }
+
+      if (question.correctIndices === null && question.options && question.options.length) {
+        const b = document.createElement("span");
+        b.className = "badge";
+        b.textContent = "Not Auto-Scored";
+        badgeRow.appendChild(b);
+      }
+    }
+
+    function renderQuestion() {
+      const question = questions[currentQuestionIndex];
+      const response = responses[currentQuestionIndex];
+
+      questionCount.textContent = "Question " + (currentQuestionIndex + 1) + " of " + questions.length;
+      renderQuestionText(question.stem);
+      renderBadges(question);
+
+      optionsElement.innerHTML = "";
+      modelAnswerElement.classList.add("hidden");
+      explanationElement.classList.add("hidden");
+      submitAnswerButton.classList.add("hidden");
+      showModelButton.classList.add("hidden");
+      multiHint.classList.add("hidden");
+
+      if (question.options && question.options.length) {
+        const multi = isMultiSelect(question);
+        if (multi) {
+          multiHint.classList.remove("hidden");
+          submitAnswerButton.classList.remove("hidden");
+        }
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "option-button";
+          btn.type = "button";
+
+          const row = document.createElement("div");
+          row.className = "option-row";
+
+          const label = document.createElement("span");
+          label.className = "opt-label";
+          label.textContent = formatOptionLabel(idx);
+
+          const text = document.createElement("span");
+          text.textContent = opt;
+
+          row.appendChild(label);
+          row.appendChild(text);
+          btn.appendChild(row);
+
+          const selected = multi
+            ? Array.isArray(response) && response.includes(idx)
+            : response === idx;
+          if (selected) btn.classList.add("selected");
+
+          btn.addEventListener("click", () => {
+            if (multi) {
+              let current = Array.isArray(responses[currentQuestionIndex]) ? [...responses[currentQuestionIndex]] : [];
+              if (current.includes(idx)) current = current.filter(v => v !== idx);
+              else current.push(idx);
+              responses[currentQuestionIndex] = current.sort((a,b) => a-b);
+              saveProgress();
+              renderQuestion();
+            } else {
+              responses[currentQuestionIndex] = idx;
+              revealed[currentQuestionIndex] = true;
+              saveProgress();
+              renderQuestion();
+            }
+          });
+
+          optionsElement.appendChild(btn);
+        });
+
+        if (!scoreableMC(question)) {
+          showModelButton.classList.remove("hidden");
+          if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+        } else if (revealed[currentQuestionIndex]) {
+          revealMCFeedback(question);
+        }
+      } else {
+        showModelButton.classList.remove("hidden");
+        if (revealed[currentQuestionIndex]) revealEssayLikeAnswer(question);
+      }
+
+      prevButton.disabled = currentQuestionIndex === 0;
+      nextButton.textContent = currentQuestionIndex === questions.length - 1 ? "See Results" : "Next";
+      updateBottomBar();
+    }
+
+    function revealMCFeedback(question) {
+      const response = responses[currentQuestionIndex];
+      const buttons = [...optionsElement.querySelectorAll(".option-button")];
+
+      buttons.forEach((btn, idx) => {
+        const isCorrect = Array.isArray(question.correctIndices) && question.correctIndices.includes(idx);
+        const isSelected = Array.isArray(response) ? response.includes(idx) : response === idx;
+
+        btn.classList.remove("selected");
+        if (isCorrect) btn.classList.add("correct");
+        if (isSelected && !isCorrect) btn.classList.add("wrong");
+      });
+
+      const answerText = question.correctIndices === null
+        ? "Model note"
+        : Array.isArray(question.correctIndices) && question.correctIndices.length
+          ? question.correctIndices.map(i => formatOptionLabel(i)).join(" + ")
+          : "—";
+
+      modelAnswerElement.innerHTML = '<div class="section-title">Best Answer</div>'
+        + '<strong>' + question.modelAnswer + '</strong>'
+        + (question.correctIndices !== null
+          ? '<div style="margin-top:8px;color:var(--muted);">Correct choice' + (question.correctIndices.length > 1 ? 's' : '') + ': ' + answerText + '</div>'
+          : '<div style="margin-top:8px;color:var(--muted);">This item is shown as a doctrinal note rather than auto-scored because the option set is imperfect.</div>');
+
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    function revealEssayLikeAnswer(question) {
+      modelAnswerElement.innerHTML = '<div class="section-title">Model Answer</div>' + question.modelAnswer;
+      explanationElement.innerHTML = '<div class="section-title">Explanation</div>' + question.explanation;
+      modelAnswerElement.classList.remove("hidden");
+      explanationElement.classList.remove("hidden");
+    }
+
+    submitAnswerButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    showModelButton.addEventListener("click", () => {
+      revealed[currentQuestionIndex] = true;
+      saveProgress();
+      renderQuestion();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        saveProgress();
+        renderQuestion();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (currentQuestionIndex === questions.length - 1) {
+        showResultScreen();
+        renderResults();
+        saveProgress();
+        return;
+      }
+      currentQuestionIndex += 1;
+      saveProgress();
+      renderQuestion();
+    });
+
+    startButton.addEventListener("click", startNewReview);
+    resumeButton.addEventListener("click", resumeReview);
+    clearProgressButton.addEventListener("click", () => {
+      clearProgress();
+      setStartStats();
+      alert("Saved progress cleared.");
+    });
+
+    restartButton.addEventListener("click", () => {
+      startNewReview();
+    });
+
+    reviewAgainButton.addEventListener("click", () => {
+      showQuizScreen();
+      renderQuestion();
+      saveProgress();
+    });
+
+    function updateBottomBar() {
+      bottomBarList.innerHTML = "";
+      const answered = responses.filter(resp => {
+        if (resp == null) return false;
+        if (Array.isArray(resp)) return resp.length > 0;
+        return true;
+      }).length;
+      const revealedCount = revealed.filter(Boolean).length;
+
+      bottomBarMeta.innerHTML = "<div><strong>Q " + (currentQuestionIndex + 1) + "</strong> / " + questions.length + "</div>"
+        + "<div>" + answered + " answered · " + revealedCount + " revealed</div>";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "qnav-btn";
+        btn.type = "button";
+        btn.textContent = idx + 1;
+        const status = questionStatus(idx);
+        btn.classList.add(status);
+        if (idx === currentQuestionIndex) btn.classList.add("current");
+        btn.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          saveProgress();
+          renderQuestion();
+        });
+        bottomBarList.appendChild(btn);
+      });
+
+      const currentBtn = bottomBarList.querySelector(".qnav-btn.current");
+      if (currentBtn) currentBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+
+    function renderResults() {
+      const scoreable = questions.filter(q => scoreableMC(q));
+      const totalScoreable = scoreable.length;
+      let correct = 0;
+      let wrong = 0;
+      let pending = 0;
+      let study = 0;
+
+      questions.forEach((q, idx) => {
+        const status = questionStatus(idx);
+        if (status === "correct") correct += 1;
+        else if (status === "wrong") wrong += 1;
+        else if (status === "study") study += 1;
+        else pending += 1;
+      });
+
+      finalScore.innerHTML = totalScoreable
+        ? 'Auto-scored multiple-choice: <strong>' + correct + ' / ' + totalScoreable + '</strong>. Essay and doctrinal-note questions are included below for review but are not added to the numeric score.'
+        : 'This file contains no auto-scored questions.';
+
+      const stats = [
+        ["Correct", correct],
+        ["Wrong", wrong],
+        ["Pending", pending],
+        ["Revealed / Study", study]
+      ];
+
+      const resultSummary = document.getElementById("result-summary");
+      resultSummary.innerHTML = stats.map(([label, value]) =>
+        '<div class="stat"><span class="label">' + label + '</span><strong>' + value + '</strong></div>'
+      ).join("");
+
+      reviewTableBody.innerHTML = "";
+      questions.forEach((q, idx) => {
+        const tr = document.createElement("tr");
+        const status = questionStatus(idx);
+
+        let answerNote = "";
+        if (q.options && q.options.length) {
+          if (q.correctIndices === null) answerNote = q.modelAnswer;
+          else answerNote = 'Correct: ' + q.correctIndices.map(i => formatOptionLabel(i)).join(" + ") + ' — ' + q.modelAnswer;
+        } else {
+          answerNote = q.modelAnswer;
+        }
+
+        const statusText = status === "correct" ? "Correct" : status === "wrong" ? "Wrong" : status === "study" ? "Reviewed" : "Pending";
+
+        tr.innerHTML = '<td><strong>' + (idx + 1) + '</strong></td>'
+          + '<td><span class="status-pill ' + status + '">' + statusText + '</span></td>'
+          + '<td>' + answerNote + '</td>';
+
+        tr.addEventListener("click", () => {
+          currentQuestionIndex = idx;
+          showQuizScreen();
+          renderQuestion();
+          saveProgress();
+        });
+
+        reviewTableBody.appendChild(tr);
+      });
+    }
+
+    window.addEventListener("beforeunload", saveProgress);
+    setStartStats();
+  </script>
+</body>
+</html>

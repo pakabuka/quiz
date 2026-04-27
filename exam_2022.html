@@ -442,9 +442,9 @@
       <div id="start-screen" class="screen">
         <div class="hero-card">
           <div class="section-title">What’s inside</div>
-          <div style="font-size: 17px; line-height: 1.65;">
-            
-          </div>
+          <!-- <div style="font-size: 17px; line-height: 1.65;">
+            This review file contains the uploaded Spring 2022 evidence exam, corrected against recurring Carter answer-key patterns from later years, with model answers, explanations, saved progress, jump navigation, and a results screen.
+          </div> -->
 
           <div class="stat-grid">
             <div class="stat">
@@ -471,9 +471,7 @@
             <button id="clear-progress-button" class="danger-button hidden">Clear Saved Progress</button>
           </div>
 
-          <!-- <div class="small-note">
-            Note: I corrected several answer keys and parser artifacts, including multi-answer impeachment, document authentication, character-response rules, Confrontation Clause expert-report issues, and the post-2017 ancient-document rule. A few casebook-referenced questions remain best-effort where the underlying problem text is not embedded.
-          </div> -->
+          <div class="small-note"></div>
         </div>
       </div>
 
@@ -546,7 +544,7 @@
   </div>
 
   <script>
-    const STORAGE_KEY = "evidence_exam_interactive_review_2022_fixed_v2";
+    const STORAGE_KEY = "evidence_exam_interactive_review_2022_clean_official_v2";
     const questions = [
   {
     "number": 1,
@@ -576,9 +574,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the objection unless Dickinson is genuinely testifying from refreshed present memory. If she is merely using the report as a script, the prosecution should move instead under the recorded-recollection rule.",
-    "explanation": "Refreshing recollection is proper only when the witness’s memory is actually revived. Once it becomes clear that the witness is effectively reading or parroting the report, Rule 612 is no longer the right device; Rule 803(5) is.",
-    "closeCall": false,
+    "modelAnswer": "Objection overruled. Dickinson may continue using the report to refresh her recollection while testifying from memory.",
+    "explanation": "This is a long list of regulatory violations. Carter’s answer key treats repeated use of the report as proper refreshing when a witness must work through a lengthy list, so long as the testimony is still presented as Dickinson’s refreshed recollection rather than the report itself being admitted or read as a substitute.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -604,7 +602,7 @@
     "answerType": "mc",
     "multiSelect": true,
     "modelAnswer": "b and c",
-    "explanation": "Correct answers: B and C.\n\nWhy B is right (FRE 609(a)(2), 609(b)):\nFiling a false federal tax return is a dishonest-act/false-statement conviction, so it must be admitted to impeach if it is not stale. Because Sandburg pled guilty nine years ago and received no prison time, the conviction falls within the ordinary ten-year window.\n\nWhy C is right (FRE 609(a)(2), 609(b)):\nAlthough the guilty plea was twelve years ago, Rule 609(b) measures the ten-year period from the later of conviction or release from confinement. Sandburg was released from prison nine years ago, so the conviction is still within the ordinary window.\n\nWhy A is wrong:\nThe first guilty plea was followed by a pardon based on innocence, so that conviction is excluded under Rule 609(c). The later separate conviction does not revive the pardoned conviction identified in the question.\n\nWhy D is wrong:\nFor convictions older than ten years, Rule 609(b) requires probative value to substantially outweigh prejudicial effect, with notice. Merely saying probative value outweighs prejudice applies too lenient a standard.",
+    "explanation": "Correct answers: B and C.\n\nWhy B is right:\nA false-tax-return conviction is a crime involving a dishonest act or false statement and is within the ordinary ten-year window because the guilty plea was nine years ago and there was no prison release date to extend the period.\n\nWhy C is right:\nAlthough the guilty plea was twelve years ago, Sandburg was released from confinement nine years ago, so the conviction falls within Rule 609’s ten-year period measured from the later of conviction or release.\n\nWhy A is wrong:\nThe first conviction was pardoned based on innocence, so Rule 609(c) bars using it.\n\nWhy D is wrong:\nFor convictions outside the ten-year window, probative value must substantially outweigh prejudicial effect; merely outweighing is not enough.",
     "closeCall": false,
     "correctIndices": [
       1,
@@ -622,11 +620,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "a",
-    "explanation": "Correct answer: A.\n\nWhy A is right (FRE 801(d)(1)(B)):\nPrior consistent statements are not automatically admissible just because credibility has been attacked. Unless they fit a recognized rehabilitation route—most often a Rule 801(d)(1)(B) theory—they remain improper bolstering. A conviction impeachment by itself does not open the floodgates.\n\nWhy B is wrong:\nSandburg’s character for truthfulness has been attacked by the conviction question, but that does not by itself make prior consistent statements admissible.\n\nWhy C is wrong:\nThe Federal Rules did not abolish the ban on simple bolstering.\n\nWhy D is wrong:\nA generic attack on credibility is not enough. The prior consistent statement still has to fit Rule 801(d)(1)(B) or another proper rehabilitation doctrine.",
-    "closeCall": true,
+    "modelAnswer": "d",
+    "explanation": "Correct answer: D.\n\nWhy D is right (FRE 801(d)(1)(B)(ii)):\nOnce Sandburg is impeached with a dishonest-act conviction, his credibility has been attacked in a way that can permit rehabilitation by prior consistent statements under Rule 801(d)(1)(B)(ii).\n\nWhy A is wrong:\nThe statement is not mere bolstering once Sandburg’s credibility has been attacked.\n\nWhy B is wrong:\nHis character for truthfulness has been attacked through the prior guilty plea.\n\nWhy C is wrong:\nThe Federal Rules did not simply eliminate all limits on bolstering; the better reason is the specific prior-consistent-statement rule.",
+    "closeCall": false,
     "correctIndices": [
-      0
+      3
     ]
   },
   {
@@ -641,7 +639,7 @@
     "answerType": "mc",
     "multiSelect": false,
     "modelAnswer": "c",
-    "explanation": "Correct answer: C.\n\nWhy C is right (FRE 901(b)(2)):\nA lay handwriting opinion is not enough when the witness’s familiarity with the handwriting was acquired for the current litigation. The FBI agent learned Kayo’s handwriting only by reviewing seized materials while preparing for trial, so that route is not sufficient.\n\nWhy A is wrong:\nA proper business-record certification could authenticate the note as part of the company’s records, even though it may not be the cleanest way to prove authorship.\n\nWhy B is wrong:\nLive testimony from the records executive about how the files were kept and how the note was found gives a sufficient foundation for authentication by custody and circumstances.\n\nWhy D is wrong:\nKayo’s own testimony that he wrote the note is direct author testimony and is plainly sufficient under Rule 901(b)(1).",
+    "explanation": "Correct answer: C.\n\nWhy C is right (FRE 901(b)(2)):\nA handwriting opinion by a nonexpert is not sufficient if the witness became familiar with the handwriting only for the current litigation. The FBI agent learned Kayo’s handwriting during trial preparation.\n\nWhy A is wrong:\nA business-record certification can help authenticate the note as a business record.\n\nWhy B is wrong:\nA custodian who found and explains the recordkeeping system can provide sufficient authentication of the document’s source/location.\n\nWhy D is wrong:\nKayo’s own testimony that he authored the note is plainly sufficient.",
     "closeCall": false,
     "correctIndices": [
       2
@@ -671,9 +669,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the relevance objection, or at least exclude under Rule 403. Christina’s ability and decision not to flee is too weak and self-serving to do much work as evidence of innocence.",
-    "explanation": "Nonflight evidence usually has a very shaky inferential chain. Many guilty defendants stay, many innocent defendants leave, and a defendant’s statement that she stayed because she is innocent is especially self-serving. Unless the prosecution has made flight or concealment a live issue, the better ruling is exclusion as irrelevant or, at minimum, under Rule 403 as confusing and distracting.",
-    "closeCall": false,
+    "modelAnswer": "Either ruling can be argued, but the answer must focus on the relevance of non-flight.",
+    "explanation": "The defense is offering a mirror image of flight evidence: because flight may show consciousness of guilt, staying put might arguably show consciousness of innocence. The contrary argument is that non-flight is weak and self-serving because many guilty people do not flee. A Rule 403 discussion is possible, but the core issue is whether non-flight has enough probative force under Rules 401 and 402.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -693,9 +691,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the hearsay objection to the parts exculpating Christina. At most, only genuinely self-inculpatory portions of Wystan’s statement are candidates for Rule 804(b)(3), and the court must parse the statement under Williamson.",
-    "explanation": "Wystan is unavailable because he invokes the Fifth Amendment, but unavailability is not enough. A statement against penal interest admits only the parts a reasonable person would not have said unless true because they were truly self-inculpatory. “It was just me” is inculpatory in part, but “Christina had nothing to do with any of this” mainly exculpates someone else and is not itself against Wystan’s interest. The calm custodial setting also weakens trustworthiness/corroboration.",
-    "closeCall": true,
+    "modelAnswer": "Objection overruled. Wystan’s statement is admissible as a statement against penal interest under Rule 804(b)(3).",
+    "explanation": "Wystan is unavailable because he invokes the Fifth Amendment, and the statement exposes him to criminal liability by taking responsibility for the fraud. The portions clearing Christina also further inculpate Wystan in this setting: if Christina had nothing to do with it, Wystan is making the crime sound like his own doing. Because this is offered in a criminal case, corroborating circumstances are required; the arrest/probable cause and Christina’s testimony supply a plausible corroboration argument.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -704,9 +702,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule the objection. Rich Uncle’s statement is admissible as a dying declaration.",
-    "explanation": "He plainly believed death was imminent—'I don’t want to die! But if I don’t make it...'—and he described the cause or circumstances of the shooting by identifying Carter as the shooter. In a homicide prosecution, Rule 804(b)(2) applies.",
-    "closeCall": false,
+    "modelAnswer": "Objection sustained, although the issue can be argued.",
+    "explanation": "The official 2022 key applies Shepard’s demanding formulation: a dying declaration requires a settled hopeless expectation of imminent death. Rich Uncle says he does not want to die and urges the ambulance to hurry, which suggests he still hopes medical help can save him. A contrary answer could argue that 'if I don’t make it' shows awareness of impending death, but the stronger 2022 answer sustains the objection.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -756,11 +754,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "b",
-    "explanation": "Correct answer: B.\n\nWhy B is right (FRE 612):\nBoth propositions are false. A witness’s recollection may be refreshed with inadmissible material, and the law does not require a rigid formal statement of total forgetfulness before counsel may attempt to refresh memory.\n\nWhy A is wrong:\nNeither proposition is true.\n\nWhy C is wrong:\nProposition (1) is false.\n\nWhy D is wrong:\nProposition (2) is false.",
+    "modelAnswer": "d",
+    "explanation": "Correct answer: D.\n\nWhy D is right (FRE 612):\nProposition (1) is false because a witness’s memory may be refreshed with material that would not itself be admissible. Proposition (2) is true in the sense tested here: refreshing present recollection is used after the witness indicates an inability or failure to remember.\n\nWhy A is wrong:\nBoth propositions are not true because Proposition (1) is false.\n\nWhy B is wrong:\nProposition (2) is treated as true for this exam key.\n\nWhy C is wrong:\nIt gets Proposition (1) backward and Proposition (2) backward.",
     "closeCall": false,
     "correctIndices": [
-      1
+      3
     ]
   },
   {
@@ -774,11 +772,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "a",
-    "explanation": "Correct answer: A.\n\nWhy A is right (FRE 608(a)):\nRobert is offering reputation testimony about Carter’s truthfulness, which is a permitted form if the foundation is adequate. Frost, by contrast, is trying to prove untruthfulness through specific acts on direct examination, which is not allowed here.\n\nWhy B is wrong:\nThis gets the two witnesses backward.\n\nWhy C is wrong:\nFrost may not testify as proposed because he is proving truthfulness through specific conduct.\n\nWhy D is wrong:\nAt least Robert’s reputation testimony may come in if the proper impeachment predicate exists.",
-    "closeCall": true,
+    "modelAnswer": "d",
+    "explanation": "Correct answer: D.\n\nWhy D is right (FRE 608(a), Michelson foundation):\nRobert cannot simply relay a student friend’s report of Carter’s reputation; he lacks the necessary acquaintance with Carter’s community and circles. Frost’s testimony is also inadmissible as proposed because it proves truthfulness through specific instances on direct examination.\n\nWhy A is wrong:\nRobert lacks a proper reputation foundation.\n\nWhy B is wrong:\nFrost’s proposed specific-act testimony is not proper direct character-for-truthfulness proof.\n\nWhy C is wrong:\nBoth proposed pieces have foundational/form defects.",
+    "closeCall": false,
     "correctIndices": [
-      0
+      3
     ]
   },
   {
@@ -787,8 +785,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Best-effort placeholder: the uploaded HTML refers to Problem 2.7 but does not include the actual casebook prompt.",
-    "explanation": "Without the underlying text of Problem 2.7, I cannot reliably reconstruct a definite answer. I am flagging this honestly instead of inventing facts.",
+    "modelAnswer": "Either answer can be argued, but the answer should frame the tension between Rule 411’s text and its policy.",
+    "explanation": "The problem asks whether to apply Rule 411 literally, which would exclude insurance evidence, or instead follow the rule’s animating purpose and admit the evidence where admitting it would not reduce anyone’s incentive to buy liability insurance. A good answer can enforce the text or make the policy-based exception, but it must explain why this corner case does or does not justify departing from the rule’s literal command.",
     "closeCall": true,
     "correctIndices": null
   },
@@ -798,9 +796,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Admit the diary entry, but only for the limited purpose of showing Lewis’s then-existing belief and state of mind, not to prove that the doctors in fact misdiagnosed his mother.",
-    "explanation": "Rule 803(3) permits statements of then-existing mental or emotional condition. The entry is relevant because Carroll’s theory is that Lewis sincerely believed his mother had been misdiagnosed; the statement is not admissible to prove the underlying medical truth.",
-    "closeCall": false,
+    "modelAnswer": "Objection overruled.",
+    "explanation": "The diary entry is admissible because the statements were not intended as assertions to an audience. Lewis was writing privately and even said he would 'never let anyone know' his pain, which supports the conclusion that the diary was not a communicative assertion offered for its truth. The entry also bears on his sincere belief about his mother’s diagnosis, but the official answer’s main route is the nonassertive/private-diary theory.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -820,8 +818,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the privilege objection. Lewis’s death does not by itself terminate the attorney-client privilege.",
-    "explanation": "The privilege generally survives death. This is an ordinary civil coverage dispute, not one of the narrow situations in which posthumous disclosure is allowed.",
+    "modelAnswer": "Objection sustained. The attorney-client privilege survives the client’s death and generally passes to the estate.",
+    "explanation": "Whitman is wrong to say the privilege disappears merely because Lewis has died. Communications between Lewis and Berssenbrugge about the insurance policy remain privileged unless some separate exception or waiver applies.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -903,8 +901,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "One clean chain is: no gun was found → Glück probably was unarmed → Louise was less likely reacting to an actual draw of a weapon → Louise’s account of reasonable fear becomes less probable.",
-    "explanation": "That chain is enough under Rule 401. The prosecution does not need the no-gun evidence to prove self-defense impossible by itself; it only has to make Louise’s story less likely.",
+    "modelAnswer": "One valid chain: no gun was found at the scene → Glück probably had no gun during the encounter → Glück probably did not make a motion that actually involved drawing a gun → Louise was less likely to have perceived a gun-drawing motion → Louise was less likely to have been in reasonable fear for her life.",
+    "explanation": "The chain must end on a fact of consequence and should connect the missing gun to Louise’s perception, because her defense turns on what she reasonably perceived. The evidence need not prove the defense false by itself; under Rule 401 it only has to make that defense less probable.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -936,8 +934,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the Confrontation Clause objection. On these facts Jorge’s statement looks testimonial.",
-    "explanation": "The statement was made to a detective describing completed past events for investigative purposes. If Jorge does not testify and Ramsey had no prior chance to cross-examine him, Crawford bars admission in a criminal case.",
+    "modelAnswer": "The objection can be argued either way, but the answer must address whether Jorge’s statement is testimonial.",
+    "explanation": "Jorge’s statement was made to a detective after the emergency had ended, which points toward a testimonial statement barred by the Confrontation Clause because Jorge does not testify. But Jorge is four years old, and Ohio v. Clark says young children’s statements rarely implicate the Clause. The strongest answer weighs three facts together: Jorge is a child witness rather than a victim, the interview was investigative rather than emergency-driven, and the judge found that testifying would traumatize him.",
     "closeCall": true,
     "correctIndices": null
   },
@@ -1019,8 +1017,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the prosecution’s objection. Ogden’s refusal to accept immunity is weak, self-serving 'consciousness of innocence' evidence and should not come in.",
-    "explanation": "The inference from rejecting immunity to actual innocence is highly uncertain, and admitting negotiation details risks side issues and unfair distortion. The better answer—consistent with the classroom analogy—is exclusion.",
+    "modelAnswer": "Objection overruled.",
+    "explanation": "Under the Biaggi-style theory, a defendant’s refusal of immunity can be relevant as consciousness-of-innocence evidence. Rule 410 does not by its text bar the evidence when the defendant offers it, though the court should still consider whether the same concerns behind Rule 410 call for a mirror-image limitation. Any alternative explanation, such as fear of Milne, goes to weight or allows the prosecution to complete the picture.",
     "closeCall": true,
     "correctIndices": null
   },
@@ -1052,8 +1050,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Best answer on the visible text: Bibb’s own statement should not come in as an adoptive admission by silence. Wordsworth’s silence in that private, emotionally charged meeting is too ambiguous to count as adoption. Also, the uploaded prompt appears truncated; if the intended follow-up concerned Sara’s testimony that Bibb said she could 'take him for a lot of cash,' that latter statement would ordinarily be admissible against Bibb as an opposing party’s own statement.",
-    "explanation": "Adoptive admissions by silence require circumstances in which a reasonable person would naturally deny the statement. Here Wordsworth’s choice to end the meeting is too equivocal. I am also flagging that the prompt cuts off before the final question is stated.",
+    "modelAnswer": "Either answer can be argued, but the key question is whether Wordsworth’s silence can be treated as adopting Bibb’s statement.",
+    "explanation": "A reasonable person falsely accused in private of being someone’s father might be expected to deny it, which supports adoption by silence. The contrary argument is that Wordsworth’s refusal to engage and decision to have Bibb removed may not be an adoption at all. There is also a doctrinal wrinkle: Rule 801(d)(2)(B) is a party-admission rule, and Wordsworth is not himself a party, so any nonparty adoption would need another route to admissibility.",
     "closeCall": true,
     "correctIndices": null
   },
@@ -1104,11 +1102,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "d",
-    "explanation": "Correct answer: D.\n\nWhy D is right (FRE 803(4)):\nGertrude’s statements about her symptoms to Stein, Stein’s relay of those symptoms to Neruda, and Neruda’s instructions for treatment all fit the medical-diagnosis-and-treatment framework. Each statement is part of obtaining or giving medical care.\n\nWhy A is wrong:\nStein’s relay to Neruda is also part of the treatment process.\n\nWhy B is wrong:\nGertrude’s symptom statements are likewise admissible under the treatment exception.\n\nWhy C is wrong:\nNeruda’s treatment instructions are also admissible to explain the medical exchange.",
+    "modelAnswer": "c",
+    "explanation": "Correct answer: C.\n\nWhy C is right (FRE 803(4)):\nGertrude’s symptom statement to Stein and Stein’s repetition of those symptoms to Dr. Neruda are admissible because they are made for medical diagnosis or treatment. Neruda’s own instruction back to Stein is not being admitted through the same hearsay exception.\n\nWhy A is wrong:\nIt excludes Stein’s statement to the doctor even though that is central to diagnosis/treatment.\n\nWhy B is wrong:\nIt excludes Gertrude’s statement, even though the child’s symptom description can qualify.\n\nWhy D is wrong:\nIt sweeps in Neruda’s instruction back to Stein, which is not covered by the same hearsay route.",
     "closeCall": false,
     "correctIndices": [
-      3
+      2
     ]
   },
   {
@@ -1135,8 +1133,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Yes. The court should now admit the later anti-slip measure for impeachment, and possibly feasibility, with a limiting instruction.",
-    "explanation": "A defendant may not use Rule 407 as both a shield and a sword. Once Sexton makes the sweeping claim that the staircase 'could not have been any safer,' the later safety change becomes proper impeachment evidence.",
+    "modelAnswer": "Yes. The court should change its ruling and admit the later anti-slip measure on feasibility.",
+    "explanation": "Rule 407 bars subsequent remedial measures when offered to prove negligence or fault. But the rule permits such evidence when feasibility is disputed. Sexton’s statement that the staircase 'could not have been any safer' makes feasibility a live issue, so the anti-slip improvement becomes admissible for that substantive purpose.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1146,9 +1144,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Best-effort placeholder: the uploaded HTML refers to Problem 7.39 but does not include the underlying problem or its two prompts.",
-    "explanation": "I cannot give a reliable answer without the text of Problem 7.39. This item is marked honestly as incomplete.",
-    "closeCall": true,
+    "modelAnswer": "For prompt (1), the return receipts are admissible as business records, but the customers’ stated reasons for returning items are admissible only for notice, not for their truth. For prompt (2), the return receipts are again admissible as business records, and Donohue’s own stated reason may be used against her as a party statement.",
+    "explanation": "Both prompts involve layered hearsay. The business record gets the receipt itself into evidence, but it does not automatically make customer statements inside the receipt true. In the second prompt, the embedded statement has its own route because Donohue is a party and the statement is offered against her.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -1157,9 +1155,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule the objection if the prosecution shows the video cannot be found despite reasonable efforts and was not lost in bad faith.",
-    "explanation": "Rule 1004 allows other evidence of a recording’s contents once the original is lost or destroyed without bad faith. Officer Duncan’s testimony can then serve as secondary evidence.",
-    "closeCall": false,
+    "modelAnswer": "The result can be argued either way, but Rule 1004(a) is the starting point.",
+    "explanation": "Because the video cannot be found, Officer Duncan may describe what he saw on it unless the original was lost by the proponent in bad faith. The prompt gives no direct evidence of bad faith. Still, courts sometimes use evidence rules to discipline the prosecution for failing to preserve important evidence, so a strong answer must decide whether that disciplinary impulse justifies exclusion here.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -1202,11 +1200,12 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "b",
-    "explanation": "Correct answer: B.\n\nWhy B is right (Confrontation Clause):\nIf Dipoko testifies, Carter can cross-examine the technician who performed the fingerprint analysis. That cures the Confrontation Clause problem.\n\nWhy A is wrong:\nA certified forensic report offered by itself is testimonial in a criminal case. Certification does not replace confrontation.\n\nWhy C is wrong:\nA supervisor who merely explains ordinary lab procedures is a surrogate witness. Under Melendez-Diaz/Bullcoming-style reasoning, that does not give Carter the required opportunity to cross-examine the analyst who made the case-specific finding.\n\nWhy D is wrong under current doctrine:\nAfter Smith v. Arizona, an expert cannot be used simply to relay or depend for truth on another analyst’s testimonial report while avoiding confrontation. Another expert may give an independent opinion based on admissible/non-testimonial data, but this choice says the expert relies on the contents of Dipoko’s report as the basis for the testimony, so it is not a safe Confrontation Clause answer.",
+    "modelAnswer": "b and d",
+    "explanation": "Correct answers: B and D under the 2022 exam key.\n\nWhy B is right:\nIf Dipoko testifies, Carter can confront the analyst who made the fingerprint report, so the Confrontation Clause problem is solved.\n\nWhy D is right under the 2022 key:\nThe 2022 key treated Williams v. Illinois as permitting a properly qualified expert to rely on Dipoko’s report as part of the basis for her own opinion.\n\nWhy A is wrong:\nA testimonial forensic report cannot be admitted by itself against a criminal defendant without confrontation.\n\nWhy C is wrong:\nA supervisor who merely explains general lab procedures is not the analyst who made the testimonial certification; Bullcoming bars that surrogate route.",
     "closeCall": true,
     "correctIndices": [
-      1
+      1,
+      3
     ]
   },
   {
@@ -1354,11 +1353,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "c",
-    "explanation": "Correct answer: C.\n\nWhy C is right (FRE 803(3)): \nThe letters are admissible for both their substance and their tone because both are relevant to Rich Uncle’s then-existing attitude toward Carter. Friendly words and a friendly tone both make it less likely that Rich Uncle bore a grudge.\n\nWhy A is wrong:\nThe substantive content also matters because it reflects affectionate feelings.\n\nWhy B is wrong:\nThe tone also matters because it shows warmth.\n\nWhy D is wrong:\nThe letters are not excluded for both purposes; they are relevant state-of-mind evidence.",
+    "modelAnswer": "a",
+    "explanation": "Correct answer: A.\n\nWhy A is right:\nThe letters’ warm and friendly tone is admissible to rebut the claim that Rich Uncle held a grudge. The tone is not hearsay because it is not being offered for the truth of any assertion in the letters.\n\nWhy B is wrong:\nThe substance of the letters is not the main admissible use; their tone is.\n\nWhy C is wrong:\nThe letters’ substantive assertions do not all come in merely because the tone is relevant.\n\nWhy D is wrong:\nThe tone is relevant and nonhearsay.",
     "closeCall": false,
     "correctIndices": [
-      2
+      0
     ]
   },
   {
@@ -1367,8 +1366,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the hearsay objection. The March 1, 2002 newspaper article does not qualify under the current ancient-document exception.",
-    "explanation": "Rule 803(16) no longer uses the old floating twenty-year rule. Since the 2017 amendment, the ancient-document exception applies only to statements in authenticated documents prepared before January 1, 1998. This article was published in 2002, so it does not come in merely because it was twenty years old by the exam date. Another exception might be argued on different facts, but the prompt gives no basis for one.",
+    "modelAnswer": "Objection sustained unless Longfellow can satisfy another hearsay exception, such as Rule 807.",
+    "explanation": "The ancient-document exception does not apply because the article was published after January 1, 1998. The old twenty-year rule no longer controls after the 2017 amendment. A residual-exception argument is possible, but it would require a careful reliability showing; the article is not admitted simply because it is old.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1378,9 +1377,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule the objection. The recordings are admissible against Lewis once the prosecution shows that Lewis later joined the same ongoing conspiracy.",
-    "explanation": "The key is that the statements were made during and in furtherance of the conspiracy itself. A later-joining conspirator is bound by such statements once membership in the existing conspiracy is established.",
-    "closeCall": true,
+    "modelAnswer": "Objection overruled.",
+    "explanation": "A defendant who joins an existing conspiracy takes it as he finds it. Prior statements by Sylvia and Plath are admissible against Lewis if they relate to a common conspiratorial purpose that existed before and after Lewis joined and were made during and in furtherance of that conspiracy.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -1389,9 +1388,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule the objection if the defense lays an agency foundation. Both layers can be treated as opposing-party statements by Dickinson personnel acting within the scope of their jobs.",
-    "explanation": "Kayo’s decision about the carload threshold is a statement by Dickinson’s vice president of scheduling, and Patrice’s relay of that decision also appears to be within the scope of employment. The fact that Patrice is unavailable does not matter if Rule 801(d)(2)(D) applies.",
-    "closeCall": true,
+    "modelAnswer": "Objection overruled.",
+    "explanation": "Emily’s testimony contains two hearsay layers: Kayo’s statement to Patrice and Patrice’s statement to Emily. Both can come in under Rule 801(d)(2)(D) as statements by Dickinson’s agents or employees on matters within the scope of their roles.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -1400,8 +1399,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Object under Rule 408. Frost’s 7.5 percent offer is a settlement communication.",
-    "explanation": "The offer was made after Emily threatened litigation and plainly sought to compromise the dispute. It is therefore the classic sort of compromise evidence Rule 408 excludes for liability purposes.",
+    "modelAnswer": "Object under Rule 408.",
+    "explanation": "Frost’s offer of a 7.5 percent discount was made after Emily notified Dickinson Railroad that she was considering litigation and was offered to end the dispute. That makes it compromise-negotiation evidence barred for the merits use.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1452,11 +1451,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "c",
-    "explanation": "Correct answer: C.\n\nWhy C is right (FRE 701):\nEdgar is describing the agency’s procedures and rules, not offering scientific or technical expert analysis. That is ordinary fact testimony based on his position and personal knowledge.\n\nWhy A is wrong:\nBeing the head of the agency does not itself eliminate the expert requirement.\n\nWhy B is wrong:\nWhether he is a party is irrelevant.\n\nWhy D is wrong:\nTestifying for the prosecution does not remove expert requirements.",
+    "modelAnswer": "a",
+    "explanation": "Correct answer: A.\n\nWhy A is right:\nEdgar can testify about his own agency’s rules because he runs the agency and has firsthand organizational knowledge. He need not be qualified as an outside expert to explain internal procedures.\n\nWhy B is wrong:\nBeing a nonparty does not itself make expert qualification unnecessary.\n\nWhy C is wrong:\nThe wording is incomplete because Rule 701 also excludes lay opinions based on specialized knowledge, not just scientific or technical knowledge.\n\nWhy D is wrong:\nThe side that calls the witness has nothing to do with whether expert qualification is required.",
     "closeCall": false,
     "correctIndices": [
-      2
+      0
     ]
   },
   {
@@ -1471,7 +1470,7 @@
     "answerType": "mc",
     "multiSelect": false,
     "modelAnswer": "b",
-    "explanation": "Correct answer: B.\n\nWhy B is right (FRE 803(6)):\nOnce the business-record foundation is laid, the burden of showing untrustworthiness falls on the opponent.\n\nWhy A is wrong:\nThe proponent must lay the basic foundation, but the specific burden on trustworthiness generally falls on the objector.\n\nWhy C is wrong:\nThe custodian does not bear a separate statutory burden of proving trustworthiness beyond the ordinary foundation.\n\nWhy D is wrong:\nThe statute is not silent; the burden is conventionally understood to rest with the opponent.",
+    "explanation": "Correct answer: B.\n\nWhy B is right (FRE 803(6)(E)):\nOnce the proponent lays the business-record foundation, the burden shifts to the opponent to show the source or circumstances indicate a lack of trustworthiness.\n\nWhy A is wrong:\nThe proponent must lay the foundation, but does not carry the final burden of proving trustworthiness once the rule’s elements are met.\n\nWhy C is wrong:\nThe custodian supplies the foundation; the custodian does not carry a separate burden of proving trustworthiness.\n\nWhy D is wrong:\nThe rule does speak to trustworthiness by allowing exclusion if the opponent shows untrustworthiness.",
     "closeCall": false,
     "correctIndices": [
       1
@@ -1483,9 +1482,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "The best answer is: sustain unless the defense can satisfy Rule 804(b)(3)’s corroboration requirement, and even then admit only the genuinely self-inculpatory portions. Sandburg is unavailable because he has been deported, but Williamson means the court should be cautious with the parts that mainly help Carl.",
-    "explanation": "Statements against penal interest can come in when the declarant is unavailable, but exculpatory use in a criminal case requires corroborating circumstances clearly indicating trustworthiness. The court should parse the statement carefully instead of admitting the whole narrative wholesale.",
-    "closeCall": false,
+    "modelAnswer": "Objection sustained unless the prosecution was aware that Sandburg was a potential defense witness before he was deported.",
+    "explanation": "The defense is trying to use the government’s deportation of Sandburg as a route around hearsay. That argument is strongest only if the federal government knew Sandburg was a potential defense witness and nevertheless made him unavailable. Because this is a federal prosecution, the Justice Department’s knowledge could be attributed across the government; without that knowledge, the ordinary hearsay objection should be sustained.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -1494,9 +1493,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "The court should reject Ghalib’s challenge and enforce the subpoena absent a more specific showing. Client identity is usually not privileged.",
-    "explanation": "Attorney-client privilege generally protects confidential communications, not the client’s name. On these facts, revealing the identity does not itself appear to disclose a privileged communication or legal advice.",
-    "closeCall": false,
+    "modelAnswer": "The issue can be argued either way.",
+    "explanation": "Client identity is usually not privileged, but the cases beginning with Baird recognize narrow situations where revealing the client’s identity would effectively reveal a confidential legal communication. Ghalib can argue that naming the client would disclose who sought legal advice about a potentially unlawful tax-avoidance plan. The government can respond that the subpoena asks only for identity, not the substance of advice.",
+    "closeCall": true,
     "correctIndices": null
   },
   {
@@ -1505,8 +1504,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule both objections. The testimony is not hearsay because Césaire is recounting his own perception, and the best-evidence rule does not bar ordinary testimony about the license plate he observed.",
-    "explanation": "A witness may testify to what he saw on a getaway car. The best-evidence rule does not usually require production of the plate itself or a photograph when the witness has personal knowledge.",
+    "modelAnswer": "Both objections are overruled.",
+    "explanation": "The hearsay objection fails because the license plate is a mechanical trace rather than a human assertion. The best-evidence objection fails because a license plate number is an inscription on a chattel; the witness may testify to what he saw without producing the plate itself.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1516,8 +1515,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "The judge means that 'once a week' tells us nothing unless we also know the total number of opportunities. Habit depends on regularity relative to the number of times Carter used the stairs.",
-    "explanation": "If Carter used the stairs hundreds of times, seeing him run down them once a week may show only occasional conduct, not a semi-automatic habit. The denominator is the total universe of stair-using occasions.",
+    "modelAnswer": "The judge means that 'once a week' is meaningless without the denominator.",
+    "explanation": "Habit requires a regular response to a repeated situation. If Carter descends the stairs only once a week, always using the handrail may look habitual; if he descends them fifteen times a week, using the handrail once a week is far too irregular. The missing denominator prevents the court from assessing invariable regularity.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1599,9 +1598,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "The court should permit the prosecutor to ask whether Wystan filed a civil suit, because that bears on bias and also undercuts his present claim that the shooting was certainly accidental. The settlement itself is trickier: Rule 408 bars using settlements to prove liability, but the fact of settlement may still come in for a non-liability purpose such as bias if the court finds the probative value worth it.",
-    "explanation": "The cleanest ruling is to allow the question about the lawsuit and to treat the settlement with more caution. If the prosecutor is simply trying to show prior fault or liability from the earlier shooting, Rule 408 should block that use.",
-    "closeCall": true,
+    "modelAnswer": "Objection overruled.",
+    "explanation": "The settlement questions go to Wystan’s possible bias. Rule 408 generally bars settlement evidence when used to prove liability or amount, but it permits other uses such as showing a witness’s bias or motive.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -1610,8 +1609,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Sustain the objection. The prosecution may not call Whitman as a mere subterfuge to get his prior out-of-court accusation before the jury when it already knows he will claim memory loss.",
-    "explanation": "Because the prosecutors knew in advance that Whitman would not give the hoped-for account, the prior statement cannot come in under the guise of impeachment. Nor does the current record establish a proper route such as recorded recollection or a substantive prior statement exception.",
+    "modelAnswer": "Objection sustained.",
+    "explanation": "Under United States v. Ince, the prosecution may not call a witness it knows will claim lack of memory merely as a device to place a prior accusation before the jury under the guise of impeachment.",
     "closeCall": false,
     "correctIndices": null
   },
@@ -1621,9 +1620,9 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Best-effort placeholder: the uploaded HTML refers to Problem 12.7 but does not include the actual problem prompt.",
-    "explanation": "I cannot answer this responsibly without the underlying text.",
-    "closeCall": true,
+    "modelAnswer": "Koh may not refuse to answer.",
+    "explanation": "She is not being asked to reveal the content of a confidential communication. Handwriting is generally treated as physical form rather than privileged communicative content, so the attorney-client privilege does not allow refusal on these facts.",
+    "closeCall": false,
     "correctIndices": null
   },
   {
@@ -1632,8 +1631,8 @@
     "options": [],
     "answerType": "essay",
     "multiSelect": false,
-    "modelAnswer": "Overrule the hearsay objection, at least in substantial part. Psychiatrists may rely on family reports in forming opinions, and the court may allow Borges to disclose those reports as the basis of his opinion under Rule 703 if their helpfulness outweighs the risk of misuse.",
-    "explanation": "Louise’s statements are not automatically admitted for their truth, but they are the sort of information mental-health experts reasonably rely on. In a bench commitment proceeding the danger of misuse is especially reduced.",
+    "modelAnswer": "The court must analyze the mother’s statements under Rule 703 unless they independently qualify under Rule 803(4).",
+    "explanation": "Even if psychiatrists reasonably rely on family reports when forming opinions, that only supports Borges’s ability to base his opinion on Louise’s statements. It does not automatically let the jury hear those statements for their truth. If the statements are otherwise inadmissible, the court may disclose them to the jury only if their probative value in helping evaluate the expert opinion substantially outweighs their prejudicial effect, and a limiting instruction is important.",
     "closeCall": true,
     "correctIndices": null
   },
@@ -1702,11 +1701,11 @@
     ],
     "answerType": "mc",
     "multiSelect": false,
-    "modelAnswer": "d",
-    "explanation": "Correct answer: D.\n\nWhy D is right (FRE 804(b)(1)):\nFormer testimony is admissible only if the party against whom it is now offered had a prior opportunity and similar motive to develop the testimony. None of the listed scenarios satisfies that requirement.\n\nWhy A is wrong:\nPhilip’s counsel was not present, so Philip had no prior opportunity to develop the testimony.\n\nWhy B is wrong:\nLarkin’s counsel was not present, so the party against whom the testimony is now offered lacked the prior opportunity.\n\nWhy C is wrong:\nAn unrelated criminal preliminary hearing with neither civil party participating does not satisfy the prior-opportunity and similar-motive requirements.",
+    "modelAnswer": "a",
+    "explanation": "Correct answer: A.\n\nWhy A is right (FRE 804(b)(1)):\nShakespeare is unavailable, and the earlier deposition was taken by Larkin’s counsel in preparation for this same case. Larkin therefore had an opportunity and similar motive to develop the testimony.\n\nWhy B is wrong:\nIf only Philip’s counsel was present, Larkin lacked the required opportunity to examine the witness.\n\nWhy C is wrong:\nA preliminary hearing in an unrelated criminal case does not give the civil party here the needed opportunity and similar motive.\n\nWhy D is wrong:\nOption A satisfies the former-testimony exception.",
     "closeCall": false,
     "correctIndices": [
-      3
+      0
     ]
   }
 ];
